@@ -22,7 +22,7 @@
     <body class="w-auto h-[100vh] ml-18 mr-18 ">
         <div class="w-auto h-16 shadow-emerald-100 shadow-md flex items-center justify-evenly">
             <div>
-                Logotipo
+             xaaxLogotipo
             </div>
             <div>
                 Inicio
