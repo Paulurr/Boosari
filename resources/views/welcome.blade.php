@@ -20,19 +20,6 @@
         @endif
     </head>
     <body class="w-auto h-[100vh] ml-18 mr-18 ">
-        <div class="w-auto h-16 shadow-emerald-100 shadow-md flex items-center justify-evenly">
-            <div>
-                Logotipo
-            </div>
-            <div>
-                Inicio
-            </div>
-            <div>
-                Iniciar secion
-            </div>
-        </div>
-        <div class="bg-emerald-100 h-80 m-10">
-            
-        </div>
+        <x-navbar></x-navbar>
     </body>
 </html>
