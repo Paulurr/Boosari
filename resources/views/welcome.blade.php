@@ -19,7 +19,7 @@
             </style>
         @endif
     </head>
-    <body class="w-auto h-[100vh] ml-18 mr-18 ">
+    <body class="w-auto h-auto bgcol2 ml-18 mr-18 ">
         <x-nav></x-nav>
     </body>
 </html>
