@@ -39,6 +39,12 @@ body {
 .bgcol7{background-color:var(--col7) ;}
 
 /*navbar*/
+
+@keyframes Line-bar{
+    from{transform: scaleX(0);}
+    to{transform: scaleX(1);}
+}
+
 .line-nav{
     position: relative;
     transform: scaleX(0);
@@ -58,34 +64,66 @@ body {
     animation: Line-bar 0.3s linear both 0.1s;
     transform-origin: left;
 }
-@keyframes Line-bar{
-    from{transform: scaleX(0);}
-    to{transform: scaleX(1);}
+.ul-nav
+,.li-nav
+,.a-nav
+,.a-nav::after{
+    display: none;
 }
-.li-nav{
-    margin-right: 15px;
-}
-.a-nav{
-    position: relative;
-    transition: color 0.2s ease ;
-}
-.a-nav::after{
-    content: "";
-    position: absolute;
-    bottom: 0;
-    left: 0;
-    background-color: var(--col3);
-    height: 1px;
-    width: 100%;
-    transform: scaleX(0);
-    transform-origin: right;
-     transition: transform 0.2s ease;
-}
-.a-nav:hover{
-    color:var(--col3);
-}
-.a-nav:hover::after{
-    transform: scaleX(1);
-    transform-origin: left;
 
+
+@media (min-width: 1024px) {
+    /* estilos para pantallas mayores a celulares */
+    .ul-nav
+    ,.li-nav
+    ,.a-nav
+    ,.a-nav::after{
+        display: flex;
+    }
+    .line-nav{
+    position: relative;
+    transform: scaleX(0);
+    animation: Line-bar 0.3s linear both;
+    transform-origin: left;
+    background-color: var(--col7);
+    }
+    .line-nav::before{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: var(--col3);
+        transform: scaleX(0);
+        animation: Line-bar 0.3s linear both 0.1s;
+        transform-origin: left;
+    }
+    .li-nav{
+        margin-right: 15px;
+    }
+    .a-nav{
+        position: relative;
+        transition: color 0.2s ease ;
+    }
+    .a-nav::after{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: var(--col3);
+        height: 1px;
+        width: 100%;
+        transform: scaleX(0);
+        transform-origin: right;
+        transition: transform 0.2s ease;
+    }
+    .a-nav:hover{
+        color:var(--col3);
+    }
+    .a-nav:hover::after{
+        transform: scaleX(1);
+        transform-origin: left;
+
+    }
 }
