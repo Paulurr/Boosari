@@ -64,40 +64,50 @@ body {
     animation: Line-bar 0.3s linear both 0.1s;
     transform-origin: left;
 }
-.ul-nav
-,.li-nav
-,.a-nav
-,.a-nav::after{
+.ul-nav{
     display: none;
 }
-
-
+.ul-nav-menu{
+    display: flex;
+}
+.a-nav-log.a-nav,.a-nav-up.a-nav{
+    transition: background-color 0.2s ease;
+}
+.a-nav-log{
+    color: var(--col7);
+    box-shadow: inset 0 0 0 1px var(--col3);
+    background-color: #00000000;
+}
+.a-nav-log.a-nav:hover{
+    color: var(--col7); 
+}
+.a-nav-log:hover{
+    background-color: var(--col3);
+}
+.a-nav-log:hover.a-nav:hover::after{
+    background-color: var(--col7);
+}
+.a-nav-up{
+    box-shadow: inset 0 0 0 1px var(--col4);
+    color: var(--col7);
+    background-color: #00000000;
+}
+.a-nav-up:hover{
+    background-color: var(--col4);
+}
+.a-nav-up:hover.a-nav:hover::after{
+    background-color: var(--col7);
+}
+.a-nav-up:hover.a-nav:hover{
+    color: var(--col7);
+}
 @media (min-width: 1024px) {
-    /* estilos para pantallas mayores a celulares */
-    .ul-nav
-    ,.li-nav
-    ,.a-nav
-    ,.a-nav::after{
+    /* estilos para pantallas mayores a tablets */
+    .ul-nav{
         display: flex;
     }
-    .line-nav{
-    position: relative;
-    transform: scaleX(0);
-    animation: Line-bar 0.3s linear both;
-    transform-origin: left;
-    background-color: var(--col7);
-    }
-    .line-nav::before{
-        content: "";
-        position: absolute;
-        bottom: 0;
-        left: 0;
-        height: 100%;
-        width: 100%;
-        background-color: var(--col3);
-        transform: scaleX(0);
-        animation: Line-bar 0.3s linear both 0.1s;
-        transform-origin: left;
+    .ul-nav-menu{
+        display: none;
     }
     .li-nav{
         margin-right: 15px;
@@ -110,20 +120,76 @@ body {
         content: "";
         position: absolute;
         bottom: 0;
-        left: 0;
-        background-color: var(--col3);
+        left: 5%;
+        background-color: var(--col7);
         height: 1px;
-        width: 100%;
+        width: 90%;
         transform: scaleX(0);
         transform-origin: right;
-        transition: transform 0.2s ease;
+        transition: transform 0.2s ease, background-color 0.2s ease;
     }
     .a-nav:hover{
         color:var(--col3);
     }
     .a-nav:hover::after{
+        background-color: var(--col3);
         transform: scaleX(1);
         transform-origin: left;
 
     }
+}
+
+/*animacion de paths del menu de hamburgesas*/
+.nav-menu-button{
+    transition: 0.2s ease;
+}
+.nav-menu-button:hover{
+    background-color: var(--col4); 
+}
+#path-nav1,#path-nav2,#path-nav3,svg{
+    transition: opacity 0.2s ease , transform 0.2s ease, stroke 0.2s ease;
+    transform-origin: center;
+}
+
+.nav-menu{
+    transition: transform 0.2s ease 0.1s;
+    background-color: var(--col3);
+}
+.nav-menu-back{
+    background-color: var(--col3);
+    transition: transform 0.2s ease;
+    opacity: 0.6;
+}
+.li-menu-nav{
+    display: block;
+    width: 100%;
+    margin-top: 10px;
+}
+.a-menu-nav{
+    display: block;
+    width: 100%;
+    position: relative;
+    transition: color 0.2s ease,background-color 0.2s ease;
+}
+.a-menu-nav::after{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: var(--col2);
+        height: 100%;
+        width: 3px;
+        transform: scaleY(0);
+        transform-origin: top;
+        transition: transform 0.2s ease, background-color 0.2s ease;
+    }
+.a-menu-nav:hover{
+    color:var(--col2);
+    background-color:var(--col4);
+}
+.a-menu-nav:hover::after{
+    background-color: var(--col2);
+    transform: scaleY(1);
+    transform-origin: bottom;
+
 }
