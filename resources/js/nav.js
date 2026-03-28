@@ -1,5 +1,10 @@
 window.addEventListener("DOMContentLoaded",()=>{
+    
     var nav_menu_button = document.getElementById("nav-menu-button");
+    var nav_menu_button_div1 = document.getElementById("nav-menu-button-div1");
+    var nav_menu_button_div2 = document.getElementById("nav-menu-button-div2");
+    nav_menu_button_div1.style.backgroundColor ="var(--col3)";
+    nav_menu_button_div2.style.backgroundColor ="var(--col7)";
     var nav_menu = document.getElementById("nav-menu");
     var nav_menu_back = document.getElementById("nav-menu-back");
     var path1= document.getElementById("path-nav1");
@@ -16,7 +21,8 @@ window.addEventListener("DOMContentLoaded",()=>{
 
         if ( open_menu == false ){
             open_menu=true;
-            
+            nav_menu_button_div1.style.backgroundColor ="var(--col4)";
+            nav_menu_button_div2.style.backgroundColor ="var(--col2)";
             path1.style.transform ="rotate(-45deg) scaleX(0.7)";
             path2.style.transform ="translateX(5px)";
             path3.style.transform ="rotate(45deg) scaleX(0.7)";    
@@ -27,6 +33,8 @@ window.addEventListener("DOMContentLoaded",()=>{
             nav_menu_back.style.transform ="translate(100%)";        
         }else{
             open_menu=false;
+            nav_menu_button_div1.style.backgroundColor ="var(--col3)";
+            nav_menu_button_div2.style.backgroundColor ="var(--col7)";
             path1.style.transform ="";
             path2.style.transform ="";
             path3.style.transform ="";

@@ -4,7 +4,7 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
 
-        <title>{{ config('app.name', 'Laravel') }}</title>
+        <title>Log in</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -19,37 +19,62 @@
             </style>
         @endif
     </head>
-    <body class="w-auto h-auto bgcol2 ">
+    <body class="w-auto h-auto bgcol2">
         <x-nav></x-nav>
-        <div class="h-140 lg:h-150 w-full">
-            <div class="h-full w-full flex  items-center">
-                <div class="w-2/5 h-full hidden lg:flex">
-                </div>
-                <div class="flex flex-col lg:w-3/5 w-full h-11/12 ">
-                    <div class="bg-amber-200 h-1/5 w-full">
-                        <div class="animation-welcom-circles">
-
-                        </div>
+        <div class=" h-270 lg:h-screen w-auto  flex items-center justify-end">
+            <form class="form-login  h-full w-full lg:h-full lg:w-160">
+                <div class="form-login-cont h-full w-full lg:h-full lg:w-160 flex flex-col">
+                    <div class="form-login-cont-deco"></div>
+                    <div class="h-[20%] w-full flex items-center justify-center font-bold text-2xl">
+                        Inicio de sesión
                     </div>
-                    <div class="bg-white h-3/5 w-full"></div>
-                    <div class="bg-amber-200 h-1/5 w-full"></div>
+                    <div class="h-[35%] w-full flex flex-col items-center justify-evenly">
+                       <x-label 
+                            name="email"
+                            type="email"
+                            title="Correo electrónico"
+                            color1="var(--col3)"
+                            color2="var(--col4)"
+                        />
+                        <x-label 
+                            name="password"
+                            type="password"
+                            title="Contraseña"
+                            color1="var(--col3)"
+                            color2="var(--col4)"
+                            />
+                    </div>
+                    <br>
+                    <div class="h-[2%] w-full flex items-center justify-center text-sm">
+                        ¿No tienes una cuenta? 
+                        <a href="" class="hover:underline ml-1 col3 font-bold">
+                                Registrate
+                        </a>
+                        
+                    </div>
+                    <br>
+                    <div class="h-[2%] w-full flex items-center justify-center text-xs">
+                        Leer nuestros 
+                        <a href="" class="hover:underline ml-1 col3 font-bold">
+                             Terminos y condiciones
+                        </a>
+                        
+                    </div>
+                    <div class="h-[14%] w-full flex items-center justify-center">
+                        <x-button 
+                            color1="var(--col3)"
+                            color2="var(--col1)"
+                            colortext="var(--col7)"
+                            class="p-2"
+                        >
+                            Iniciar sesión
+                        </x-button>
+                    </div>
+                    <div class="h-auto w-full flex items-center justify-center text-xs">
+                        "Un boost para su ahorro o salario"
+                    </div>
                 </div>
-            </div>
-            <div class="h-auto w-full flex justify-center">
-                <x-button
-                    color1="var(--col3)"
-                    colortext="var(--col7)"
-                    class="p-4 text-xl mr-4"
-                >
-                Iniciar Sesión
-                </x-button>
-                <x-button 
-                    color1="var(--col4)"
-                    class="p-4  text-xl ml-4"
-                >
-                    Crea una cuenta
-                </x-button>
-            </div>
+            </form>
         </div>
     </body>
 </html>

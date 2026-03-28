@@ -11,16 +11,33 @@
 body {
     font-family: "Montserrat", sans-serif;
 }
-/*colores*/
+/*colores oscuro*/
+:root{
+    --col1:#252525;
+    --col2:#3e3e3e;
+    --col3:#3d9c55;
+    --col4:#ffc400;
+    --col5:#3d9c55;
+    --col6:#fffcf0;
+    --col7:#ffffff;
+}
+
 :root{
     --col1:#ffffff;
     --col2:#fffcf0;
     --col3:#ffc400;
     --col4:#34C759;
-    --col5:#3F6E4B;
-    --col6:#4E4937;
-    --col7:#000000;
+    --col5:#ff6f00;
+    --col6:#1a1a1a;
+    --col7:#3e3e3e;
 }
+
+html{
+    color: var(--col7);
+    transition: color 0.2s ease,background-color  0.2s ease;
+    
+}
+
 
 .col1{color:var(--col1) ;}
 .col2{color:var(--col2) ;}
@@ -40,15 +57,19 @@ body {
 
 /*navbar*/
 
-@keyframes Line-bar{
+@keyframes ScaleX-0-1{
     from{transform: scaleX(0);}
     to{transform: scaleX(1);}
+}
+@keyframes ScaleY-0-1{
+    from{transform: scaleY(0);}
+    to{transform: scaleY(1);}
 }
 
 .line-nav{
     position: relative;
     transform: scaleX(0);
-    animation: Line-bar 0.3s linear both;
+    animation: ScaleX-0-1 0.3s linear both;
     transform-origin: left;
     background-color: var(--col7);
 }
@@ -61,15 +82,17 @@ body {
     width: 100%;
     background-color: var(--col3);
     transform: scaleX(0);
-    animation: Line-bar 0.3s linear both 0.1s;
+    animation: ScaleX-0-1 0.3s linear both 0.1s;
     transform-origin: left;
 }
 .ul-nav{
     display: none;
+
 }
 .ul-nav-menu{
     display: flex;
 }
+
 .a-nav-log.a-nav,.a-nav-up.a-nav{
     transition: background-color 0.2s ease;
 }
@@ -96,10 +119,10 @@ body {
     background-color: var(--col4);
 }
 .a-nav-up:hover.a-nav:hover::after{
-    background-color: var(--col7);
+    background-color: var(--col1);
 }
 .a-nav-up:hover.a-nav:hover{
-    color: var(--col7);
+    color: var(--col1);
 }
 @media (min-width: 1024px) {
     /* estilos para pantallas mayores a tablets */
@@ -129,10 +152,10 @@ body {
         transition: transform 0.2s ease, background-color 0.2s ease;
     }
     .a-nav:hover{
-        color:var(--col3);
+        color:var(--col4);
     }
     .a-nav:hover::after{
-        background-color: var(--col3);
+        background-color: var(--col4);
         transform: scaleX(1);
         transform-origin: left;
 
@@ -141,20 +164,71 @@ body {
 
 /*animacion de paths del menu de hamburgesas*/
 .nav-menu-button{
-    transition: 0.2s ease;
+    position: relative;
+    z-index: 1;
 }
-.nav-menu-button:hover{
-    background-color: var(--col4); 
+.nav-menu-button-div1{
+    position: absolute;
+    z-index: 0;
+    bottom: 0;
+    left: 0;
+    background-color: inherit;
+    height: 100%;
+    width: 100%;
+    transform: scale(0);
+    transform-origin: center;
+    transition: transform 0.2s ease 0.1s,background-color 0.2s ease;
+    z-index: 1;
+    border-radius: 50%;
+}
+.nav-menu-button:hover .nav-menu-button-div1, .nav-menu-button:active .nav-menu-button-div1{
+    transform: scale(0.9);
+}
+.nav-menu-button-div2{
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    background-color: var(--col7);
+    height: 100%;
+    width: 100%;
+    transform: scale(0);
+    transform-origin: center;
+    transition: transform 0.2s ease,background-color 0.2s ease;
+    z-index: 1;
+    border-radius: 50%;
+}
+.nav-menu-button:hover .nav-menu-button-div2,.nav-menu-button:active .nav-menu-button-div2{
+    transform: scale(1);
 }
 #path-nav1,#path-nav2,#path-nav3,svg{
     transition: opacity 0.2s ease , transform 0.2s ease, stroke 0.2s ease;
     transform-origin: center;
+    position: relative;
+    z-index: 2;
+    stroke: var(--col7);
 }
 
 .nav-menu{
+    border-top: 68px solid var(--col3) ;
     transition: transform 0.2s ease 0.1s;
     background-color: var(--col3);
 }
+
+.nav-menu::-webkit-scrollbar {
+    width: 8px;
+}
+
+.nav-menu::-webkit-scrollbar-track {
+    background: none;
+    border-radius: 10px;
+}
+
+.nav-menu::-webkit-scrollbar-thumb {
+    background: var(--col2);
+    border-radius: 10px;
+    transition: all 0.3s;
+}
+
 .nav-menu-back{
     background-color: var(--col3);
     transition: transform 0.2s ease;
@@ -163,7 +237,6 @@ body {
 .li-menu-nav{
     display: block;
     width: 100%;
-    margin-top: 10px;
 }
 .a-menu-nav{
     display: block;
@@ -183,13 +256,204 @@ body {
         transform-origin: top;
         transition: transform 0.2s ease, background-color 0.2s ease;
     }
-.a-menu-nav:hover{
+.a-menu-nav:hover,.a-menu-nav:active{
     color:var(--col2);
     background-color:var(--col4);
 }
-.a-menu-nav:hover::after{
+.a-menu-nav:hover::after,.a-menu-nav:active::after{
     background-color: var(--col2);
     transform: scaleY(1);
     transform-origin: bottom;
 
 }
+
+/*login css*/
+
+.form-login{
+    position: relative;
+    transform-origin: right;
+    background-color: var(--col3);
+    animation:none ;
+
+}
+.form-login-cont{
+    position: relative;
+    transform-origin: right;
+    background-color: var(--col1);
+    animation:none ;
+
+
+}
+.form-login-cont-deco{
+    display: none;
+}
+
+@media (min-width: 1024px) {
+    .form-login{
+        animation: ScaleX-0-1 linear both 0.2s;
+    }
+    .form-login-cont{
+        animation: ScaleX-0-1 linear alternate both 0.2s 0.1s;
+
+    }
+    .form-login-cont::after{
+        content: "";
+        position: absolute;
+        bottom: 5%;
+        left: 0;
+        background-color: var(--col3);
+        height: 90%;
+        width: 3px;
+        transform: scaleY(0);
+        animation: ScaleY-0-1 linear alternate both 0.2s 0.3s;
+    }    
+    .form-login-cont::before{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: var(--col4);
+        height: 100%;
+        width: 100%;
+        z-index: 3;
+        transform-origin: right;
+        animation: ScaleX-0-1 reverse both 0.2s 0.3s;
+    }   
+    .form-login-cont-deco{
+        top: 10%;
+        left: 6px;
+        position: absolute;
+        display: flex;
+        background-color: var(--col4);
+        height: 80%;
+        width: 3px;
+        transform: scaleY(0);
+        animation: ScaleY-0-1 linear alternate both 0.2s 0.4s;
+    }
+
+
+    
+}
+
+/*x-label*/
+.label-cont{
+    position: relative;
+}
+.name-label{
+    padding-left: 4px;
+    padding-right: 4px;
+    border-radius: 4px;
+    position: absolute;
+    z-index: 2;
+    top:45%;
+    left: 2%;
+    pointer-events: none;
+    transform-origin: left;
+    transition: transform 0.2s ease, background-color 0.2s ease;
+}
+.input-label:focus + .name-label{
+    transform: translate(5%,-60%) scale(0.7);
+    background-color: var(--color-deco);
+}
+.input-label{
+    padding: 2px;
+    position: relative;
+    z-index: 1;
+    transition: box-shadow 0.7s ease;
+    box-shadow: inset 0 0 var(--input-color1),
+    inset 0 0 var(--input-color2),
+    0 0 0  var(--input-color2)
+    ;
+
+}
+.input-label:hover{
+    box-shadow: inset 0 0 var(--input-color1),
+    inset 0 0 var(--input-color2),
+    -5px 0 0  var(--input-color2)
+    ;
+}
+.input-label:focus{
+    box-shadow: inset -650px 0 var(--input-color1),
+    inset 800px 0 var(--input-color2)
+    ;
+    border: none;
+    outline: none;
+}
+.input-deco{
+    position: absolute;
+    top: 50%;
+    height: 50%;
+    width: 100%;
+}
+.input-deco::before{
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 1%;
+    width: 95%;
+    height: 2px;
+    transform-origin: left;
+    background-color: var(--col3);
+    animation: ScaleX-0-1 linear both 0.2s 0.5s;
+}
+.input-label:hover.has-value{
+    box-shadow: inset 0 0 var(--input-color1),
+    inset 0 0 var(--input-color2),
+    -5px 0 0  var(--input-color2)
+    ;
+
+}
+.input-label:focus.has-value {
+    border: none;
+    outline: none;
+    box-shadow: inset -650px 0 var(--input-color1),
+    inset 800px 0 var(--input-color2)
+    ,0 0 0 var(--input-color2);
+}
+.input-label.has-value {
+    border: none;
+    outline: none;
+    box-shadow: inset 0 0 var(--input-color1),
+    inset 0 0 var(--input-color2)
+    , 0 0 0  var(--input-color2);
+}
+
+.input-label:focus + .name-label {
+    background-color: var(--color-deco);
+}
+
+.input-label.has-value + .name-label{
+    transform: translate(0,-110%) scale(0.7);
+    background-color: none;
+}
+/*page-button*/
+.page-button{
+    position: relative;
+    cursor: pointer;
+}
+
+.page-button::before{
+    content: "";
+    position: absolute;
+    transform-origin: left;
+    transform: scaleX(0);
+
+}
+.page-button:hover::before{
+    transform: scaleX(1);
+}
+.page-button-div{
+    box-shadow: inset 0 0 0 1px var(--page-button-div1),
+     inset 0 -9px 0  var(--page-button-div2),
+     inset 0 -10px 0  var(--page-button-div1);
+    transition: box-shadow 0.2s ease ,color 0.1s ease ;
+}
+.page-button-div:hover{
+     box-shadow: inset 0 0 0 1px var(--page-button-div1),
+     inset 0 -2px 0  var(--page-button-div2),
+     inset 0 -100px 0  var(--page-button-div1);
+     color: var(--color-page-text);
+}
+/* inicio */
+
+/* animaciones inicio */
