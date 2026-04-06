@@ -25,31 +25,37 @@
             <div class="h-full w-full flex  items-center">
                 <div class="w-2/5 h-full hidden lg:flex">
                 </div>
-                <div class="flex flex-col lg:w-3/5 w-full h-11/12 ">
-                    <div class="bg-amber-200 h-1/5 w-full">
-                        <div class="animation-welcom-circles">
-
-                        </div>
+                <div class="flex flex-col lg:w-3/5 w-full h-11/12">
+                    <div class=" h-1/5 w-full flex relative z-1 overflow-hidden">
+                        <div class="animation-welcome-1"></div>
+                        <div class="animation-welcome-2 hidden lg:block"></div>
                     </div>
-                    <div class="bg-white h-3/5 w-full"></div>
-                    <div class="bg-amber-200 h-1/5 w-full"></div>
+                    <div class="bg-white h-3/5 w-full relative z-2"></div>
+                    <div class=" h-1/5 w-full flex relative z-1 justify-center rotate-180 ">
+                        
+                    </div>
                 </div>
             </div>
-            <div class="h-auto w-full flex justify-center">
+            <div class="h-auto w-full flex justify-center items-center flex-col lg:flex-row ">
                 <x-button
                     color1="var(--col3)"
                     colortext="var(--col7)"
-                    class="p-4 text-xl mr-4"
+                    class="p-4 lg:text-xl lg:mr-4 text-sx mb-3"
                 >
-                Iniciar Sesión
+                    <a href="/log_in">                    
+                        Iniciar Sesión
+                    </a>
                 </x-button>
                 <x-button 
                     color1="var(--col4)"
-                    class="p-4  text-xl ml-4"
+                    class="p-4 lg:text-xl lg:ml-4 text-sx "
                 >
-                    Crea una cuenta
+                    <a href="/sign_up">                    
+                    Crear una cuenta
+                    </a>
                 </x-button>
             </div>
+            <div class="h-1/6 w-full flex justify-center items-center">Icono de mas contenido abajo abajo</div>
         </div>
     </body>
 </html>

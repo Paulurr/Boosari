@@ -41,14 +41,14 @@
             </a>
             <ul class="ul-nav-menu flex items-center  justify-end sm:justify-evenly h-full w-1/3">
                 <li class="li-nav">
-                    <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden text-sm lg:text-lg" >
+                    <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden text-xs lg:text-lg" >
                         Iniciar Sesión
                     </a>
                     
                 </li>
                 <li class="li-nav">
-                    <a href="" class="a-nav a-nav-up p-1 hidden sm:flex rounded-md overflow-hidden text-sm lg:text-lg" >
-                        Registrate
+                    <a href="/sign_up" class="a-nav a-nav-up p-1 hidden sm:flex rounded-md overflow-hidden text-sm lg:text-lg" >
+                        Crear una cuenta
                     </a>
                     
                 </li>
@@ -75,7 +75,7 @@
             </li>
     
         </ul>
-        <ul class="ul-nav h-full w-1/4 flex items-center justify-end">
+        <ul class="ul-nav h-full w-1/3 flex items-center justify-end">
             <li class="li-nav">
                 <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden" >
                     Iniciar Sesión
@@ -83,8 +83,8 @@
                 
             </li>
             <li class="li-nav">
-                <a href="" class="a-nav a-nav-up p-1 rounded-md overflow-hidden">
-                    Registrate
+                <a href="/sign_up" class="a-nav a-nav-up p-1 rounded-md overflow-hidden">
+                    Crear una cuenta
                 </a>
             </li>
         </ul>

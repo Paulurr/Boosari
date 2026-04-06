@@ -134,6 +134,7 @@ html{
     }
     .li-nav{
         margin-right: 15px;
+        padding: 2px;
     }
     .a-nav{
         position: relative;
@@ -272,7 +273,7 @@ html{
 .form-login{
     position: relative;
     transform-origin: right;
-    background-color: var(--col3);
+    background-color: var(--col4);
     animation:none ;
 
 }
@@ -312,7 +313,7 @@ html{
         position: absolute;
         bottom: 0;
         left: 0;
-        background-color: var(--col4);
+        background-color: var(--col3);
         height: 100%;
         width: 100%;
         z-index: 3;
@@ -335,6 +336,77 @@ html{
     
 }
 
+/*signup css*/
+
+.form-signup{
+    position: relative;
+    transform-origin: left;
+    background-color: var(--col3);
+    animation:none ;
+    border-bottom: 60px solid var(--col1);
+}
+.form-signup-cont{
+    position: relative;
+    transform-origin: left;
+    background-color: var(--col1);
+    animation:none ;
+
+
+}
+.form-signup-cont-deco{
+    display: none;
+}
+@media (min-width: 2000px) {
+    .form-signup{
+        background-color: var(--col1);
+    }
+}
+@media (min-width: 1024px) {
+    .form-signup{
+        animation: ScaleX-0-1 linear both 0.2s;
+    }
+    .form-signup-cont{
+        animation: ScaleX-0-1 linear alternate both 0.2s 0.1s;
+
+    }
+    .form-signup-cont::after{
+        content: "";
+        position: absolute;
+        bottom: 5%;
+        left: 97%;
+        background-color: var(--col4);
+        height: 90%;
+        width: 3px;
+        transform: scaleY(0);
+        animation: ScaleY-0-1 linear alternate both 0.2s 0.3s;
+    }    
+    .form-signup-cont::before{
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background-color: var(--col4);
+        height: 100%;
+        width: 100%;
+        z-index: 3;
+        transform-origin: left;
+        animation: ScaleX-0-1 reverse both 0.2s 0.3s;
+    }   
+    .form-signup-cont-deco{
+        top: 10%;
+        right: 25px;
+        position: absolute;
+        display: flex;
+        background-color: var(--col3);
+        height: 80%;
+        width: 3px;
+        transform: scaleY(0);
+        animation: ScaleY-0-1 linear alternate both 0.2s 0.4s;
+    }
+
+
+    
+}
 /*x-label*/
 .label-cont{
     position: relative;
@@ -457,3 +529,39 @@ html{
 /* inicio */
 
 /* animaciones inicio */
+
+@keyframes Circles{
+    from{
+        rotate: 0;
+    }   
+    to{
+        rotate: 360deg;
+    }
+}
+@keyframes Scale-01-1{
+    0%{
+        scale: 0.3;
+    }   
+    50%{
+        scale: 1;
+    }
+    100%{
+        scale: 0.3;
+    }
+}
+.animation-welcome-1{
+    position: absolute;
+    top: 0;
+    left:0;
+    height: 150px;
+    width: 150px;
+    background-color: #252525;
+}
+.animation-welcome-2{
+    position: absolute;
+    top: 0;
+    left: 60%; 
+    height: 150px;
+    width: 150px;
+    background-color: #252525;
+}

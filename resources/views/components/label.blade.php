@@ -6,8 +6,12 @@
     'color2'
 ])
 <label for="" class="flex flex-col w-3/5 label-cont">
-    <input name="${{ $name }}" type="{{ $type }}" class="input-label mt-5"
-    style="--input-color1:{{ $color1 }};--input-color2:{{ $color2 }};">
+    <input 
+        name="{{ $name }}" 
+        type="{{ $type }}" 
+        class="input-label mt-5"
+        style="--input-color1:{{ $color1 }};--input-color2:{{ $color2 }};"
+    >
     <span class="name-label absolute "
     style="--color-deco:{{ $color1 }};">
         {{ $title }}

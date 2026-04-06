@@ -4,7 +4,7 @@ style="--page-button1:{{ $color1 }};--page-button2:{{ $color2 }};--color-page-te
 
     <div
         {{ $attributes->merge([
-            'class' => 'h-ful w-full page-button-div '
+            'class' => 'h-full page-button-div'
         ]) }}
     style="--page-button-div1:{{ $color1 }};--page-button-div2:{{ $color2 }};">
         {{$slot}}
