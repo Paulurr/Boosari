@@ -5,10 +5,12 @@
     'color1',
     'color2'
 ])
+@vite(['resources/js/label.js'])
 <label for="" class="flex flex-col w-3/5 label-cont">
     <input 
         name="{{ $name }}" 
         type="{{ $type }}" 
+        placeholder=" "
         class="input-label mt-5"
         style="--input-color1:{{ $color1 }};--input-color2:{{ $color2 }};"
     >
@@ -18,24 +20,3 @@
     </span>
         <div class="input-deco" style="--color-deco:{{ $color1 }};"></div>
 </label>
-<script>
-    document.querySelectorAll(".input-label").forEach(input => {
-        
-        function checkValue() {
-            if (input.value.trim() !== "") {
-                input.classList.add("has-value");
-            } else {
-                input.classList.remove("has-value");
-            }
-        }
-
-        // cuando escribe
-        input.addEventListener("input", checkValue);
-
-        // cuando pierde focus
-        input.addEventListener("blur", checkValue);
-
-        // por si ya tiene valor al cargar
-        checkValue();
-    });
-</script>

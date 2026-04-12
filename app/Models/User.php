@@ -13,7 +13,7 @@ class User extends Authenticatable
     use HasFactory, Notifiable;
     public function role()
     {
-        return $this->belongsTo(Role::class);
+        return $this->belongsTo(Role::class , 'id_roles');
     }
 
     /**

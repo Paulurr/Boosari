@@ -1,5 +1,4 @@
 <?php
-
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
@@ -10,9 +9,17 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
     )
+
     ->withMiddleware(function (Middleware $middleware): void {
-        //
+
+        $middleware->alias([
+            'usuario' => \App\Http\Middleware\Usuario::class,
+            'moderador' => \App\Http\Middleware\Moderador::class,
+            'admin' => \App\Http\Middleware\Admin::class,
+        ]);
+
     })
+
     ->withExceptions(function (Exceptions $exceptions): void {
         //
     })->create();

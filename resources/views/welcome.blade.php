@@ -40,7 +40,7 @@
                 <x-button
                     color1="var(--col3)"
                     colortext="var(--col7)"
-                    class="p-4 lg:text-xl lg:mr-4 text-sx mb-3"
+                    class="p-4 lg:text-xl lg:mr-4 text-sx mb-3 lg:mb-0"
                 >
                     <a href="/log_in">                    
                         Iniciar Sesión

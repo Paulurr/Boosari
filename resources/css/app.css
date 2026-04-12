@@ -24,7 +24,7 @@ body {
 
 :root{
     --col1:#ffffff;
-    --col2:#fffcf0;
+    --col2:#fff0bb;
     --col3:#ffc400;
     --col4:#34C759;
     --col5:#ff6f00;
@@ -267,6 +267,71 @@ html{
     transform-origin: bottom;
 
 }
+.perfil-menu-nav{
+    position: absolute;
+    width: 270px;
+    height:170px;
+    right: 0%;
+    bottom:-285%;
+    transform-origin: top right;
+    transform: scale(0);
+    transition: transform 0.2s ease;
+    background-color: var(--col1);
+    border-radius: 8px;
+}
+.perfil-menu-div-nav{
+    position: relative;
+    box-shadow: inset 0 0 0 1px var(--col4);
+    color: var(--col4);
+    margin: 1px;
+    border-radius: 0 8px 8px 0 ;
+    transition: color 0.2s ease,background-color 0.2s ease;
+}
+
+.perfil-menu-div-nav:last-child{
+    box-shadow: inset 0 0 0 1px red;
+    color: red;
+}
+.perfil-menu-div-nav:last-child:hover{
+    background-color: red;
+    color: white;
+    overflow: hidden;
+}
+.perfil-menu-div-nav:hover{
+   background-color: var(--col4);
+   color: var(--col1);
+       box-shadow: none;
+
+}
+.perfil-menu-div-nav:last-child::after{
+    background-color: white;
+    transform: scaleY(0);
+    transform-origin: top;
+
+}
+.perfil-menu-div-nav:last-child:hover::after{
+    transform: scaleY(1);
+    transform-origin: bottom;
+
+}
+.perfil-menu-div-nav::after{
+    z-index: 0;
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 2%;
+    height: 100%;
+    transform-origin: left;
+    transition: transform 0.2s ease 0.1s;
+    transform: scaleX(0);
+    background-color: var(--col1);
+}
+.perfil-menu-div-nav:hover::after{
+    transform: scaleX(1);
+
+}
+ 
 
 /*login css*/
 
@@ -344,6 +409,21 @@ html{
     background-color: var(--col3);
     animation:none ;
     border-bottom: 60px solid var(--col1);
+}
+/* Cambia el fondo del scroll (la pista) */
+.form-signup::-webkit-scrollbar-track {
+    background: var(--col1); /* color que quieras */
+}
+
+/* Opcional: el "thumb" (la barrita que se mueve) */
+.form-signup::-webkit-scrollbar-thumb {
+    background: #888;
+    border-radius: 4px;
+
+}
+/* Opcional: ancho del scroll */
+.form-signup::-webkit-scrollbar {
+    width: 10px;
 }
 .form-signup-cont{
     position: relative;
@@ -437,6 +517,15 @@ html{
     0 0 0  var(--input-color2)
     ;
 
+}
+.input-label:-webkit-autofill {
+    animation-name: autofill;
+    animation-duration: 0.1s;
+}
+
+@keyframes autofill {
+    from {}
+    to {}
 }
 .input-label:hover{
     box-shadow: inset 0 0 var(--input-color1),

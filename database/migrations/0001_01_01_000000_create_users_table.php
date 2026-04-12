@@ -17,7 +17,7 @@ return new class extends Migration
                 ->default(1) 
                 ->constrained('roles')
                 ->cascadeOnDelete();
-            $table->string('username',25);
+            $table->string('name',25);
             $table->string('email',25)->unique();
             $table->timestamp('email_verified_at')->nullable();
             $table->string('password');
