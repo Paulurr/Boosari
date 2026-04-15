@@ -18,7 +18,7 @@ class Usuario
         if(!Auth::check()){
             return redirect('/log_in');
         }
-        if(Auth::user()->id_roles != 1){
+        if(Auth::user()->roles_id != 1){
             abort(403); 
         }
         return $next($request);

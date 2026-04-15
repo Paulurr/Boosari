@@ -15,7 +15,7 @@ body {
 :root{
     --col1:#252525;
     --col2:#3e3e3e;
-    --col3:#3d9c55;
+    --col3:#22a443;
     --col4:#ffc400;
     --col5:#3d9c55;
     --col6:#fffcf0;
@@ -26,7 +26,7 @@ body {
     --col1:#ffffff;
     --col2:#fff9e8;
     --col3:#ffc400;
-    --col4:#34C759;
+    --col4:#22a443;
     --col5:#ff6f00;
     --col6:#1a1a1a;
     --col7:#3e3e3e;
@@ -654,3 +654,4 @@ html{
     width: 150px;
     background-color: #252525;
 }
+

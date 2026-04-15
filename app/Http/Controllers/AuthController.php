@@ -29,14 +29,14 @@ class AuthController extends Controller
     public function sign_up(Request $request){
 
         $request->validate([
-            'username'=>'required|min:3|max:25',
+            'name'=>'required|min:3|max:25',
             'email'=>'required|email',
             'password'=>'required|min:3|max:25',
             'repeat_password' => 'same:password'
         ]);
 
         $user = User::create([
-            'username'=> $request->username,
+            'name'=> $request->name,
             'email'=> $request->email,
             'password'=>$request->password
         ]);

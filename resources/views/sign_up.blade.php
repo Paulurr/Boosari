@@ -32,7 +32,7 @@
                     </div>
                     <div class="lg:h-150 h-200 w-full flex flex-col items-center justify-evenly">
                        <x-label 
-                            name="username"
+                            name="name"
                             type="text"
                             title="Usuario"
                             color1="var(--col3)"
