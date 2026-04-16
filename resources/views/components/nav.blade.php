@@ -177,7 +177,7 @@
                 </li>
                 </li>
                 <li class="li-nav">
-                    <a href="" class="a-nav">
+                    <a href="/deudas" class="a-nav">
                         Deudas
                     </a>
                     

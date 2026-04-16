@@ -26,6 +26,10 @@ Route::middleware(['usuario'])->group(function () {
         return view('home');
     });
     
+    Route::get('/deudas', function (){
+        return view('deudas');
+    });
+    
     Route::get('/log_out', function () {
         return abort(404);
     });
