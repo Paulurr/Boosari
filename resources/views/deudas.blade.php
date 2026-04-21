@@ -21,6 +21,6 @@
     </head>
     <body class="w-auto h-auto bgcol2 ">
         <x-nav></x-nav>
-        Feliz cumpleaños Diego jhbbhbhbj
+        Feliz cumpleaños Diego
     </body>
 </html>
