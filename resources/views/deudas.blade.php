@@ -21,6 +21,6 @@
     </head>
     <body class="w-auto h-auto bgcol2 ">
         <x-nav></x-nav>
-        Alan pro
+        Feliz cumpleaños Diego
     </body>
 </html>
