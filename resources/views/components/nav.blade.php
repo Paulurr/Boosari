@@ -1,7 +1,7 @@
 @vite(['resources/js/nav.js'])
 @guest
     
-<nav class="h-15 w-auto flex flex-col sticky top-0 pt-2 select-none z-10 bgcol2  overflow-hidden">
+<nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2  overflow-hidden">
     <div class="flex h-11/12 w-auto">
         <div class="h-full lg:w-1/4 w-full flex items-center justify-center pl-4 pr-4 lg:pl-0 sm:pr-0">
 

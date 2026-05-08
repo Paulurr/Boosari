@@ -19,7 +19,7 @@
             </style>
         @endif
     </head>
-    <body class="w-auto h-auto bgcol2">
+    <body class="w-auto h-auto pt-15 bgcol2">
         <x-nav></x-nav>
         <div class=" h-270 lg:h-screen w-auto  flex items-center justify-end">
             <form class="form-login h-full w-full lg:h-full lg:w-160" id="login_form" method="POST" action="/log_in">

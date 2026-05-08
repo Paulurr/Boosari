@@ -654,4 +654,21 @@ html{
     width: 150px;
     background-color: #252525;
 }
-
+.welcome-animation-div-scale{
+    animation: welcome-animation-div-scale 10s infinite alternate-reverse ;
+    transform-origin: right;
+    animation-timing-function: linear;
+}
+#welcome-textoScroll {
+    will-change: transform;
+    transform: translateZ(0);
+}
+@keyframes welcome-animation-div-scale{
+    0%{
+        transform: scaleX(0.6) translateY(1000px);
+        
+    }   
+    100%{
+        transform: scaleX(1) translateY(0px);
+    }
+}

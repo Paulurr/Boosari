@@ -20,7 +20,7 @@
             </style>
         @endif
     </head>
-    <body class="w-auto h-auto bgcol2 lg:overflow-hidden"> 
+    <body class="w-auto pt-15 h-auto bgcol2 lg:overflow-hidden"> 
         <x-nav></x-nav>
         <div class=" h-270 lg:h-screen w-auto  flex items-center justify-start">
             <form method="POST" action="/sign_up" class="form-signup overflow-y-auto overflow-x-hidden h-full w-full lg:h-full lg:w-180" >
