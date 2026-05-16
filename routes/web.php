@@ -10,6 +10,9 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/', function () {
         return view('welcome');
     });
+    Route::get('/about_us', function () {
+        return view('about_us');
+    });
     Route::get('/log_in', function () {
         return view('log_in');
     });

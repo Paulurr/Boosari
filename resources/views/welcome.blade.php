@@ -25,7 +25,11 @@
             <div class="h-2/3 w-full flex  items-center justify-center">
              
                 <div class="flex flex-col w-full h-11/12 pt-15">
-                    <div class="bg-white h-full w-full relative z-2"></div>
+                    <div class=" flex items-center xl:justify-between xl:pl-10 justify-center h-full w-full relative z-2">
+                        
+                <object data="{{ asset('images/IndexXlAnimate.svg') }}" type="image/svg+xml" class="xl:block h-10/12 w-3/12 hidden"></object>
+                <object data="{{ asset('images/IndexAnimate.svg') }}" type="image/svg+xml" class="md:h-full bg-white md:w-auto w-full h-auto object-fill"></object>
+                    </div>
                     
                 </div>
             </div>
@@ -59,8 +63,8 @@
                     <div class="bgcol3 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                     <div class="bgcol4 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                 </div>
-                <div class="h-130 w-full bgcol4 flex flex-col lg:flex-row items-center p-5 pt-0 lg:pl-50 lg:pr-50">
-                    <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-md text-center font-bold">
+                <div class="h-130 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
+                    <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-xl text-center font-bold">
                         Administra el movimiento de tu dinero.
                     </div>
                     <div class="h-2/3 aspect-square bgcol1 rounded-md">
@@ -84,10 +88,10 @@
                         <div id="welcome-textoScroll" class="lg:text-[200px] text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
                             Organizate
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
-                                <div class="text-xl font-normal mt-20 p-30">
+                                <div class="text-xl hidden xl:flex font-normal mt-20 p-30">
                                     Organiza tu dinero, tus gastos, tus ingresos, tus deudas y tus ahorros en un solo lugar. Lleva un control detallado de tu economía personal y toma decisiones financieras informadas.
                                 </div>
-                                <div class="lg:h-120 w-1/2 aspect-square bgcol1 rounded-md">
+                                <div class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
                                 </div>
                             </div>
                             
@@ -95,34 +99,45 @@
 
                     </div>    
                 </div>
-                    <div class="h-screen transition-transform w-full p-10 flex sticky top-0 left-0 justify-center items-center">
+                    <div class="h-screen transition-transform w-full p-10 flex flex-col lg:flex-row sticky top-0 left-0 justify-center items-center">
 
-                        <div class="h-full m-10 w-1/3 overflow-hidden flex justify-center items-center">
-                            <div class="w-full bgcol1 relative aspect-square overflow-hidden">
-
+                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                            <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
+                            <div class="w-80 bgcol1 relative aspect-square rounded-md overflow-hidden">
+                                 <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
+                            </div>
+                        </div>
+                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                            <div class="w-80 bgcol1 relative aspect-square rounded-md overflow-hidden">
+                                <object data="{{ asset('images/RegisterAnimateWelcome.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
+                            </div>
+                            <div class="font-bold text-center text-2xl">Lleva un registro de datos</div>
+                        </div>
+                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                            <div class="font-bold text-center text-2xl">Analiza tu situación financiera</div>
+                            <div class="w-80 bgcol1 relative flex items-center justify-center aspect-square rounded-md overflow-hidden">
+                                <object data="{{ asset('images/GraficsWelcomeAnimate.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
                 
-                        <div class="h-full m-10 w-1/3 overflow-hidden flex justify-center items-center">
-                            <div class="w-full bgcol1 relative aspect-square overflow-hidden">
-
-                            </div>
-                        </div>
-
-                        <div class="h-full m-10 w-1/3 overflow-hidden flex justify-center items-center">
-                            <div class="w-full bgcol1 relative aspect-square overflow-hidden">
-                                
+      
+                        <div class=" flex-col justify-evenly p-10 mt-10 h-full flex lg:hidden overflow-hidden items-center">
+                            <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
+                            <div class="w-80 bgcol1 relative aspect-square overflow-hidden">
+                                 <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
                     </div>
                 </div>
 
                 <a href="#" class="bgcol1 h-100 flex justify-center items-center lg:text-8xl text-4xl font-bold">
-                    ¡COMIENZA YA!
+                    ¡COMIENZA YA! 
                 </a>
+                <x-footer/>
+
             </div>
-            <div class="bgcol1 h-180 flex justify-center items-end p-30 lg:text-5xl text-4xl font-bold">
-                Con diversas herramientas y funciones
+            <div class="bgcol1 h-180 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
+                Con diversas funciones y herramientas
             </div>
             
         </div>

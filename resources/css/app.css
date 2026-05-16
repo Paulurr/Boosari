@@ -11,6 +11,9 @@
 body {
     font-family: "Montserrat", sans-serif;
 }
+html{
+ scroll-behavior: smooth;   
+}
 /*colores oscuro*/
 :root{
     --col1:#252525;
@@ -18,7 +21,7 @@ body {
     --col3:#22a443;
     --col4:#ffc400;
     --col5:#3d9c55;
-    --col6:#fffcf0;
+    --col6:#fff9e8;
     --col7:#ffffff;
 }
 

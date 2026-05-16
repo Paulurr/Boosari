@@ -70,7 +70,7 @@
                 </a>
             </li>
             <li class="li-nav">
-                <a href="" class="a-nav">
+                <a href="/about_us" class="a-nav">
                     Sobre nosotros
                 </a>
                 
