@@ -1,4 +1,4 @@
-@vite(['resources/js/nav.js'])
+@vite(['resources/js/nav.js','resources/js/ThemeMode.js'])
 @guest
     
 <nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2  overflow-hidden">
@@ -38,10 +38,22 @@
                     <div class="nav-menu-button-div2" id="nav-menu-button-div2"></div>
                     <div class="nav-menu-button-div1" id="nav-menu-button-div1"></div>
                 </button>
+                <div class="lg:hidden ml-3 bgcol3 h-5 w-10 relative cursor-pointer switch-theme overflow-hidden">
+                    <div
+                        class="absolute top-0 h-full w-1/2 bgcol1 switch-theme-div transition-transform duration-300">
+                    </div>
+                </div>
+                                
             </div>
+          
             <a href="/" class="flex justify-center h-full w-1/3">
-                <img src="{{ asset('images/logotipo_boosari.webp') }}" alt="Logo" srcset="" class="h-10/12 object-contain">
+                <img src="{{ asset('images/LogoTypeLight.svg') }}" alt="Logo" srcset="" class="h-full lg:w-auto logo-theme w-full object-contain">
             </a>
+             <div class="lg:flex hidden ml-3 bgcol3 h-5 w-10 relative cursor-pointer switch-theme overflow-hidden">
+                    <div
+                        class="absolute top-0 h-full w-1/2 bgcol1 switch-theme-div transition-transform duration-300">
+                    </div>
+                </div>
             <ul class="ul-nav-menu flex items-center  justify-end sm:justify-evenly h-full w-1/3">
                 <li class="li-nav mr-1">
                     <a href="">

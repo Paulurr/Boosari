@@ -37,7 +37,7 @@
                 <x-button
                     color1="var(--col3)"
                     colortext="var(--col7)"
-                    class="p-4 lg:text-xl lg:mr-4 text-sx mb-3 lg:mb-0"
+                    class="p-4 lg:text-3xl lg:mr-4 text-sx mb-3 lg:mb-0"
                 >
                     <a href="/log_in">                    
                         Iniciar Sesión
@@ -45,7 +45,7 @@
                 </x-button>
                 <x-button 
                     color1="var(--col4)"
-                    class="p-4 lg:text-xl lg:ml-4 text-sx "
+                    class="p-4 lg:text-3xl lg:ml-4 text-sx "
                 >
                     <a href="/sign_up">                    
                     Crear una cuenta
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <div id="welcome-scroll-div-cont" class="h-[180vh] bgcol3 flex relative ">
+            <div id="welcome-scroll-div-cont" class="h-[220vh] bgcol3 flex relative ">
                 <div class="h-full w-full overflow-hidden absolute top-0 left-0">
                     <div id="welcome-scroll-div-animate" 
                         class="bgcol4 origin-left h-full w-full absolute top-0 left-0 z-1 overflow-hidden">
@@ -88,8 +88,19 @@
                         <div id="welcome-textoScroll" class="lg:text-[200px] text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
                             Organizate
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
-                                <div class="text-xl hidden xl:flex font-normal mt-20 p-30">
-                                    Organiza tu dinero, tus gastos, tus ingresos, tus deudas y tus ahorros en un solo lugar. Lleva un control detallado de tu economía personal y toma decisiones financieras informadas.
+                                <div class="text-xl hidden xl:flex flex-col justify-evenly items-center font-normal mt-20 p-30">
+                                    <span>Organiza tu dinero, tus gastos, tus ingresos, tus deudas y tus ahorros en un solo lugar. Lleva un control detallado de tu economía personal y toma decisiones financieras informadas.
+                                    </span>
+                                        <x-button
+                                        color1="var(--col1)"
+                                        color2="var(--col4)"
+                                        colortext="var(--col7)"
+                                        class="p-4 text-xl mt-10"
+                                    >
+                                        <a href="/log_in">                    
+                                            Iniciar Sesión
+                                        </a>
+                                    </x-button>
                                 </div>
                                 <div class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
                                 </div>
