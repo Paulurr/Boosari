@@ -1,9 +1,22 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\App;
 use App\Http\Controllers\AuthController;
 
 
+
+Route::get('/lang/{locale}', function ($locale) {
+
+    if (! in_array($locale, ['es', 'en'])) {
+        abort(400);
+    }
+
+    session(['locale' => $locale]);
+
+    return redirect()->back();
+
+})->name('lang.switch');
 
 Route::middleware(['guest'])->group(function () {
 
@@ -39,4 +52,3 @@ Route::middleware(['usuario'])->group(function () {
     Route::post("/log_out",[AuthController::class, "log_out"]);
 
 });
-

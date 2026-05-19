@@ -11,7 +11,7 @@
                     <div class="ul-menu-nav p-3 min-h-150">
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
                             <a href="/" class="a-menu-nav text-sm p-2">
-                                Inicio
+                                {{ __('nav.nav_home') }}
                             </a>
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
@@ -56,10 +56,15 @@
                 </div>
             <ul class="ul-nav-menu flex items-center  justify-end sm:justify-evenly h-full w-1/3">
                 <li class="li-nav mr-1">
-                    <a href="">
-                        <img src="{{ asset('images/bandera.png') }}" alt="" class="h-10 object-contain">
+                    <a href="{{ route('lang.switch', app()->getLocale() == 'en' ? 'es' : 'en') }}">
+                        <img 
+                            src="{{ asset(app()->getLocale() == 'en' 
+                                ? 'images/bandera_en.png' 
+                                : 'images/bandera_es.png') }}" 
+                            alt="Switch Language" 
+                            class="h-10"
+                        >
                     </a>
-                    
                 </li>
                 <li class="li-nav">
                     <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden text-xs lg:text-lg" >
@@ -78,7 +83,8 @@
         <ul class="ul-nav h-full w-[65%] flex items-center justify-end 100 ">
             <li class="li-nav">
                 <a href="/" class="a-nav">
-                    Inicio
+                    {{ __('nav.nav_home') }}
+
                 </a>
             </li>
             <li class="li-nav">
@@ -99,10 +105,15 @@
         </ul>
         <ul class="ul-nav h-full w-1/2 flex items-center justify-end">
             <li class="li-nav">
-                <a href="">
-                    <img src="{{ asset('images/bandera.png') }}" alt="" class="h-10">
-                </a>
-                
+                <a href="{{ route('lang.switch', app()->getLocale() == 'en' ? 'es' : 'en') }}">
+                        <img 
+                            src="{{ asset(app()->getLocale() == 'en' 
+                                ? 'images/bandera_en.png' 
+                                : 'images/bandera_es.png') }}" 
+                            alt="Switch Language" 
+                            class="h-10"
+                        >
+                    </a>
             </li>
             <li class="li-nav">
                 <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden" >
