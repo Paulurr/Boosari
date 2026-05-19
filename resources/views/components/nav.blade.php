@@ -84,19 +84,18 @@
             <li class="li-nav">
                 <a href="/" class="a-nav">
                     {{ __('nav.nav_home') }}
-
                 </a>
             </li>
             <li class="li-nav">
                 <a href="/about_us" class="a-nav">
-                    Sobre nosotros
+                    {{ __('nav.about') }}
                 </a>
                 
             </li>
             </li>
             <li class="li-nav">
                 <a href="" class="a-nav">
-                    Acerca de
+                    {{ __('nav.services') }}
                 </a>
                 
             </li>
@@ -117,13 +116,13 @@
             </li>
             <li class="li-nav">
                 <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden" >
-                    Iniciar Sesión
+                    {{ __('nav.log_in') }}
                 </a>
                 
             </li>
             <li class="li-nav">
                 <a href="/sign_up" class="a-nav a-nav-up p-1 rounded-md overflow-hidden">
-                    Crear una cuenta
+                    {{ __('nav.sign_up') }}
                 </a>
             </li>
         </ul>
@@ -230,7 +229,7 @@
     <div id="perfil-menu-nav" class="perfil-menu-nav flex flex-col p-2">
         <a href= "/" class="w-full h-1/3 flex items-center perfil-menu-div-nav">
                 <div class="pl-3 relative z-1">
-                    Administrar perfil
+                    {{ __('nav.profile_config') }}
                 </div>
         </a>
         <a href="/" class="w-full h-1/3 flex items-center perfil-menu-div-nav">
