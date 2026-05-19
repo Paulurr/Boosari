@@ -28,7 +28,7 @@
                     <div class=" flex items-center xl:justify-between xl:pl-10 justify-center h-full w-full relative z-2">
                         
                 <object data="{{ asset('images/IndexXlAnimate.svg') }}" type="image/svg+xml" class="xl:block h-10/12 w-3/12 hidden"></object>
-                <object data="{{ asset('images/IndexAnimate.svg') }}" type="image/svg+xml" class="md:h-full bg-white md:w-auto w-full h-auto object-fill"></object>
+                <object type="image/svg+xml" class="md:h-full md:w-auto w-full h-auto object-fill" id="IndexAnimate"></object>
                     </div>
                     
                 </div>
@@ -65,10 +65,10 @@
                 </div>
                 <div class="h-130 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
                     <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-xl text-center font-bold">
-                        Administra el movimiento de tu dinero.
+                        Ahorra de mejor forma tu dinero.
                     </div>
                     <div class="h-2/3 aspect-square bgcol1 rounded-md">
-
+                        <object data="{{ asset('images/GoalsAnimate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
                     </div>
                 </div>
                 <div class="w-full h-15 mb-10 overflow-hidden rotate-180 bgcol1">

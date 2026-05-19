@@ -26,6 +26,7 @@ function aplicarTema(tema) {
     });
 }
 
+
 function moverSwitch(estado) {
     document.querySelectorAll('.switch-theme').forEach(function(contenedor) {
         const boton = contenedor.querySelector('.switch-theme-div');
@@ -47,36 +48,77 @@ function cambiarLogo(estado) {
         }
     });
 }
-
 function cambiarTema() {
+
     let temaActual = localStorage.getItem('tema') || 'claro';
 
     if (temaActual === 'claro') {
+
         temaActual = 'oscuro';
         aplicarTema(temaOscuro);
+
     } else {
+
         temaActual = 'claro';
         aplicarTema(temaClaro);
+
     }
 
     localStorage.setItem('tema', temaActual);
+
     moverSwitch(temaActual);
     cambiarLogo(temaActual);
+
+    const animacion = document.getElementById('IndexAnimate');
+
+    if (animacion) {
+
+        if (temaActual === 'oscuro') {
+            animacion.data = '/images/IndexAnimateDark.svg';
+        } else {
+            animacion.data = '/images/IndexAnimate.svg';
+        }
+
+    }
+
+    
+    
+
 }
 
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
+
     const temaGuardado = localStorage.getItem('tema') || 'claro';
 
+    // Aplicar colores
     if (temaGuardado === 'oscuro') {
         aplicarTema(temaOscuro);
     } else {
         aplicarTema(temaClaro);
     }
 
+    // Mover switch
     moverSwitch(temaGuardado);
+
+    // Cambiar logos
     cambiarLogo(temaGuardado);
 
-    document.querySelectorAll('.switch-theme').forEach(function(contenedor) {
+    // Cambiar animación SVG
+    const animacion = document.getElementById('IndexAnimate');
+
+    if (animacion) {
+
+        if (temaGuardado === 'oscuro') {
+            animacion.data = '/images/IndexAnimateDark.svg';
+        } else {
+            animacion.data = '/images/IndexAnimate.svg';
+        }
+
+    }
+
+    // Eventos click
+    document.querySelectorAll('.switch-theme').forEach(function (contenedor) {
         contenedor.addEventListener('click', cambiarTema);
     });
+
 });
