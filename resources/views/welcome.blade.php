@@ -40,7 +40,7 @@
                     colortext="var(--col7)"
                     class="p-4 lg:text-3xl lg:mr-4 text-sx mb-3 lg:mb-0"
                 >
-                    <a href="/log_in">                    
+                    <a id="log_in" href="/log_in">                    
                         {{ __('welcome.log_in') }}
                     </a>
                 </x-button>
@@ -54,7 +54,9 @@
                 </x-button>
             </div>
             <div class="h-1/6 w-full flex justify-center items-center">
-                <object data="{{ asset('images/masAbajo.svg') }}" type="image/svg+xml" class="h-1/2 object-fill"></object>
+                <a href="#seccion-destino" class="inline-block h-1/2">
+                    <object data="{{ asset('images/masAbajo.svg') }}" type="image/svg+xml" class="h-full object-fill pointer-events-none"></object>
+                </a>
             </div>
                     <div class="parallax z-10">
                 <div class="w-full h-15 mt-10 overflow-hidden bgcol1">
@@ -66,7 +68,7 @@
                 </div>
                 <div class="h-130 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
                     <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-xl text-center font-bold">
-                        Ahorra de mejor forma tu dinero.
+                        {{ __('welcome.txt_1') }}
                     </div>
                     <div class="h-2/3 aspect-square bgcol1 rounded-md">
                         <object data="{{ asset('images/GoalsAnimate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
@@ -87,23 +89,23 @@
                         class="bgcol4 origin-left h-full w-full absolute top-0 left-0 z-1 overflow-hidden">
 
                         <div id="welcome-textoScroll" class="lg:text-[200px] text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
-                            Organizate
+                            {{ __('welcome.txt_3') }}
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
                                 <div class="text-xl hidden xl:flex flex-col justify-evenly items-center font-normal mt-20 p-30">
-                                    <span>Organiza tu dinero, tus gastos, tus ingresos, tus deudas y tus ahorros en un solo lugar. Lleva un control detallado de tu economía personal y toma decisiones financieras informadas.
+                                    <span>{{ __('welcome.txt_4') }}
                                     </span>
-                                        <x-button
+                                        <x-button 
                                         color1="var(--col1)"
                                         color2="var(--col4)"
                                         colortext="var(--col7)"
                                         class="p-4 text-xl mt-10"
                                     >
                                         <a href="/log_in">                    
-                                            Iniciar Sesión
+                                            {{ __('welcome.log_in') }}
                                         </a>
                                     </x-button>
                                 </div>
-                                <div class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
+                                <div id="seccion-destino" class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
                                     <object data="{{ asset('images/Organizate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
                                 </div>
                             </div>
@@ -115,7 +117,7 @@
                     <div class="h-screen transition-transform w-full p-10 flex flex-col lg:flex-row sticky top-0 left-0 justify-center items-center">
 
                         <div class=" flex-col  justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
-                            <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
+                            <div class="font-bold text-center text-2xl">{{ __('welcome.txt_5') }}</div>
                             <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                  <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
@@ -124,18 +126,17 @@
                             <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                 <object data="{{ asset('images/RegisterAnimateWelcome.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
-                            <div class="font-bold text-center text-2xl">Lleva un registro de datos</div>
+                            <div class="font-bold text-center text-2xl">{{ __('welcome.txt_6') }}</div>
                         </div>
                         <div class=" flex-col  justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
-                            <div class="font-bold text-center text-2xl">Analiza tu situación financiera</div>
+                            <div class="font-bold text-center text-2xl">{{ __('welcome.txt_7') }}</div>
                             <div class="w-80 rounded-md bgcol1 relative flex items-center justify-center aspect-square overflow-hidden">
                                 <object data="{{ asset('images/GraficsWelcomeAnimate.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
-                
       
                         <div class=" flex-col  justify-evenly p-10 mt-10 h-full flex lg:hidden overflow-hidden items-center">
-                            <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
+                            <div class="font-bold text-center text-2xl">{{ __('welcome.txt_5') }}</div>
                             <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                  <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
@@ -150,7 +151,7 @@
 
             </div>
             <div class="bgcol1 h-180 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
-                Con diversas funciones y herramientas
+                {{ __('welcome.txt_2') }}
             </div>
             
         </div>
