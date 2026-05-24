@@ -89,7 +89,7 @@ html{
     display: flex;
 }
 .switch-theme{
-    border: 1px solid var(--col1);
+    border: 1px solid var(--col6);
 }
 .switch-theme-div{
     transform: translateX(100%)

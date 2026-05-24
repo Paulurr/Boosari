@@ -25,10 +25,11 @@
             <div class="h-2/3 w-full flex  items-center justify-center">
              
                 <div class="flex flex-col w-full h-11/12 pt-15">
-                    <div class=" flex items-center xl:justify-between xl:pl-10 justify-center h-full w-full relative z-2">
-                        
-                <object data="{{ asset('images/IndexXlAnimate.svg') }}" type="image/svg+xml" class="xl:block h-10/12 w-3/12 hidden"></object>
-                <object type="image/svg+xml" class="md:h-full md:w-auto w-full h-auto object-fill" id="IndexAnimate"></object>
+                    <div class=" flex items-center xl:justify-between justify-center h-full w-full relative z-2">
+                        <div class="xl:flex h-10/12 w-full items-center justify-center hidden">
+                             <object data="{{ asset('images/IndexXlAnimate.svg') }}" type="image/svg+xml" class="h-full aspect-square"></object>
+                        </div>
+                        <object type="image/svg+xml" class="md:h-full md:w-auto w-full h-auto object-fill" id="IndexAnimate"></object>
                     </div>
                     
                 </div>
@@ -40,7 +41,7 @@
                     class="p-4 lg:text-3xl lg:mr-4 text-sx mb-3 lg:mb-0"
                 >
                     <a href="/log_in">                    
-                        Iniciar Sesión
+                        {{ __('welcome.log_in') }}
                     </a>
                 </x-button>
                 <x-button 
@@ -48,7 +49,7 @@
                     class="p-4 lg:text-3xl lg:ml-4 text-sx "
                 >
                     <a href="/sign_up">                    
-                    Crear una cuenta
+                        {{ __('welcome.sign_up') }}
                     </a>
                 </x-button>
             </div>
@@ -103,6 +104,7 @@
                                     </x-button>
                                 </div>
                                 <div class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
+                                    <object data="{{ asset('images/Organizate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
                                 </div>
                             </div>
                             
@@ -112,38 +114,38 @@
                 </div>
                     <div class="h-screen transition-transform w-full p-10 flex flex-col lg:flex-row sticky top-0 left-0 justify-center items-center">
 
-                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                        <div class=" flex-col  justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
                             <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
-                            <div class="w-80 bgcol1 relative aspect-square rounded-md overflow-hidden">
+                            <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                  <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
-                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
-                            <div class="w-80 bgcol1 relative aspect-square rounded-md overflow-hidden">
+                        <div class=" flex-col  justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                            <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                 <object data="{{ asset('images/RegisterAnimateWelcome.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                             <div class="font-bold text-center text-2xl">Lleva un registro de datos</div>
                         </div>
-                        <div class=" flex-col justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
+                        <div class=" flex-col  justify-evenly p-10 mt-10 h-full lg:flex hidden overflow-hidden items-center">
                             <div class="font-bold text-center text-2xl">Analiza tu situación financiera</div>
-                            <div class="w-80 bgcol1 relative flex items-center justify-center aspect-square rounded-md overflow-hidden">
+                            <div class="w-80 rounded-md bgcol1 relative flex items-center justify-center aspect-square overflow-hidden">
                                 <object data="{{ asset('images/GraficsWelcomeAnimate.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
                 
       
-                        <div class=" flex-col justify-evenly p-10 mt-10 h-full flex lg:hidden overflow-hidden items-center">
+                        <div class=" flex-col  justify-evenly p-10 mt-10 h-full flex lg:hidden overflow-hidden items-center">
                             <div class="font-bold text-center text-2xl">Descarga en Pdf o Excel</div>
-                            <div class="w-80 bgcol1 relative aspect-square overflow-hidden">
+                            <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
                                  <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
                     </div>
                 </div>
 
-                <a href="#" class="bgcol1 h-100 flex justify-center items-center lg:text-8xl text-4xl font-bold">
-                    ¡COMIENZA YA! 
-                </a>
+              
+                <object data="{{ asset('images/Comienza.svg') }}" type="image/svg+xml" class="w-full h-auto"></object>
+              
                 <x-footer/>
 
             </div>

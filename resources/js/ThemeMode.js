@@ -19,16 +19,19 @@ const temaOscuro = {
 };
 
 function aplicarTema(tema) {
+
     const root = document.documentElement;
 
     Object.keys(tema).forEach(function(variable) {
         root.style.setProperty(variable, tema[variable]);
     });
+
 }
 
-
 function moverSwitch(estado) {
+
     document.querySelectorAll('.switch-theme').forEach(function(contenedor) {
+
         const boton = contenedor.querySelector('.switch-theme-div');
 
         if (estado === 'oscuro') {
@@ -36,18 +39,75 @@ function moverSwitch(estado) {
         } else {
             boton.style.transform = 'translateX(100%)';
         }
+
     });
+
 }
 
 function cambiarLogo(estado) {
+
     document.querySelectorAll('.logo-theme').forEach(function(logo) {
+
         if (estado === 'oscuro') {
             logo.src = '/images/LogoTypeDark.svg';
         } else {
             logo.src = '/images/LogoTypeLight.svg';
         }
+
     });
+
 }
+
+/*
+|--------------------------------------------------------------------------
+| OBTENER IDIOMA
+|--------------------------------------------------------------------------
+*/
+
+function obtenerIdioma() {
+
+    return document.documentElement.lang || 'es';
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| CAMBIAR SVG SEGÚN TEMA + IDIOMA
+|--------------------------------------------------------------------------
+*/
+
+function cambiarAnimacion(tema) {
+
+    const idioma = obtenerIdioma();
+
+    const animacion = document.getElementById('IndexAnimate');
+
+    if (!animacion) return;
+
+    let archivo = 'IndexAnimate';
+
+    // Tema oscuro
+    if (tema === 'oscuro') {
+        archivo += 'Dark';
+    }
+
+    // Inglés
+    if (idioma === 'en') {
+        archivo += 'En';
+    }
+
+    archivo += '.svg';
+
+    animacion.data = `/images/${archivo}`;
+
+}
+
+/*
+|--------------------------------------------------------------------------
+| CAMBIAR TEMA
+|--------------------------------------------------------------------------
+*/
+
 function cambiarTema() {
 
     let temaActual = localStorage.getItem('tema') || 'claro';
@@ -67,58 +127,39 @@ function cambiarTema() {
     localStorage.setItem('tema', temaActual);
 
     moverSwitch(temaActual);
+
     cambiarLogo(temaActual);
 
-    const animacion = document.getElementById('IndexAnimate');
-
-    if (animacion) {
-
-        if (temaActual === 'oscuro') {
-            animacion.data = '/images/IndexAnimateDark.svg';
-        } else {
-            animacion.data = '/images/IndexAnimate.svg';
-        }
-
-    }
-
-    
-    
+    cambiarAnimacion(temaActual);
 
 }
+
+/*
+|--------------------------------------------------------------------------
+| CARGA INICIAL
+|--------------------------------------------------------------------------
+*/
 
 document.addEventListener('DOMContentLoaded', function () {
 
     const temaGuardado = localStorage.getItem('tema') || 'claro';
 
-    // Aplicar colores
     if (temaGuardado === 'oscuro') {
         aplicarTema(temaOscuro);
     } else {
         aplicarTema(temaClaro);
     }
 
-    // Mover switch
     moverSwitch(temaGuardado);
 
-    // Cambiar logos
     cambiarLogo(temaGuardado);
 
-    // Cambiar animación SVG
-    const animacion = document.getElementById('IndexAnimate');
+    cambiarAnimacion(temaGuardado);
 
-    if (animacion) {
-
-        if (temaGuardado === 'oscuro') {
-            animacion.data = '/images/IndexAnimateDark.svg';
-        } else {
-            animacion.data = '/images/IndexAnimate.svg';
-        }
-
-    }
-
-    // Eventos click
     document.querySelectorAll('.switch-theme').forEach(function (contenedor) {
+
         contenedor.addEventListener('click', cambiarTema);
+
     });
 
 });
