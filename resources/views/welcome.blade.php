@@ -56,7 +56,7 @@
             <div class="h-1/6 w-full flex justify-center items-center">
                 <object data="{{ asset('images/masAbajo.svg') }}" type="image/svg+xml" class="h-1/2 object-fill"></object>
             </div>
-                    <div class="parallax z-10">
+            <div class="parallax z-10">
                 <div class="w-full h-15 mt-10 overflow-hidden bgcol1">
                     <div class="bgcol4 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                     <div class="bgcol3 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
@@ -64,11 +64,11 @@
                     <div class="bgcol3 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                     <div class="bgcol4 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                 </div>
-                <div class="h-130 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
+                <div class="h-110 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
                     <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-xl text-center font-bold">
                         Ahorra de mejor forma tu dinero.
                     </div>
-                    <div class="h-2/3 aspect-square bgcol1 rounded-md">
+                    <div class="h-2/3 aspect-square bgcol1 rounded-md lg:mb-0 mb-20">
                         <object data="{{ asset('images/GoalsAnimate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
                     </div>
                 </div>
@@ -81,12 +81,12 @@
                 </div>
             </div>
 
-            <div id="welcome-scroll-div-cont" class="h-[220vh] bgcol3 flex relative ">
+            <div id="welcome-scroll-div-cont" class="lg:h-[180vh] h-[150vh] bgcol3 flex relative ">
                 <div class="h-full w-full overflow-hidden absolute top-0 left-0">
                     <div id="welcome-scroll-div-animate" 
                         class="bgcol4 origin-left h-full w-full absolute top-0 left-0 z-1 overflow-hidden">
 
-                        <div id="welcome-textoScroll" class="lg:text-[200px] text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
+                        <div id="welcome-textoScroll" class="lg:text-[200px] pt-10 text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
                             Organizate
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
                                 <div class="text-xl hidden xl:flex flex-col justify-evenly items-center font-normal mt-20 p-30">
@@ -149,7 +149,7 @@
                 <x-footer/>
 
             </div>
-            <div class="bgcol1 h-180 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
+            <div class="bgcol1 h-150 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
                 Con diversas funciones y herramientas
             </div>
             

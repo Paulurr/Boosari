@@ -21,10 +21,13 @@
     </head>
     <body class="w-auto h-auto pt-15 bgcol2">
         <x-nav></x-nav>
-        <div class=" h-270 lg:h-screen w-auto  flex items-center justify-end">
-            <form class="form-login h-full w-full lg:h-full lg:w-160" id="login_form" method="POST" action="/log_in">
+        <div class="h-270 lg:h-screen w-auto  flex items-center justify-end">
+            <div class="overflow-hidden w-full h-full hidden lg:flex items-center justify-center">
+                <object data="{{ asset('images/Log_in_animated.svg') }}" type="image/svg+xml" class="object-fill h-full"></object>
+            </div>
+            <form class="form-login h-full w-full lg:h-full lg:w-full" id="login_form" method="POST" action="/log_in">
                 @csrf
-                <div class="form-login-cont h-full w-full lg:h-full lg:w-160 flex flex-col">
+                <div class="form-login-cont h-full w-full lg:h-full lg:w-full flex flex-col">
                     <div class="form-login-cont-deco"></div>
                     <div class="h-[20%] w-full flex items-center justify-center font-bold text-2xl">
                         Inicio de sesión
@@ -70,6 +73,7 @@
                     </div>
                 </div>
             </form>
+     
         </div>
     </body>
 </html>

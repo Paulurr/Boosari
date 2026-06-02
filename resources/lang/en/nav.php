@@ -2,7 +2,7 @@
 
 return [
     'nav_home' => 'Home',
-    'about' => 'About',
+    'about' => 'About Us',
     'services' => 'Services',
     'contact' => 'Contact',
     'log_in' => 'Log In',

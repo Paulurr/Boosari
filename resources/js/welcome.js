@@ -22,7 +22,7 @@ window.addEventListener("scroll", () => {
             window.addEventListener("scroll", () => {
                 const rect = container.getBoundingClientRect();
 
-                const offset = 450; 
+                const offset = 210; 
                 
                 const move = Math.min(0, rect.top - offset);
 
