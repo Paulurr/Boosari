@@ -137,7 +137,7 @@
       
                         <div class=" flex-col  justify-evenly p-10 mt-10 h-full flex lg:hidden overflow-hidden items-center">
                             <div class="font-bold text-center text-2xl">{{ __('welcome.txt_5') }}</div>
-                            <div class="w-80 rounded-md bgcol1 relative aspect-square overflow-hidden">
+                            <div class="w-80  rounded-md bgcol1 relative aspect-square overflow-hidden">
                                  <object data="{{ asset('images/PDF_excel_wlcome_donwload_icone.svg') }}" type="image/svg+xml" class="h-full w-full object-contain"></object>
                             </div>
                         </div>
@@ -151,8 +151,6 @@
 
             </div>
             <div class="bgcol1 h-150 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
-                Con diversas funciones y herramientas
-            <div class="bgcol1 h-180 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
                 {{ __('welcome.txt_2') }}
             </div>
             

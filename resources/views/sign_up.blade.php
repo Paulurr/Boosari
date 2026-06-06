@@ -28,34 +28,34 @@
                 <div class="form-signup-cont h-full w-full lg:h-auto lg:w-180 flex flex-col">
                     <div class="form-signup-cont-deco"></div>
                     <div class="h-60 w-full flex items-center justify-center font-bold text-2xl">
-                        Crear una Cuenta
+                        {{ __('nav.sign_up') }}
                     </div>
                     <div class="lg:h-150 h-200 w-full flex flex-col items-center justify-evenly">
                        <x-label 
                             name="name"
                             type="text"
-                            title="Usuario"
+                            title='{{ __("forms.box3") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
                         />
                        <x-label 
                             name="email"
                             type="email"
-                            title="Correo electrónico"
+                            title='{{ __("forms.box1") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
                         />
                         <x-label 
                             name="password"
                             type="password"
-                            title="Contraseña"
+                            title='{{ __("forms.box2") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
                             />
                         <x-label 
                             name="repeat_password"
                             type="password"
-                            title="Repetir Contraseña"
+                            title='{{ __("forms.box4") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
                             />
@@ -63,17 +63,17 @@
                     </div>
                     <br>
                     <div class="h-20 w-full flex items-center justify-center text-sm">
-                        ¿Tienes una cuenta? 
+                        {{ __('forms.msg3') }} 
                         <a href="/log_in" class="hover:underline ml-1 col3 font-bold">
-                                Iniciar Sesión
+                            {{ __('nav.log_in') }}
                         </a>
                         
                     </div>
                     <br>
                     <div class="h-20 w-full flex items-center justify-center text-xs">
-                        Leer nuestros 
-                        <a href="" class="hover:underline ml-1 col3 font-bold">
-                             Terminos y condiciones
+                        {{ __('forms.msg4') }}
+                        <a href="/terms" class="hover:underline ml-1 col3 font-bold">
+                            {{ __('nav.terms') }}
                         </a>
                         
                     </div>
@@ -84,11 +84,11 @@
                             colortext="var(--col1)"
                             class="p-2"
                         >
-                            Crear cuenta
+                            {{ __('forms.btn2') }}
                         </x-button>
                     </div>
                     <div class="h-30 w-full flex items-center justify-center text-xs">
-                        "Un boost para su ahorro o salario"
+                        {{ __('forms.msg2') }}
                     </div>
                 </div>
             </form>

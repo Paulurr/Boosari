@@ -21,7 +21,7 @@
                             
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
-                            <a href="" class="a-menu-nav text-sm p-2">
+                            <a href="/terms" class="a-menu-nav text-sm p-2">
                                 {{ __('nav.services') }}
                             </a>
                             
@@ -94,7 +94,7 @@
             </li>
             </li>
             <li class="li-nav">
-                <a href="" class="a-nav">
+                <a href="/terms" class="a-nav">
                     {{ __('nav.services') }}
                 </a>
                 
@@ -153,7 +153,7 @@
                             
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
-                            <a href="" class="a-menu-nav text-sm p-2">
+                            <a href="/terms" class="a-menu-nav text-sm p-2">
                                 {{ __('nav.services') }}
                                 
                             </a>
@@ -228,7 +228,7 @@
             </li>
             </li>
             <li class="li-nav">
-                <a href="" class="a-nav">
+                <a href="/terms" class="a-nav">
                     {{ __('nav.services') }}
                 </a>
                 

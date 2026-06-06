@@ -32,7 +32,10 @@ Route::middleware(['guest'])->group(function () {
     Route::get('/sign_up', function () {
         return view('sign_up');
     });
-
+    Route::get('terms', function (){
+        return view('terms');
+    });
+    
     Route::post("/sign_up",[AuthController::class, "sign_up"]);
     Route::post("/log_in",[AuthController::class, "log_in"]);
 

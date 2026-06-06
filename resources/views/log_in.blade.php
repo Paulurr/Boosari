@@ -30,29 +30,29 @@
                 <div class="form-login-cont h-full w-full lg:h-full lg:w-full flex flex-col">
                     <div class="form-login-cont-deco"></div>
                     <div class="h-[20%] w-full flex items-center justify-center font-bold text-2xl">
-                        Inicio de sesión
+                        {{ __('nav.log_in') }}
                     </div>
                     <div class="h-[35%] w-full flex flex-col items-center justify-evenly">
                         <x-label 
                             name="email"
                             type="email"
-                            title="Correo electrónico"
+                            title='{{ __("forms.box1") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
                         />
                         <x-label 
                             name="password"
                             type="password"
-                            title="Contraseña"
+                            title='{{ __("forms.box2") }}'
                             color1="var(--col3)"
                             color2="var(--col4)"
-                            />
+                        />
                     </div>
                     <br>
                     <div class="h-[2%] w-full flex items-center justify-center text-sm">
-                        ¿No tienes una cuenta? 
+                        {{ __('forms.msg1') }}
                         <a href="/sign_up" class="hover:underline ml-1 col4 font-bold">
-                                Crear una cuenta
+                                {{ __('forms.btn1') }}
                         </a>
                         
                     </div>
@@ -65,11 +65,11 @@
                             colortext="var(--col7)"
                             class="p-2"
                         >
-                            Iniciar sesión
+                            {{ __('nav.log_in') }}
                         </x-button>
                     </div>
                     <div class="h-auto w-full flex items-center justify-center text-xs">
-                        "Un boost para su ahorro o salario"
+                        {{ __('forms.msg2') }}
                     </div>
                 </div>
             </form>
