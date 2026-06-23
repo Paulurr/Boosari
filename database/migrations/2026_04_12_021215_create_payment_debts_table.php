@@ -15,8 +15,12 @@ return new class extends Migration
             $table->id();
             $table->foreignId('debt_id')
             ->constrained();
+            $table->foreignId('category_id')
+            ->nullable()
+            ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255);
             $table->decimal('monto', 10, 2)->default(0.00);
-            $table->date('fecha_pago');
             $table->boolean('pago_minimo')->default(false);
             $table->timestamps();
         });

@@ -15,12 +15,15 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
+            $table->foreignId('category_id')
+            ->nullable()
+            ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255);
             $table->decimal('monto_total', 10, 2)->default(1.00);
             $table->decimal('saldo_actual', 10, 2)->default(0.00);
-            $table->text('descripcion')->nullable();
             $table->decimal('tasa_interes', 7, 4)->default(0.0000);
-            $table->date('fecha_inicio');
-            $table->date('fecha_limite');
+            $table->date('fecha_limite')->nullable();
             $table->enum('estado', [
                 'pendiente',
                 'pagando',

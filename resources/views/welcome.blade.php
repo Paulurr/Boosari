@@ -19,7 +19,7 @@
             </style>
         @endif
     </head>
-    <body class="w-auto h-auto bgcol2 ">
+    <body class="w-auto h-auto bgcol2  overflow-x-hidden">
         <x-nav></x-nav>
         <div class="h-200 lg:h-230 w-full relative">
             <div class="h-2/3 w-full flex  items-center justify-center">
@@ -67,7 +67,7 @@
                     <div class="bgcol4 w-400 h-10 rotate-45 m-15 welcome-animation-div-scale"></div>
                 </div>
                 <div class="h-110 w-full bgcol4 flex flex-col lg:flex-row items-center justify-center p-5 pt-0 lg:pl-50 lg:pr-50">
-                    <div class="lg:h-160 h-1/3 flex justify-center items-center p-30 lg:text-3xl col1 text-xl text-center font-bold">
+                    <div class="lg:h-160 h-1/3 flex justify-center items-center m-5 lg:m-0 lg:p-30 lg:text-3xl col1 text-xl text-center font-bold">
                         {{ __('welcome.txt_1') }}
                     </div>
                     <div class="h-2/3 aspect-square bgcol1 rounded-md lg:mb-0 mb-20">
@@ -88,12 +88,13 @@
                     <div id="welcome-scroll-div-animate" 
                         class="bgcol4 origin-left h-full w-full absolute top-0 left-0 z-1 overflow-hidden">
 
-                        <div id="welcome-textoScroll" class="lg:text-[200px] text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
+                        <div id="welcome-textoScroll" class="lg:text-[200px] md:text-9xl text-5xl font-bold absolute col1 h-250 w-full flex justify-center items-center flex-col">
                             {{ __('welcome.txt_3') }}
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
-                                <div class="text-xl hidden xl:flex flex-col justify-evenly items-center font-normal mt-20 p-30">
-                                    <span>{{ __('welcome.txt_4') }}
-                                    </span>
+                                <div class="text-lg hidden lg:flex flex-col justify-evenly items-center font-normal mt-20 p-30 pb-0 pt-0">
+                                    <div class="hidden xl:block w-auto text-center">
+                                        {{ __('welcome.txt_4') }}
+                                    </div>
                                         <x-button 
                                         color1="var(--col1)"
                                         color2="var(--col4)"
@@ -105,7 +106,11 @@
                                         </a>
                                     </x-button>
                                 </div>
+                                <div class="text-lg font-normal mb-20 mt-10 lg:hidden md:pr-50 md:pl-50 sm:pr-30 pr-20 sm:pl-30 pl-20">{{ __('welcome.txt_4') }}
+                                 
+                                </div>
                                 <div id="seccion-destino" class="lg:h-120 h-2/3 aspect-square bgcol1 rounded-md">
+                                    
                                     <object data="{{ asset('images/Organizate.svg') }}" type="image/svg+xml" class="w-full h-full object-contain"></object>
                                 </div>
                             </div>
@@ -150,7 +155,7 @@
                 <x-footer/>
 
             </div>
-            <div class="bgcol1 h-150 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
+            <div class="bgcol1 h-160 lg:h-150 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
                 {{ __('welcome.txt_2') }}
             </div>
             

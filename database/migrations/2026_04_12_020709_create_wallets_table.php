@@ -15,15 +15,17 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255)->nullable();
             $table->enum('tipo', [
+                'ninguno',
                 'efectivo',
                 'debito',
                 'credito',
                 'ahorro'
-            ])->default('efectivo');
-            $table->decimal('saldo_actual', 10, 2)->default(0.00);
-            $table->decimal('valor_inicial', 10, 2)->default(0.00);
-            $table->date('fecha_inicio');
+            ])->default('ninguno');
+            $table->decimal('monto_actual', 10, 2)->default(0.00);
+            $table->decimal('monto_inicial', 10, 2)->default(0.00);
             $table->timestamps();
         });
     }

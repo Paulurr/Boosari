@@ -23,9 +23,10 @@
     <body class="w-auto pt-15 h-auto bgcol2 lg:overflow-hidden"> 
         <x-nav></x-nav>
         <div class=" h-270 lg:h-screen w-auto  flex items-center justify-start">
-            <form method="POST" action="/sign_up" class="form-signup overflow-y-auto overflow-x-hidden h-full w-full lg:h-full lg:w-180" >
+            
+            <form method="POST" action="/sign_up" class="form-signup barpag overflow-y-auto overflow-x-hidden h-full w-full lg:h-full lg:2/5" >
                 @csrf
-                <div class="form-signup-cont h-full w-full lg:h-auto lg:w-180 flex flex-col">
+                <div class="form-signup-cont h-full w-full lg:h-auto lg:w-full flex flex-col">
                     <div class="form-signup-cont-deco"></div>
                     <div class="h-60 w-full flex items-center justify-center font-bold text-2xl">
                         {{ __('nav.sign_up') }}
@@ -92,6 +93,9 @@
                     </div>
                 </div>
             </form>
+            <div class="overflow-hidden bgcol2 w-full h-full hidden lg:flex items-center justify-center">
+                <object data="{{ asset('images/Sign_up_animated.svg') }}" type="image/svg+xml" class="object-fill h-full"></object>
+            </div>
         </div>
     </body>
 

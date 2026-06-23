@@ -3,7 +3,7 @@ const temaClaro = {
     '--col2': '#fff9e8',
     '--col3': '#ffc400',
     '--col4': '#22a443',
-    '--col5': '#3d9c55',
+    '--col5': '#f3e38b',
     '--col6': '#252525',
     '--col7': '#3e3e3e'
 };
@@ -13,7 +13,7 @@ const temaOscuro = {
     '--col2': '#3e3e3e',
     '--col3': '#22a443',
     '--col4': '#ffc400',
-    '--col5': '#3d9c55',
+    '--col5': '#23803B',
     '--col6': '#fff9e8',
     '--col7': '#ffffff'
 };

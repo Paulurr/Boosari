@@ -15,14 +15,24 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
-            $table->foreignId('category_t_id')
+            $table->foreignId('wallet_origen_id')
+            ->nullable()
+            ->constrained('wallets');
+            $table->foreignId('wallet_destino_id')
+            ->nullable()
+            ->constrained('wallets');
+            $table->foreignId('category_id')
+            ->nullable()
             ->constrained();
-            $table->foreignId('wallet_id')
+            $table->foreignId('income_id')
+            ->nullable()
             ->constrained();
-            $table->decimal('monto', 10, 2)->default(0.00);
-            $table->enum('tipo', ['ingreso', 'gasto', 'transferencia']);
-            $table->date('fecha');
-            $table->text('descripcion')->nullable();
+            $table->string("titulo",25);
+            $table->string("icono",255)
+            ->nullable();
+            $table->decimal('monto',10,2);
+            $table->enum('tipo',['ingreso','gasto','transferencia']);
+            $table->timestamp('fecha_ejecucion')->nullable();
             $table->timestamps();
         });
     }

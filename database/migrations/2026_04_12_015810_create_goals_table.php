@@ -15,8 +15,11 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
-            $table->foreignId('category_g_id')
+            $table->foreignId('category_id')
+            ->nullable()
             ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255);
             $table->decimal('monto_inicial', 10, 2)->default(0.00);
             $table->decimal('monto_actual', 10, 2)->default(0.00);
             $table->decimal('monto_objetivo', 10, 2)->default(0.00);

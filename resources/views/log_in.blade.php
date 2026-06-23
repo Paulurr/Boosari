@@ -22,8 +22,10 @@
     <body class="w-auto h-auto pt-15 bgcol2">
         <x-nav></x-nav>
         <div class="h-270 lg:h-screen w-auto  flex items-center justify-end">
-            <div class="overflow-hidden w-full h-full hidden lg:flex items-center justify-center">
+            <div class="overflow-hidden bgcol2 w-full h-full hidden lg:flex items-center justify-center">
                 <object data="{{ asset('images/Log_in_animated.svg') }}" type="image/svg+xml" class="object-fill h-full"></object>
+            </div>
+            <div class="h-full w-3 bgcol2 hidden lg:block">
             </div>
             <form class="form-login h-full w-full lg:h-full lg:w-full" id="login_form" method="POST" action="/log_in">
                 @csrf

@@ -1,11 +1,11 @@
 @vite(['resources/js/nav.js','resources/js/ThemeMode.js'])
 @guest
     
-<nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2  overflow-hidden">
+<nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2 ">
     <div class="flex h-11/12 w-auto">
         <div class="h-full lg:w-1/4 w-full flex items-center justify-center pl-4 pr-4 lg:pl-0 sm:pr-0">
 
-            <div class="nav-menu-cont flex items-center h-screen w-1/3 lg:hidden">
+            <div class="nav-menu-cont flex items-center h-auto w-1/3 lg:hidden">
                 <div class="h-full w-full fixed top-0 flex nav-menu-back right-full flex-col" id="nav-menu-back"></div>
                 <div class="h-screen w-64 fixed top-0 right-3/3 flex nav-menu flex-col overflow-y-auto" id="nav-menu">
                     <div class="ul-menu-nav p-3 min-h-150">
@@ -132,11 +132,11 @@
 @endguest
 @auth
     
-<nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2 ">
+<nav class="h-15 w-full flex flex-col fixed top-0 pt-2 select-none z-50 bgcol2">
     <div class="flex h-11/12 w-auto">
-        <div class="h-full lg:w-1/4 w-full flex items-center justify-center pl-4 pr-4 lg:pl-0 sm:pr-0">
+        <div class="h-full lg:w-1/4  w-full flex items-center justify-between lg:justify-center pl-4 pr-4 lg:pl-0 sm:pr-0">
 
-            <div class="nav-menu-cont flex items-center h-screen w-1/3 lg:hidden">
+            <div class="nav-menu-cont flex items-center h-auto w-1/3 lg:hidden">
                 <div class="h-full w-full fixed top-0 flex nav-menu-back right-full flex-col" id="nav-menu-back"></div>
                 <div class="h-screen w-64 fixed top-0 right-3/3 flex nav-menu flex-col overflow-y-auto" id="nav-menu">
                     <div class="ul-menu-nav p-3 min-h-150">
@@ -187,7 +187,7 @@
                         class="absolute top-0 h-full w-1/2 bgcol1 switch-theme-div transition-transform duration-300">
                     </div>
                 </div>
-            <ul class="ul-nav-menu flex items-center  justify-end sm:justify-evenly h-full w-1/3">
+            <ul class="ul-nav-menu flex items-center  justify-end sm:justify-evenly h-full w-auto">
                 <li class="li-nav mr-1">
                     <a href="{{ route('lang.switch', app()->getLocale() == 'en' ? 'es' : 'en') }}">
                         <img 
@@ -198,19 +198,6 @@
                             class="h-10"
                         >
                     </a>
-                </li>
-                <li class="li-nav">
-                    <a href="/log_in" class="a-nav a-nav-log p-1 rounded-md overflow-hidden text-xs lg:text-lg" >
-                    {{ __('nav.log_in') }}
-                        
-                    </a>
-                    
-                </li>
-                <li class="li-nav">
-                    <a href="/sign_up" class="a-nav a-nav-up p-1 hidden md:flex rounded-md overflow-hidden text-xs lg:text-lg" >
-                      {{ __('nav.sign_up') }}
-                    </a>
-                    
                 </li>
             </ul>
         </div>
@@ -250,16 +237,11 @@
             </li>
             
         </ul>
-        <div class="h-full lg:w-auto w-1/3 flex items-center justify-end pb-1">
+        <div class="h-full lg:w-auto w-1/6 flex items-center justify-end pb-1 mr-5">
+               
+                <div class="perfil-div-nav border bg-transparent aspect-square h-11/12 rounded-full cursor-pointer overflow-hidden flex items-center justify-center  transition-colors" id="perfil-nav">
                     
-                <div class="li-nav m-2">
-                    <a href="">
-                        <img src="{{ asset('images/bandera.png') }}" alt="" class="h-10 object-contain">
-                    </a>
-                    
-                </div>
-                <div class="perfil-div-nav border w-11 lg:w-auto h-full cursor-pointer overflow-hidden flex items-center justify-center rounded-full transition-colors" id="perfil-nav">
-                        <img src="{{ asset('images/perfil.png') }}" alt="perfil" class="w-11 object-contain">
+                    <img src="{{ asset("images/account.png") }}" alt="" >                    
                 </div>
                 
             </div>
@@ -271,21 +253,21 @@
 
     <div class="line-nav w-full h-1"></div>
     <div id="perfil-menu-nav" class="perfil-menu-nav flex flex-col p-2">
-        <a href= "/" class="w-full h-1/3 flex items-center perfil-menu-div-nav">
-                <div class="pl-3 relative z-1">
+        <a href= "/" class="w-full h-10 flex items-center perfil-menu-div-nav">
+                <div class="pl-3 relative perfil-menu-div-nav-text z-1  ">
                     Administrar perfil
                 </div>
         </a>
-        <a href="/" class="w-full h-1/3 flex items-center perfil-menu-div-nav">
-                <div class="pl-3 relative z-1">
+        <a href="/" class="w-full h-10 flex items-center perfil-menu-div-nav">
+                <div class="pl-3 relative perfil-menu-div-nav-text z-1">
                     Configuración
                 </div>
 
         </a>
-        <form method="POST" action="/log_out" class="w-full h-1/3 flex items-center perfil-menu-div-nav">
+        <form method="POST" action="/log_out" class="w-full h-10 flex items-center perfil-menu-div-nav">
             @csrf
                 <button type="submit" class="pl-3 relative z-1 w-full h-full flex items-center justify-start cursor-pointer">
-                    Cerrar Sesión                
+                    Cerrar Sesión              
                 </button>
         </form>
     </div>

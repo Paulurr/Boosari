@@ -15,13 +15,14 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
-            $table->foreignId('category_i_id')
+            $table->foreignId('category_id')
+            ->nullable()
             ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255)->nullable();
             $table->decimal('monto_inicial', 10, 2)->default(0.00);
             $table->decimal('valor_actual', 10, 2)->default(0.00);
             $table->decimal('ganancia', 10, 2)->default(0.00);
-            $table->date('fecha_inicio');
-            $table->text('descripcion')->nullable();
             $table->timestamps();
         });
     }

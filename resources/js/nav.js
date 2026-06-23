@@ -62,7 +62,15 @@ window.addEventListener("DOMContentLoaded",()=>{
         var animation_end_perfil_menu = true;
 
         perfil_nav.addEventListener("click",open_close_perfil_menu);
-
+        document.addEventListener("keydown",(e)=>{
+            if(e.key == "Escape"){
+                if(open_perfil_menu == true && animation_end_perfil_menu == true){
+                    open_close_perfil_menu();
+                }else{
+                    return;
+                }
+            }
+        })
         document.addEventListener("click", function(e) {
             if (open_perfil_menu) {
                 if (

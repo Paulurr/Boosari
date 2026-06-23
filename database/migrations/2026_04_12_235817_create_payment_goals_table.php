@@ -11,12 +11,16 @@ return new class extends Migration
      */
     public function up(): void
     {
-        Schema::create('category_gs', function (Blueprint $table) {
+        Schema::create('payment_goals', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
+            $table->foreignId('goal_id')
             ->constrained();
-            $table->text('icon');   
-            $table->string('categoria', 25);
+            $table->foreignId('category_id')
+            ->nullable()
+            ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255);
+            $table->decimal('monto', 10, 2)->default(0.00);
             $table->timestamps();
         });
     }
@@ -26,6 +30,6 @@ return new class extends Migration
      */
     public function down(): void
     {
-        Schema::dropIfExists('category_gs');
+        Schema::dropIfExists('payment_goals');
     }
 };

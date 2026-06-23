@@ -22,7 +22,7 @@ html{
     --col2:#fff9e8;
     --col3:#ffc400;
     --col4:#22a443;
-    --col5:#3d9c55;
+    --col5:#23803B;
     --col6:#252525;
     --col7:#3e3e3e;
 }
@@ -273,14 +273,30 @@ html{
 .perfil-menu-nav{
     position: absolute;
     width: 270px;
-    height:170px;
+    height:auto;
     right: 0%;
-    bottom:-285%;
+    top:100%;
     transform-origin: top right;
     transform: scale(0);
     transition: transform 0.2s ease;
     background-color: var(--col1);
     border-radius: 8px;
+}
+
+.perfil-div-nav{
+    border: none;
+    background-color: var(--col3);
+}
+.perfil-div-nav:hover{
+    background-color: var(--col4);
+
+
+}
+.perfil-menu-div-nav-text{
+    transition: transform 0.2s ease;   
+}
+.perfil-menu-div-nav:hover .perfil-menu-div-nav-text{
+    transform: translateX(5px);
 }
 .perfil-menu-div-nav{
     position: relative;
@@ -414,18 +430,18 @@ html{
     border-bottom: 60px solid var(--col1);
 }
 /* Cambia el fondo del scroll (la pista) */
-.form-signup::-webkit-scrollbar-track {
+.barpag::-webkit-scrollbar-track {
     background: var(--col1); /* color que quieras */
 }
 
 /* Opcional: el "thumb" (la barrita que se mueve) */
-.form-signup::-webkit-scrollbar-thumb {
+.barpag::-webkit-scrollbar-thumb {
     background: #888;
     border-radius: 4px;
 
 }
 /* Opcional: ancho del scroll */
-.form-signup::-webkit-scrollbar {
+.barpag::-webkit-scrollbar {
     width: 10px;
 }
 .form-signup-cont{
@@ -456,7 +472,7 @@ html{
         content: "";
         position: absolute;
         bottom: 5%;
-        left: 97%;
+        left: 98%;
         background-color: var(--col4);
         height: 90%;
         width: 3px;
@@ -537,7 +553,7 @@ html{
     ;
 }
 .input-label:focus{
-    box-shadow: inset -650px 0 var(--input-color1),
+    box-shadow: inset -750px 0 var(--input-color1),
     inset 800px 0 var(--input-color2)
     ;
     border: none;
@@ -570,7 +586,7 @@ html{
 .input-label:focus.has-value {
     border: none;
     outline: none;
-    box-shadow: inset -650px 0 var(--input-color1),
+    box-shadow: inset -750px 0 var(--input-color1),
     inset 800px 0 var(--input-color2)
     ,0 0 0 var(--input-color2);
 }
@@ -674,4 +690,130 @@ html{
     100%{
         transform: scaleX(1) translateY(0px);
     }
+}
+
+/*home pag*/
+.flechas-home{
+    aspect-ratio: 1/1;
+    border-radius: 50%;
+    margin: 5px;
+    list-style: none;
+    transition: background-color 0.2s ease;
+    overflow: hidden;
+    background-color: transparent;
+    border: 2px solid var(--col3);
+}
+.flechas-home-focus{
+    background-color: var(--col3);
+
+}
+.flechas-home:hover{
+    background-color: var(--col3);
+}
+.filtro-but-icon{
+    height: 80%;
+    margin: 3px;
+    aspect-ratio: 1/1;
+    overflow: hidden;
+    position: relative;
+}
+.filtro-but-icon-p1{
+    position: absolute;
+    top:-25%;
+    left: 25%;
+    background-color: var(--col7);
+    height: 13px;
+    aspect-ratio: 1/1;
+    rotate: 45deg;
+    border-radius: 2px;
+}
+button:hover .filtro-but-icon-p1, button:hover .filtro-but-icon-p2{
+    background-color: var(--col1);
+}
+.filtro-but-icon-p2{
+    position: absolute;
+    height: 10px;
+    width: 2px;
+    top: 35%;
+    left: 46%;
+    transform: skewY(30deg);
+    background-color: var(--col7);
+
+
+}
+.editar-btn{
+    cursor: pointer;
+    background-color: transparent;
+    display: inline-block;
+    border: 1px solid var(--col7);
+    color: var(--col7);
+    padding: 5px;
+    border-radius: 4px;
+    transition: all 0.1s ease;
+}
+.editar-btn:hover{
+    border: 1px solid transparent;
+    background-color: var(--col3);
+    color: var(--col7);
+}
+.panel-deco{
+    background-color: var(--col3);
+    opacity: 0.2;
+    
+}
+.panel-deco2{
+    background-color: var(--col4);
+    opacity: 0.2;
+    
+}
+.x-select{
+    transition: color 0.2s ease, background-color 0.2s ease;    
+}
+.x-select:hover{
+    background-color: var(--col4);
+}
+.x-select:hover .x-select-tit{
+    color: var(--col1);
+}
+.x-select:hover .x-select-v{
+    color: var(--col1);
+}
+.x-select-v{
+    transition: transform 0.2s ease;
+
+}
+.x-select:hover .x-select-v{
+    transform: translateY(3px);
+}
+
+.x-option{
+    background-color: var(--col3);
+    color: var(--col7);
+    position: relative;
+    transition: color 0.2s ease, background-color 0.2s ease;    
+
+}
+.x-option:hover{
+    background-color: var(--col4);
+    color: var(--col1);
+
+}
+.x-option::after{
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 5px;
+    height: 100%;
+    background-color: var(--col7);
+    transition: transform 0.3s ease;
+    transform: scaleY(0);
+    transform-origin: top ;
+}
+.x-option:hover::after{
+    transform: scaleY(1);
+    transform-origin: bottom ;
+    background-color: var(--col1);
+
+
 }

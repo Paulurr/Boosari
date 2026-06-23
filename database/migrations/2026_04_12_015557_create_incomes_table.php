@@ -15,17 +15,22 @@ return new class extends Migration
             $table->id();
             $table->foreignId('user_id')
             ->constrained();
+            $table->foreignId('wallet_id')->nullable()
+            ->constrained();
+            $table->foreignId('category_id')->nullable()
+            ->constrained();
+            $table->string("titulo",25);
+            $table->string("icono",255)->nullable();
             $table->decimal('monto', 10, 2)->default(0.00);
             $table->enum('frecuencia', [
-                'ninguna',
+                'ninguno',
                 'diario',
                 'semanal',
                 'quincenal',
                 'mensual',
                 'anual'
-            ])->default('ninguna');
-            $table->string('descripcion', 100)->nullable();
-            $table->date('fecha')->nullable();
+            ])->default('ninguno');
+            $table->timestamp('fecha_inicio')->nullable();
             $table->boolean('activo')->default(true);
             $table->timestamps();
         });
