@@ -4,8 +4,10 @@
 ])
 
 <li
-    class="border-b p-3 {{$name}}-option x-option"
-    data-value="{{$value}}"
+    {{ $attributes->merge([
+        'class' => "border-b p-3 {$name}-option x-option",
+        'data-value' => $value
+    ]) }}
 >
-    {{$slot}}
+    {{ $slot }}
 </li>

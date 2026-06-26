@@ -1,86 +1,47 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-use Illuminate\Support\Facades\App;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\RecordController;
-use App\Models\Wallet;
-use App\Models\Transaction;
-use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\DB;
-
-
 
 Route::get('/lang/{locale}', function ($locale) {
-
     if (! in_array($locale, ['es', 'en'])) {
         abort(400);
     }
-
     session(['locale' => $locale]);
-
     return redirect()->back();
-
 })->name('lang.switch');
 
+// --- RUTAS PARA INVITADOS ---
 Route::middleware(['guest'])->group(function () {
-
-    Route::get('/', function () {
-        return view('welcome');
-    });
-    Route::get('/about_us', function () {
-        return view('about_us');
-    });
-    Route::get('/log_in', function () {
-        return view('log_in');
-    });
-    Route::get('/sign_up', function () {
-        return view('sign_up');
-    });
-    Route::get('terms', function (){
-        return view('terms');
-    });
+    Route::get('/', function () { return view('welcome'); });
+    Route::get('/about_us', function () { return view('about_us'); });
+    Route::get('/log_in', function () { return view('log_in'); });
+    Route::get('/sign_up', function () { return view('sign_up'); });
+    Route::get('terms', function () { return view('terms'); });
     
-    Route::post("/sign_up",[AuthController::class, "sign_up"]);
-    Route::post("/log_in",[AuthController::class, "log_in"]);
-
+    Route::post("/sign_up", [AuthController::class, "sign_up"]);
+    Route::post("/log_in", [AuthController::class, "log_in"]);
 });
+
+// --- RUTAS PARA USUARIOS AUTENTICADOS ---
 Route::middleware(['usuario'])->group(function () {
-   Route::get('/home', function () {
-        // 1. Obtener las billeteras del usuario
-        $wallets = Wallet::where('user_id', Auth::id())->get();
-
-        // 2. Obtener las transacciones ordenadas con el doble criterio
-        $transactions = Transaction::with(['walletOrigen', 'walletDestino', 'category'])
-            ->where('user_id', Auth::id())
-            // COALESCE toma 'fecha_ejecucion', y si es NULL, usa 'created_at' para ordenar correctamente
-            ->orderBy(DB::raw('COALESCE(fecha_ejecucion, created_at)'), 'desc')
-            ->orderBy('id', 'desc') // Desempata dejando el ID más alto (última inserción) arriba
-            ->paginate(9);
-
-        // 3. Pasar ambas variables a la vista
-        return view('home', compact('wallets', 'transactions'));
-    });
-    Route::get('/deudas', function (){
-        return view('deudas');
-    });
-    Route::post(
-        '/wallet/create',
-        [RecordController::class,'create_wallet']
-    );
-    Route::post(
-        '/income/create',
-        [RecordController::class,'create_income']
-    );
-    Route::post(
-        '/transaction/create',
-        [RecordController::class,'create_transaction']
-    );
     
-    Route::get('/log_out', function () {
-        return abort(404);
-    });
+    // Vista principal conectada directamente al controlador unificado
+    Route::get('/home', [RecordController::class, 'index'])->name('home');
     
-    Route::post("/log_out",[AuthController::class, "log_out"]);
-
+    Route::get('/deudas', function () { return view('deudas'); });
+    
+    // Procesamiento de formularios
+    Route::post('/wallet/create', [RecordController::class, 'create_wallet']);
+    Route::post('/income/create', [RecordController::class, 'create_income']);
+    Route::post('/transaction/create', [RecordController::class, 'create_transaction']);
+    Route::post('/investment/create', [RecordController::class, 'investment_create'])->name('investment.create');
+    Route::post('/goal/create', [RecordController::class, 'create_goal']);
+    Route::post('/payment-goal/create', [RecordController::class, 'create_payment_goal']);
+    Route::post('/debt/create', [RecordController::class, 'create_debt']);
+    Route::post('/payment-debt/create', [RecordController::class, 'create_paymentdebt']);
+    
+    Route::get('/log_out', function () { return abort(404); });
+    Route::post("/log_out", [AuthController::class, "log_out"]);
 });

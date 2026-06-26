@@ -29,9 +29,9 @@
             <div class="h-10 w-full flex justify-center mb-5 relative">
                 <x-button
                     color1="var(--col4)"
-                    color2="var(--col2)"
+                    color2="var(--col3)"
                     colortext="var(--col1)"
-                    class="filter-btn p-2 pt-1 flex items-center justify-center"
+                    class="filter-btn p-2 flex items-center justify-center"
                     >
                     <div class="filtro-but-icon">
                         <div class="filtro-but-icon-p2"></div>
@@ -50,41 +50,383 @@
                     </button>
                 </form>
             </div>
-            <div class="w-full flex justify-end mb-15">
+            <div class="w-full flex justify-between mb-15">
+                <div>
+                    <x-select
+                        title="Tipo de registro"
+                        name="add-select"
+                        first="Billetera"
+                    >
+                        <x-option
+                            name="add-select"
+                            value="0"
+                        >
+                            Billetera
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="1"
+                        >
+                            Ingreso
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="2"
+                        >
+                            Transacción
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="3"
+                        >
+                            inversión
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="4"
+                        >
+                            Meta
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="5"
+                        >
+                            Pagos de meta
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="6"
+                        >
+                            Deuda
+
+                        </x-option>
+                        <x-option
+                            name="add-select"
+                            value="7"
+                        >
+                            Pagos de deuda
+
+                        </x-option>
+                    </x-select>
+                </div>
+                
                 <x-button
                     color1="var(--col3)"
-                    color2="var(--col2)"
+                    color2="var(--col4)"
                     colortext="var(--col7)"
-                    class="pt-2 p-4 w-50 flex justify-center add-btn"
+                    class="p-4 pb-0 pt-0 w-autoW text-xs lg:text-sm flex justify-center items-center add-btn"
                     >
                     + Agregar Registro
                 </x-button>
             </div>
-            @if($transactions->count())
-                @foreach ($transactions->chunk(3) as $row)
-                    <x-row-home>
-                        @foreach ($row as $transaction)
-                            <x-col-home 
-                                :tipo="$transaction->tipo"
-                                :titulo="$transaction->titulo"
-                                :icono="$transaction->icono"
-                                :monto="number_format($transaction->monto, 2)"
-                                :origen="$transaction->walletOrigen?->titulo"
-                                :destino="$transaction->walletDestino?->titulo"
-                                :categoria="$transaction->category?->categoria"
-                                :fecha="$transaction->income_id ? \Carbon\Carbon::parse($transaction->fecha_ejecucion)->format('d/m/Y') : $transaction->created_at->format('d/m/Y')"
-                            />
-                        @endforeach
-                    </x-row-home>
-                @endforeach
-            @else
-                Ninguna transaccion realizada crea una en añadir registro
-            @endif
+            <div class="w-full h-auto show-record">
+                @if($wallets->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($wallets[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $wallet = $wallets[$index] ?? null;
+                                    @endphp
 
-            <div class="h-30 flex items-center justify-center mt-5">
-                {{ $transactions->links() }}
+                                    @if($wallet)
+                                        <x-col-home 
+                                            :tipo="ucfirst($wallet->tipo)"
+                                            :titulo="$wallet->titulo"
+                                            :icono="$wallet->icono"
+                                            :monto="number_format($wallet->monto_actual, 2)"
+                                            :origen="'Inicial: $' . number_format($wallet->monto_inicial, 2)"
+                                            :destino="$wallet->tipo === 'credito' ? 'Línea de Crédito / Deuda' : 'Balance Disponible'"
+                                            :fecha="$wallet->created_at->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ninguna billetera registrada. Crea una en añadir registro.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $wallets->appends(request()->query())->links() }}
+                </div>
             </div>
-        </div>
+            <div class="w-full h-auto show-record">
+
+                @if($incomes->count())
+                    {{-- Generamos exactamente 3 filas fijas --}}
+                    @for ($i = 0; $i < 3; $i++)
+                        {{-- Solo abrimos la fila si existen elementos para esta fila --}}
+                        @if(isset($incomes[$i * 3]))
+                            <x-row-home>
+                                {{-- Cada fila dibuja exactamente 3 columnas internas --}}
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $income = $incomes[$index] ?? null;
+                                    @endphp
+
+                                    @if($income)
+                                        <x-col-home 
+                                            :tipo="$income->frecuencia !== 'ninguno' ? 'Recurrente' : 'Único'"
+                                            :titulo="$income->titulo"
+                                            :icono="$income->icono"
+                                            :monto="number_format($income->monto, 2)"
+                                            :origen="$income->wallet?->titulo ?? 'Externa'"
+                                            :destino="'Frecuencia: ' . ucfirst($income->frecuencia)"
+                                            :categoria="$income->category?->categoria ?? 'Sin categoría'"
+                                            :fecha="$income->fecha_inicio ? \Carbon\Carbon::parse($income->fecha_inicio)->format('d/m/Y') : $income->created_at->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ningún ingreso programado. Crea uno en añadir registro.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $incomes->appends(request()->query())->links() }}
+                </div>
+            </div>
+            <div class="w-full h-auto show-record">
+                @if($transactions->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($transactions[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $transaction = $transactions[$index] ?? null;
+                                    @endphp
+
+                                    @if($transaction)
+                                        <x-col-home 
+                                            :tipo="ucfirst($transaction->tipo)"
+                                            :titulo="$transaction->titulo"
+                                            :icono="$transaction->icono"
+                                            :monto="number_format($transaction->monto, 2)"
+                                            :origen="$transaction->walletOrigen?->titulo"
+                                            :destino="$transaction->walletDestino?->titulo"
+                                            :categoria="$transaction->category?->categoria ?? 'General'"
+                                            :fecha="$transaction->fecha_ejecucion ? \Carbon\Carbon::parse($transaction->fecha_ejecucion)->format('d/m/Y') : $transaction->created_at->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ninguna transacción realizada.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $transactions->appends(request()->query())->links() }}
+                </div>
+            </div>
+            <div class="w-full h-auto show-record">
+                @if($investments->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($investments[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $investment = $investments[$index] ?? null;
+                                    @endphp
+
+                                    @if($investment)
+                                        <x-col-home 
+                                            :tipo="'Inversión ' . ucfirst($investment->tipo_renta) . ' (' . ucfirst($investment->estado) . ')'"
+                                            :titulo="$investment->titulo"
+                                            :icono="$investment->icono"
+                                            :monto="number_format($investment->valor_actual, 2)"
+                                            :origen="'Inicial: $' . number_format($investment->monto_inicial, 2)"
+                                            :destino="$investment->tasa_interes ? 'Rendimiento: ' . $investment->tasa_interes . '%' : 'Ganancia: $' . number_format($investment->ganancia, 2)"
+                                            :categoria="$investment->category?->categoria ?? ($investment->wallet?->titulo ? 'Fondo: ' . $investment->wallet->titulo : 'Sin categoría')"
+                                            :fecha="\Carbon\Carbon::parse($investment->fecha_adquisicion)->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ninguna inversión registrada. Crea una en añadir registro.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $investments->appends(request()->query())->links() }}
+                </div>
+            </div>
+            <div class="w-full h-auto show-record">
+                @if($goals->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($goals[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $goal = $goals[$index] ?? null;
+                                    @endphp
+
+                                    @if($goal)
+                                        <x-col-home 
+                                            :tipo="'Meta (' . ucfirst($goal->estado) . ')'"
+                                            :titulo="$goal->titulo"
+                                            :icono="$goal->icono"
+                                            :monto="number_format($goal->monto_actual, 2)"
+                                            :origen="'Objetivo: $' . number_format($goal->monto_objetivo, 2)"
+                                            :destino="'Inicial: $' . number_format($goal->monto_inicial, 2)"
+                                            :categoria="$goal->category?->categoria ?? ($goal->descripcion ? Str::limit($goal->descripcion, 20) : 'Ahorro')"
+                                            :fecha="'Límite: ' . \Carbon\Carbon::parse($goal->fecha_limite)->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ninguna meta registrada. Crea una en añadir registro.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $goals->appends(request()->query())->links() }}
+                </div>
+            </div>
+            <div class="w-full h-auto show-record">
+                @if($paymentGoals->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($paymentGoals[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $payment = $paymentGoals[$index] ?? null;
+                                    @endphp
+
+                                    @if($payment)
+                                        <x-col-home 
+                                            :tipo="'Abono a Meta'"
+                                            :titulo="$payment->titulo"
+                                            :icono="$payment->icono"
+                                            :monto="number_format($payment->monto, 2)"
+                                            :origen="'Cuenta: ' . ($payment->wallet?->titulo ?? 'N/A')"
+                                            :destino="'Meta: ' . $payment->goal->titulo"
+                                            :categoria="$payment->category?->categoria ?? 'Ahorro'"
+                                            :fecha="$payment->created_at->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ningún abono realizado a tus metas aún.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $paymentGoals->appends(request()->query())->links() }}
+                </div>
+            </div>
+            <div class="w-full h-auto show-record">
+                @if($debts->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($debts[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $debt = $debts[$index] ?? null;
+                                    @endphp
+
+                                    @if($debt)
+                                        <x-col-home 
+                                            :tipo="'Deuda (' . ucfirst($debt->estado) . ')'"
+                                            :titulo="$debt->titulo"
+                                            :icono="$debt->icono"
+                                            :monto="number_format($debt->monto_actual, 2)"
+                                            :origen="'Monto Inicial: $' . number_format($debt->monto_inicial, 2)"
+                                            :destino="'Interés: ' . $debt->tasa_interes . '% | Prioridad: ' . ucfirst($debt->prioridad)"
+                                            :categoria="ucfirst($debt->categoria ?? 'General')"
+                                            :fecha="'Vence: ' . \Carbon\Carbon::parse($debt->fecha_vencimiento)->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ninguna deuda registrada actualmente.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $debts->appends(request()->query())->links() }}
+                </div>
+            </div>
+           <div class="w-full h-auto show-record">
+                @if($paymentDebts->count())
+                    @for ($i = 0; $i < 3; $i++)
+                        @if(isset($paymentDebts[$i * 3]))
+                            <x-row-home>
+                                @for ($j = 0; $j < 3; $j++)
+                                    @php 
+                                        $index = ($i * 3) + $j; 
+                                        $paymentDebt = $paymentDebts[$index] ?? null;
+                                    @endphp
+
+                                    @if($paymentDebt)
+                                        <x-col-home 
+                                            :tipo="$paymentDebt->pago_minimo ? 'Abono Deuda (Mínimo)' : 'Abono Deuda'"
+                                            :titulo="$paymentDebt->titulo"
+                                            :icono="$paymentDebt->icono"
+                                            :monto="number_format($paymentDebt->monto, 2)"
+                                            :origen="'Cuenta: ' . ($paymentDebt->wallet?->titulo ?? 'Externa')"
+                                            :destino="'Deuda: ' . $paymentDebt->debt->titulo"
+                                            :categoria="$paymentDebt->category?->categoria ?? 'Pago Deuda'"
+                                            :fecha="$paymentDebt->created_at->format('d/m/Y')"
+                                        />
+                                    @endif
+                                @endfor
+                            </x-row-home>
+                        @endif
+                    @endfor
+                @else
+                    <div class="h-100 text-center flex items-center justify-center">
+                        Ningún abono realizado a tus deudas aún.
+                    </div>
+                @endif
+
+                <div class="h-30 flex items-center justify-center mt-5">
+                    {{ $paymentDebts->appends(request()->query())->links() }}
+                </div>
+            </div> 
+        </div> 
+
+            
        
         <object data="{{ asset('images/BarAppere (2).svg') }}" type="image/svg+xml" class="w-full h-full pointer-events-none object-contain border-b-3 col3 mt-15"></object>
 
@@ -107,46 +449,55 @@
                         name="add">
                         <x-option
                             name="add"
+                            value="Ninguno"
                         >
                             Ninguno
                         </x-option>  
                         <x-option
                             name="add"
+                            value="Billetera"
                         >
-                            Cuenta
+                            Billetera
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Salario"
                         >
                             Salario
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Inversión"
                         >
                             Inversión
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Movimiento"
                         >
                             Movimiento
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Meta"
                         >
                             Meta
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Pago de Meta"
                         >
                             Pago de Meta
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Deuda"
                         >
                             Deuda
                         </x-option>    
                         <x-option
                             name="add"
+                            value="Pago de Deuda"
                         >
                             Pago de Deuda
                         </x-option>    
@@ -157,12 +508,12 @@
                     <form action="/wallet/create" method="POST" enctype="multipart/form-data" id="wallet-form" class="w-full flex items-center justify-center flex-col ">
                         @csrf
                         <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                            Nueva Cuenta
+                            Nueva Billetera
                         </h2>
                         <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
                             <x-label 
                             name="wallet-titulo"
-                            title='Titulo'
+                            title='Nombre de Billetera'
                             maxlength="25"
                                 color1="var(--col3)"
                                 color2="var(--col4)"
@@ -186,7 +537,8 @@
                                     
                                     <x-select
                                     title="Seleccionar tipo:"
-                                    name="wallet">
+                                    name="wallet"
+                                    :required="true">
                                     <x-option
                                             name="wallet"
                                             value="ninguno"
@@ -226,7 +578,6 @@
                                 </div>
                             </div>
                             
-                            
                         </form>
                         
                         <form action="/income/create" method="POST" enctype="multipart/form-data" id="income-form" class="w-full flex items-center justify-center flex-col ">
@@ -237,7 +588,7 @@
                             <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
                                 <x-label 
                                     name="income-titulo"
-                                    title='Titulo'
+                                    title='Nombre de Salario'
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -267,7 +618,8 @@
                                             
                                         <x-select
                                             title="Seleccionar tipo:"
-                                            name="income">
+                                            name="income"
+                                            :required="true">
                                             <x-option
                                                 name="income"
                                             value="ninguno"
@@ -316,14 +668,15 @@
 
                             <div class="mb-60 h-auto w-3/5 flex items-center justify-center">
                                 <x-select
-                                    title="Seleccionar cuenta:"
-                                    name="income-wallet">
+                                    title="Seleccionar Billetera:"
+                                    name="income-wallet"
+                                    :required="true">
 
                                     <x-option name="income-wallet">
                                     Ninguno
                                     </x-option>
 
-                                    @foreach($wallets as $wallet)
+                                    @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
 
                                     <x-option
                                     name="income-wallet"
@@ -341,80 +694,109 @@
                         </form>
                         
                         
-                        <form action="/investment/create" method="POST" enctype="multipart/form-data" id="investment-form" class="w-full flex items-center justify-center flex-col ">
+                        <form action="/investment/create" method="POST" enctype="multipart/form-data" id="investment-form" class="w-full flex items-center justify-center flex-col">
                             @csrf
+                            @if($wallets->whereIn('tipo', ['ahorro', 'debito', 'efectivo'])->isNotEmpty())
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
                                 Nueva Inversión
                             </h2>
-                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
+                            
+
+                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center">
                                 <x-label 
-                                    name="income-titulo"
-                                    title='Titulo'
+                                    name="investment-titulo"
+                                    title="Nombre de Inversión"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
                                     w="w-full"
-                                    />
-                            </div>
-                            <div class="mb-50 h-70 w-3/5 flex items-center justify-evenly">
-                                <x-label-image
-                                    name="income"
                                 />
-                                <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
-                                    <x-label 
-                                        name="income-category"
-                                        title='Categoria'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        w="w-full"
-                                        />
-                                    <x-label 
-                                        name="income-monto"
-                                        title='Monto'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        type="number"
-                                        w="w-full"
-                                        />
-                                            
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="income">
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Ninguno
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Diario
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Semanal
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Quincenal   
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Anual   
-                                            </x-option>
-                                        </x-select>
-                                    
-                                </div>
                             </div>
+
+                            <div class="mb-50 h-auto w-full sm:w-3/5 flex flex-col lg:flex-row items-center lg:items-start justify-evenly">
+                                
+                                <div class="mb-6 lg:mb-0">
+                                    <x-label-image name="investment" />
+                                </div>
+                                
+                                <div class="w-full h-auto flex flex-col p-5">
+                                    
+                                    <div class="w-full flex flex-col lg:flex-row items-end mb-6">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="investment-category"
+                                                title="Categoria"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-label 
+                                                name="investment-monto"
+                                                title="Monto Inicial"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full flex flex-col lg:flex-row items-end mb-6">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-select :required="true" title="Billetera origen:" name="investment-wallet">
+                                                <x-option name="investment-wallet" value="Ninguno">
+                                                    Ninguno
+                                                </x-option>
+                                                @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
+                                                    <x-option name="investment-wallet" value="{{ $wallet->id }}">
+                                                        {{ $wallet->titulo }}
+                                                    </x-option>
+                                                @endforeach
+                                            </x-select>
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-select :required="true" title="Tipo de Renta:" name="investment-renta" id="investment-renta-select">
+                                                <x-option name="investment-renta" value="Ninguno">
+                                                    Ninguno
+                                                </x-option>
+                                                <x-option name="investment-renta" value="variable">Variable / Acciones</x-option>
+                                                <x-option name="investment-renta" value="fija">Fija / Plazo Fijo</x-option>
+                                            </x-select>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full flex flex-col lg:flex-row items-start mb-6 gap-4 lg:gap-0">
+                                        <div id="wrapper-tasa-interes" class="w-full lg:w-1/2 lg:pr-2 hidden flex-col">
+                                            <x-label 
+                                                name="investment-tasa"
+                                                title="Tasa Interés Anual (%)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+
+                                        <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
+                                            <span class="text-xs font-semibold mb-1" style="color: var(--col3)">Fecha Vencimiento</span>
+                                            <input type="date" class="border cursor-pointer p-2 w-full lg:w-40 col7 bgcol3 rounded-md" name="investment-vencimiento" required>
+                                        </div>
+                                    </div>
+
+                                </div>                                    
+                            </div>
+                            @else
+                                Cree una Billetera de tipo debito, efectivo o ahorro antes de crear una inversión
+                            @endif
+                            
                         </form>
                         
                         
                         <form action="/transaction/create" method="POST" enctype="multipart/form-data" id="transaction-form" class="w-full flex items-center justify-center flex-col mb-50">
                             @csrf
-                            @if($wallets->count())
+                            @if($wallets->whereIn('tipo', ['ahorro', 'debito', 'efectivo'])->isNotEmpty())
 
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
                                 Nuevo Movimiento
@@ -422,7 +804,7 @@
                             <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
                                 <x-label 
                                     name="transaction-titulo"
-                                    title='Titulo'
+                                    title='Nombre de Movimiento'
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -451,400 +833,420 @@
                                         w="w-full"
                                         />
                                             
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="transaction"
-                                            first="Ingreso">
-                                            <x-option
-                                                name="transaction"
-                                            >
-                                                Ingreso
-                                            </x-option>
-                                            <x-option
-                                                name="transaction"
-                                            >
-                                                Gasto
-                                            </x-option>
-                                            <x-option
-                                                name="transaction"
-                                            >
-                                                Transferencia
-                                            </x-option>
-                                           
+                                        <x-select title="Seleccionar tipo:" name="transaction" id="transaction-tipo-select" first="Ingreso">
+                                            <x-option name="transaction" value="Ingreso">Ingreso</x-option>
+                                            <x-option name="transaction" value="Gasto">Gasto</x-option>
+                                            <x-option name="transaction" value="Transferencia">Transferencia</x-option>
                                         </x-select>
                                     
                                 </div>
 
                             </div>
-                            <div id="transaction-select-transaccion" class="mb-10 h-auto w-3/5 hidden flex-col items-center justify-evenly">
-                                
-                                <x-select
-                                    title="Cuenta origen:"
-                                    name="transaction-origen"
-                                    first="Externa"
-                                    >
-                                    <x-option
-                                    name="transaction-origen"
-                                    >
-                                        Externa
-                                    </x-option>
-                                    
-                                    @foreach($wallets as $wallet)
+                            {{-- 2. BLOQUE INGRESO: Solo destino (Sin Crédito) --}}
+                                <div id="bloque-ingreso" class="grupo-movimiento w-full flex flex-col items-center">
+                                    <x-select title="Billetera destino (Ingreso):" name="transaction-destino-ingreso" first="Seleccione...">
+                                        @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
+                                            <x-option name="transaction-destino-ingreso" value="{{ $wallet->id }}">{{ $wallet->titulo }}</x-option>
+                                        @endforeach
+                                    </x-select>
+                                </div>
 
-                                    <x-option
-                                    name="transaction-origen"
-                                    value="{{ $wallet->id }}"
-                                    >
-                                    {{ $wallet->titulo }}
+                                {{-- 3. BLOQUE GASTO: Solo origen/destino de pago (Todas las cuentas) --}}
+                                <div id="bloque-gasto" class="grupo-movimiento w-full  flex-col items-center hidden">
+                                    <x-select title="Billetera de pago (Gasto):" name="transaction-destino-gasto" first="Seleccione...">
+                                        @foreach($wallets as $wallet)
+                                            <x-option name="transaction-destino-gasto" value="{{ $wallet->id }}">{{ $wallet->titulo }}</x-option>
+                                        @endforeach
+                                    </x-select>
+                                </div>
 
-                                    </x-option>
-
-                                    @endforeach
-                                    
-                                </x-select>
-                                
-                            </div>
-                            <div id="transaction-select-transaccion" class="mb-10 h-auto w-3/5 hidden flex-col items-center justify-evenly">
-                                
-                                <x-select
-                                    title="Cuenta origen:"
-                                    name="transaction-origen"
-                                    first="Externa"
-                                    >
-                                    <x-option
-                                    name="transaction-origen"
-                                    >
-                                        Externa
-                                    </x-option>
-                                    
-                                    @foreach($wallets as $wallet)
-
-                                    <x-option
-                                    name="transaction-origen"
-                                    value="{{ $wallet->id }}"
-                                    >
-                                    {{ $wallet->titulo }}
-
-                                    </x-option>
-
-                                    @endforeach
-                                    
-                                </x-select>
-                                
-                            </div>
-                            <div class="h-auto w-3/5 flex flex-col items-center justify-evenly">
-
-                                <x-select
-                                    title="Cuenta destino:"
-                                    name="transaction-destino"
-                                    first="{{ $wallets[0]->titulo }}"
-                                    >
-                                    
-                                    @foreach($wallets as $wallet)
-
-                                    <x-option
-                                    name="transaction-destino"
-                                    value="{{ $wallet->id }}"
-                                    >
-                                    {{ $wallet->titulo }}
-
-                                    </x-option>
-
-                                    @endforeach
-                                    
-                                </x-select>
-                            
-                                
-                            </div>
+                                {{-- 4. BLOQUE TRANSFERENCIA: Origen (Sin crédito) y Destino (Todas) --}}
+                                <div id="bloque-transferencia" class="grupo-movimiento w-full  flex-col items-center hidden">
+                                    <div class="mb-5 w-full flex flex-col items-center">
+                                        <x-select title="Billetera origen:" name="transaction-origen" first="Externa">
+                                            <x-option name="transaction-origen" value="Externa">Externa</x-option>
+                                            @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
+                                                <x-option name="transaction-origen" value="{{ $wallet->id }}">{{ $wallet->titulo }}</x-option>
+                                            @endforeach
+                                        </x-select>
+                                    </div>
+                                    <div class="w-full flex flex-col items-center">
+                                        <x-select title="Billetera destino:" name="transaction-destino" first="Seleccione...">
+                                            @foreach($wallets as $wallet)
+                                                <x-option name="transaction-destino" value="{{ $wallet->id }}">{{ $wallet->titulo }}</x-option>
+                                            @endforeach
+                                        </x-select>
+                                    </div>
+                                </div>
                             @else
-                                Cree una cuenta antes de crear un movimiento
+                                Cree una Billetera de tipo debito, efectivo o ahorro antes de crear un movimiento
                             @endif
                         </form>
-                        
-                        
-                        <form action="" id="goal-form" class="w-full flex items-center justify-center flex-col ">
+
+                        <form action="/goal/create" method="POST" enctype="multipart/form-data" id="goal-form" class="w-full flex items-center justify-center flex-col">
                             @csrf
-                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nueva Meta
-                            </h2>
-                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
-                                <x-label 
-                                    name="income-titulo"
-                                    title='Titulo'
-                                    maxlength="25"
-                                    color1="var(--col3)"
-                                    color2="var(--col4)"
-                                    w="w-full"
-                                    />
-                            </div>
-                            <div class="mb-50 h-70 w-3/5 flex items-center justify-evenly">
-                                <x-label-image
-                                    name="income"
-                                />
-                                <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
-                                    <x-label 
-                                        name="income-category"
-                                        title='Categoria'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        w="w-full"
-                                        />
-                                    <x-label 
-                                        name="income-monto"
-                                        title='Monto'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        type="number"
-                                        w="w-full"
-                                        />
-                                            
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="income">
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Ninguno
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Diario
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Semanal
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Quincenal   
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Anual   
-                                            </x-option>
-                                        </x-select>
-                                    
-                                </div>
-                            </div>
-                        </form>
-                        
-                        
-                        <form action="" id="paymentgoal-form" class="w-full flex items-center justify-center flex-col ">
-                            @csrf
-                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nuevo Pago De Meta
-                            </h2>
-                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
-                                <x-label 
-                                    name="income-titulo"
-                                    title='Titulo'
-                                    maxlength="25"
-                                    color1="var(--col3)"
-                                    color2="var(--col4)"
-                                    w="w-full"
-                                    />
-                            </div>
-                            <div class="mb-50 h-70 w-3/5 flex items-center justify-evenly">
-                                <x-label-image
-                                    name="income"
-                                />
-                                <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
-                                    <x-label 
-                                        name="income-category"
-                                        title='Categoria'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        w="w-full"
-                                        />
-                                    <x-label 
-                                        name="income-monto"
-                                        title='Monto'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        type="number"
-                                        w="w-full"
-                                        />
-                                            
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="income">
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Ninguno
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Diario
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Semanal
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Quincenal   
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Anual   
-                                            </x-option>
-                                        </x-select>
-                                    
-                                </div>
-                            </div>
-                        </form>
-                        
-                        
-                        <form action="" id="debt-form" class="w-full flex items-center justify-center flex-col ">
-                            @csrf
-                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nueva Deuda
-                            </h2>
-                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
-                                <x-label 
-                                    name="income-titulo"
-                                    title='Titulo'
-                                    maxlength="25"
-                                    color1="var(--col3)"
-                                    color2="var(--col4)"
-                                    w="w-full"
-                                    />
-                            </div>
-                            <div class="mb-50 h-70 w-3/5 flex items-center justify-evenly">
-                                <x-label-image
-                                    name="income"
-                                />
-                                <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
-                                    <x-label 
-                                        name="income-category"
-                                        title='Categoria'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        w="w-full"
-                                        />
-                                    <x-label 
-                                        name="income-monto"
-                                        title='Monto'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        type="number"
-                                        w="w-full"
-                                        />
-                                            
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="income">
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Ninguno
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Diario
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Semanal
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Quincenal   
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Anual   
-                                            </x-option>
-                                        </x-select>
-                                    
-                                </div>
-                            </div>
-                        </form>
-                        
-                        
-                        <form action="" id="paymentdebt-form" class="w-full flex items-center justify-center flex-col ">
-                            @csrf
-                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nuevo Pago De Deuda
-                            </h2>
-                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center ">
-                                <x-label 
-                                    name="income-titulo"
-                                    title='Titulo'
-                                    maxlength="25"
-                                    color1="var(--col3)"
-                                    color2="var(--col4)"
-                                    w="w-full"
-                                    />
-                            </div>
-                            <div class="mb-50 h-70 w-3/5 flex items-center justify-evenly">
-                                <x-label-image
-                                    name="income"
-                                />
-                                <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
-                                    <x-label 
-                                        name="income-category"
-                                        title='Categoria'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        w="w-full"
-                                        />
-                                    <x-label 
-                                        name="income-monto"
-                                        title='Monto'
-                                        color1="var(--col3)"
-                                        color2="var(--col4)"
-                                        type="number"
-                                        w="w-full"
-                                        />
-                                            
-                                        <x-select
-                                            title="Seleccionar tipo:"
-                                            name="income">
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Ninguno
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Diario
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Semanal
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Quincenal   
-                                            </x-option>
-                                            <x-option
-                                                name="income"
-                                            >
-                                                Anual   
-                                            </x-option>
-                                        </x-select>
-                                    
-                                </div>
-                            </div>
                             
-    
+                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
+                                Nueva Meta de Ahorro
+                            </h2>
+
+                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center">
+                                <x-label 
+                                    name="goal-titulo"
+                                    title="Nombre de la meta"
+                                    maxlength="25"
+                                    color1="var(--col3)"
+                                    color2="var(--col4)"
+                                    w="w-full"
+                                />
+                            </div>
+
+                            <div class="mb-10 h-auto w-full sm:w-3/5 flex flex-col lg:flex-row items-center lg:items-start justify-evenly gap-6">
+                                
+                                <div class="mb-6 lg:mb-0">
+                                    <x-label-image name="goal" />
+                                </div>
+                                
+                                <div class="w-full h-auto flex flex-col p-5 gap-6">
+                                    
+                                    <div class="w-full flex flex-col lg:flex-row items-end">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="goal-category"
+                                                title="Categoría"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-label 
+                                                name="goal-monto-objetivo"
+                                                title="Monto Objetivo ($)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full flex flex-col lg:flex-row items-end">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="goal-monto-inicial"
+                                                title="Monto Inicial (Opcional)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                                :required="false"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
+                                            <span class="text-xs mb-1" style="color: var(--col3)">Fecha Límite</span>
+                                            <input type="date" class="border cursor-pointer p-2 w-full col7 bgcol3 rounded-md h-10" name="goal-fecha-limite" required>
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full flex flex-col">
+                                        <span class="text-xs mb-1">Descripción / Notas</span>
+                                        <textarea 
+                                            name="goal-descripcion" 
+                                            rows="3" 
+                                            maxlength="255"
+                                            class="border p-2 w-full col7 bgcol3 rounded-md resize-none outline-none transition-colors text-sm"
+                                            placeholder="¿Para qué estás ahorrando dinero?... (Opcional)"
+                                        ></textarea>
+                                    </div>
+
+                                </div>                                    
+                            </div>
+
+                          
+
+                        </form>         
+
+                        <form action="/payment-goal/create" method="POST" enctype="multipart/form-data" id="paymentgoal-form" class="w-full flex items-center justify-center flex-col">
+                            @csrf
+                            @if($goals->isNotEmpty())
+                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
+                                Nuevo Pago de Meta
+                            </h2>
+
+                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center">
+                                <x-label 
+                                    name="paygoal-titulo"
+                                    title="Concepto del pago / abono"
+                                    maxlength="25"
+                                    color1="var(--col3)"
+                                    color2="var(--col4)"
+                                    w="w-full"
+                                />
+                            </div>
+
+                            <div class="mb-10 h-auto w-full sm:w-3/5 flex flex-col lg:flex-row items-center lg:items-start justify-evenly gap-6">
+                                
+                                <div class="mb-6 lg:mb-0">
+                                    <x-label-image name="paygoal" />
+                                </div>
+                                
+                                <div class="w-full h-auto flex flex-col p-5 gap-6 mb-30">
+                                    
+                                    <div class="w-full flex flex-col lg:flex-row items-end">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="paygoal-category"
+                                                title="Categoría"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                w="w-full"
+                                                :required="false"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-label 
+                                                name="paygoal-monto"
+                                                title="Monto a Aportar ($)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    <div class="w-full flex flex-col xl:flex-row gap-4">
+                                        
+                                        
+                                        <div class="w-full lg:w-1/2 flex items-center flex-col">
+                                            <x-select title="Billetera de origen :" name="paygoal-wallet" first="Externa">
+                                                <x-option name="paygoal-wallet" value="">Externa</x-option>
+                                                @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
+                                                    <x-option name="paygoal-wallet" value="{{ $wallet->id }}">
+                                                        {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})
+                                                    </x-option>
+                                                @endforeach
+                                            </x-select>
+                                            <span class="text-xs">(No se muestran billeteras credito)</span>
+
+                                        </div>
+
+                                        <div class="w-full lg:w-1/2">
+                                            <x-select title="Meta a destinar:" name="paygoal-target" :required="true" first="Seleccionar Meta:">
+                                                <x-option name="paygoal-target" value="">Seleccionar Meta:</x-option>
+                                                @foreach($goals as $goal)
+                                                    <x-option name="paygoal-target" value="{{ $goal->id }}">
+                                                        {{ $goal->titulo }} (Faltan: ${{ number_format($goal->monto_objetivo - $goal->monto_actual, 2) }})
+                                                    </x-option>
+                                                @endforeach
+                                            </x-select>
+                                        </div>
+
+                                    </div>
+
+                                </div>                                    
+                            </div>
+                            @else
+                                <div class="w-full text-center">
+                                        Cree una meta antes de poder ahorrar.
+                                </div>
+                            @endif
+
+
+                        </form>
+                        
+                        <form action="/debt/create" method="POST" enctype="multipart/form-data" id="debt-form" class="w-full p-4 flex items-center justify-center flex-col">
+                            @csrf
+                            
+                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
+                                Nueva Deuda Principal
+                            </h2>
+
+                            {{-- Concepto o Nombre de la Deuda --}}
+                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center">
+                                <x-label 
+                                    name="debt-titulo"
+                                    title="¿A quién o qué le debes? (Ej: Tarjeta Visa, Préstamo)"
+                                    maxlength="25"
+                                    color1="var(--col3)"
+                                    color2="var(--col4)"
+                                    w="w-full"
+                                />
+                            </div>
+
+                            <div class="mb-10 h-auto w-full sm:w-3/5 flex flex-col items-center justify-evenly gap-6">
+                                
+                                {{-- Imagen vinculada exactamente a: let debt = new ImagePreview("debt"); --}}
+                                <div class="mb-6 lg:mb-0">
+                                    <x-label-image name="debt" />
+                                </div>
+                                
+                                <div class="w-full h-auto flex flex-col p-5 gap-6">
+                                    
+                                    {{-- Fila 1: Categoría y Monto Inicial --}}
+                                    <div class="w-full flex flex-col lg:flex-row items-end">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="debt-category"
+                                                title="Categoría (Ej: Bancos, Educación)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                w="w-full"
+                                                :required="false"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-label 
+                                                name="debt-monto"
+                                                title="Monto Inicial de la Deuda ($)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                    </div>
+
+
+
+                                </div>              
+                                <div class="w-full flex flex-col lg:flex-row items-center">
+                                    <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <span class="text-xs">Fecha de vencimiento: </span>
+                                        <input type="date" class="border cursor-pointer p-2 w-full col7 bgcol3 rounded-md h-10" name="debt-vencimiento" required>
+
+                                    </div>
+                                    <div class="w-full lg:w-1/2 lg:pl-2">
+                                        <x-label 
+                                            name="debt-tasa"
+                                            title="Tasa de Interés % (0 si no aplica)"
+                                            color1="var(--col3)"
+                                            color2="var(--col4)"
+                                            type="number"
+                                            w="w-full"
+                                            value="0"
+                                        />
+                                    </div>
+                                </div>
+
+                                {{-- Fila 3: Prioridad de Alerta --}}
+                                <div class="w-full flex flex-col xl:flex-row gap-4">
+                                    <div class="w-full">
+                                        <x-select title="Prioridad de Alerta :" :required="true" name="debt-prioridad" first="Ninguno">
+                                            <x-option name="debt-prioridad" value="Ninguno">Ninguno</x-option>
+                                            <x-option name="debt-prioridad" value="media">Media (Normal)</x-option>
+                                            <x-option name="debt-prioridad" value="alta">Alta (Urgente)</x-option>
+                                            <x-option name="debt-prioridad" value="baja">Baja (Flexible)</x-option>
+                                        </x-select>
+                                    </div>
+                                </div>      
+                            </div>                
+                        </form>
+                        
+                        
+                        <form action="/payment-debt/create" method="POST" enctype="multipart/form-data" id="paymentdebt-form" class="w-full flex items-center justify-center flex-col">
+                            @csrf
+                            
+                            @if($debts->isNotEmpty())
+                            <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
+                                Registrar Pago de Deuda
+                            </h2>
+
+                            {{-- Concepto del Pago --}}
+                            <div class="mb-10 h-auto w-3/5 flex items-center justify-center">
+                                <x-label 
+                                    name="payment-titulo"
+                                    title="Concepto del pago (Ej: Abono capital Enero, Pago mínimo)"
+                                    maxlength="25"
+                                    color1="var(--col3)"
+                                    color2="var(--col4)"
+                                    w="w-full"
+                                />
+                            </div>
+
+                            <div class="mb-10 h-auto w-full sm:w-3/5 flex flex-col lg:flex-row items-center lg:items-start justify-evenly gap-6">
+                                
+                                {{-- Imagen vinculada exactamente a: let payment = new ImagePreview("payment"); --}}
+                                <div class="mb-6 lg:mb-0">
+                                    <x-label-image name="paymentdebt" />
+                                </div>
+                                
+                                <div class="w-full h-auto flex flex-col p-5 gap-6 mb-30">
+                                    
+                                    {{-- Fila 1: Categoría (Opcional) y Monto a Abonar --}}
+                                    <div class="w-full flex flex-col lg:flex-row items-end">
+                                        <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0">
+                                            <x-label 
+                                                name="payment-category"
+                                                title="Categoría (Opcional)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                w="w-full"
+                                                :required="false"
+                                            />
+                                        </div>
+                                        <div class="w-full lg:w-1/2 lg:pl-2">
+                                            <x-label 
+                                                name="payment-monto"
+                                                title="Monto a Pagar ($)"
+                                                color1="var(--col3)"
+                                                color2="var(--col4)"
+                                                type="number"
+                                                w="w-full"
+                                            />
+                                        </div>
+                                    </div>
+
+                                    {{-- Fila 2: Billetera Origen (wallet_id) y Deuda Destino (debt_id) --}}
+                                    <div class="w-full flex flex-col lg:flex-row gap-4">
+                                        {{-- Billetera Origen --}}
+                                        <div class="w-full lg:w-1/2 flex items-center flex-col">
+                                            <x-select title="Billetera de origen :" name="payment-wallet" first="Externa">
+                                                <x-option name="payment-wallet" value="">Externa</x-option>
+                                                @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
+                                                    <x-option name="payment-wallet" value="{{ $wallet->id }}">
+                                                        {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})
+                                                    </x-option>
+                                                @endforeach
+                                            </x-select>
+                                            <span class="text-xs mt-1">(No se muestran billeteras de crédito)</span>
+                                        </div>
+
+                                        {{-- Deuda Destino --}}
+                                        <div class="w-full lg:w-1/2">
+                                            <x-select title="Deuda a aplicar pago:" name="payment-target" :required="true" first="Seleccionar Deuda:">
+                                                <x-option name="payment-target" value="">Seleccionar Deuda:</x-option>
+                                                @foreach($debts as $debt)
+                                                    <x-option name="payment-target" value="{{ $debt->id }}">
+                                                        {{ $debt->titulo }} (Resta: ${{ number_format($debt->monto_actual, 2) }})
+                                                    </x-option>
+                                                @endforeach
+                                            </x-select>
+                                        </div>
+                                    </div>
+
+                                    {{-- Fila 3: Checkbox estratégico para Pago Mínimo (pago_minimo) --}}
+                                    <div class="w-full flex items-center gap-3 pl-1 mt-2">
+                                        <input 
+                                            type="checkbox" 
+                                            name="payment-minimo" 
+                                            id="payment-minimo" 
+                                            value="1" 
+                                            class="w-4 h-4 rounded cursor-pointer"
+                                        >
+                                        <label for="payment-minimo" class="text-sm font-medium  select-none cursor-pointer">
+                                            ¿Este abono corresponde al pago mínimo obligatorio?
+                                        </label>
+                                    </div>
+
+                                </div>                                    
+                            </div>
+                            @else
+                                <div class="w-full text-center py-8 ">
+                                    No tienes deudas pendientes registradas que requieran pagos.
+                                </div>
+                            @endif
                         </form>
                         
                     </div>

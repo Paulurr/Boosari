@@ -13,22 +13,16 @@ return new class extends Migration
     {
         Schema::create('debts', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')
-            ->constrained();
-            $table->foreignId('category_id')
-            ->nullable()
-            ->constrained();
-            $table->string("titulo",25);
-            $table->string("icono",255);
-            $table->decimal('monto_total', 10, 2)->default(1.00);
-            $table->decimal('saldo_actual', 10, 2)->default(0.00);
-            $table->decimal('tasa_interes', 7, 4)->default(0.0000);
-            $table->date('fecha_limite')->nullable();
-            $table->enum('estado', [
-                'pendiente',
-                'pagando',
-                'pagada'
-            ])->default('pendiente');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('category_id')->nullable()->constrained()->onDelete('set null');
+            $table->string('titulo', 25);
+            $table->decimal('monto_inicial', 10, 2);
+            $table->decimal('monto_actual', 10, 2); // Este bajará con cada abono de 'payment_debts'
+            $table->date('fecha_vencimiento'); //
+            $table->decimal('tasa_interes', 5, 2)->default(0.00); 
+            $table->string('prioridad', 10)->default('media');
+            $table->enum('estado', ['pendiente', 'pagada'])->default('pendiente');
+            $table->string('icono', 255)->nullable();
             $table->timestamps();
         });
     }

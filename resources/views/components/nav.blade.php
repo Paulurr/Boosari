@@ -253,22 +253,43 @@
 
     <div class="line-nav w-full h-1"></div>
     <div id="perfil-menu-nav" class="perfil-menu-nav flex flex-col p-2">
-        <a href= "/" class="w-full h-10 flex items-center perfil-menu-div-nav">
-                <div class="pl-3 relative perfil-menu-div-nav-text z-1  ">
-                    Administrar perfil
-                </div>
-        </a>
-        <a href="/" class="w-full h-10 flex items-center perfil-menu-div-nav">
-                <div class="pl-3 relative perfil-menu-div-nav-text z-1">
-                    Configuración
-                </div>
+        <div class="w-full h-full">
+             <x-button
+                    color1="var(--col4)"
+                    color2="var(--col3)"
+                    colortext="var(--col1)"
+                    class="filter-btn p-2 w-63 h-full text-start"
+                    >
+                    Administrar Perfil
 
-        </a>
-        <form method="POST" action="/log_out" class="w-full h-10 flex items-center perfil-menu-div-nav">
+            </x-button>
+
+        </div>
+        <div class="w-full h-full">
+                
+            <x-button
+                        color1="var(--col4)"
+                        color2="var(--col3)"
+                        colortext="var(--col1)"
+                        class="filter-btn p-2 w-63 h-full text-start"
+                        >
+                        Configuración
+
+            </x-button>
+        </div>
+        
+        <form method="POST" action="/log_out" class="w-full h-full">
             @csrf
-                <button type="submit" class="pl-3 relative z-1 w-full h-full flex items-center justify-start cursor-pointer">
-                    Cerrar Sesión              
-                </button>
+                <x-button
+                    color1="red"
+                    color2="white"
+                    colortext="text-white"
+                    class="filter-btn p-2 w-63 h-full text-start text-white"
+                    type="submit"
+                    >
+                    Cerrar Sesión
+                </x-button>
+
         </form>
     </div>
 </nav>

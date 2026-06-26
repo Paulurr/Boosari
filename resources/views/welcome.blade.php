@@ -34,25 +34,31 @@
                     
                 </div>
             </div>
-            <div class="h-auto w-full flex justify-center items-center flex-col lg:flex-row ">
-                <x-button
-                    color1="var(--col3)"
-                    colortext="var(--col7)"
-                    class="p-4 lg:text-3xl lg:mr-4 text-sx mb-3 lg:mb-0"
-                >
-                    <a id="log_in" href="/log_in">                    
-                        {{ __('welcome.log_in') }}
-                    </a>
-                </x-button>
-                <x-button 
-                    color1="var(--col4)"
-                    class="p-4 lg:text-3xl lg:ml-4 text-sx "
-                >
-                    <a href="/sign_up">                    
-                        {{ __('welcome.sign_up') }}
-                    </a>
-                </x-button>
+            <div class="h-auto w-full flex justify-center">
+                <div class="h-50 w-100 flex justify-evenly items-center flex-col lg:flex-row ">
+                    <x-button
+                        color1="var(--col3)"
+                        color2="var(--col4)"
+                        colortext="var(--col7)"
+                        class="p-4 lg:text-3xl text-sx lg:mb-0"
+                    >
+                        <a id="log_in" href="/log_in">                    
+                            {{ __('welcome.log_in') }}
+                        </a>
+                    </x-button>
+                    <x-button 
+                        color1="var(--col4)"
+                        color2="var(--col3)"
+                        class="p-4 lg:text-3xl text-sx "
+                    >
+                        <a href="/sign_up">                    
+                            {{ __('welcome.sign_up') }}
+                        </a>
+                    </x-button>
+                </div>
+
             </div>
+            
             <div class="h-1/6 w-full flex justify-center items-center">
                 <a href="#seccion-destino" class="inline-block h-1/2">
                     <object data="{{ asset('images/masAbajo.svg') }}" type="image/svg+xml" class="h-full object-fill pointer-events-none"></object>
@@ -92,14 +98,14 @@
                             {{ __('welcome.txt_3') }}
                             <div class="h-150 flex lg:flex-row lg:p-40 p-10 flex-col justify-center items-center">
                                 <div class="text-lg hidden lg:flex flex-col justify-evenly items-center font-normal mt-20 p-30 pb-0 pt-0">
-                                    <div class="hidden xl:block w-auto text-center">
+                                    <div class="hidden xl:block w-auto  mb-10 text-center">
                                         {{ __('welcome.txt_4') }}
                                     </div>
                                         <x-button 
                                         color1="var(--col1)"
                                         color2="var(--col4)"
                                         colortext="var(--col7)"
-                                        class="p-4 text-xl mt-10"
+                                        class="p-4 text-xl"
                                     >
                                         <a href="/log_in">                    
                                             {{ __('welcome.log_in') }}

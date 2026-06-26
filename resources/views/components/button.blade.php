@@ -1,5 +1,5 @@
 @props(['color1','color2' => 'var(--col2)','colortext' => 'var(--col1)','type' => 'submit','cont' => 'button' ,'id' => ''])
-<{{$cont}} id="{{$id}}" type="{{$type}}" class="page-button rounded-md h-auto w-auto"
+<{{$cont}} id="{{$id}}" type="{{$type}}" class="page-button rounded-xs h-auto w-auto"
 style="--page-button1:{{ $color1 }};--page-button2:{{ $color2 }};--color-page-text:{{ $colortext }};">
 
     <div

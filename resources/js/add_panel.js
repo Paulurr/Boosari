@@ -9,150 +9,264 @@ let paymentgoal_form = document.getElementById("paymentgoal-form");
 let debt_form = document.getElementById("debt-form");
 let paymentdebt_form = document.getElementById("paymentdebt-form");
 
-let transaction_select_transaccion = document.getElementById("transaction-select-transaccion");
-let transaction_select_value = document.getElementById("transaction-select-value");
-
-wallet_form.style.display = "none";
-income_form.style.display = "none";
-investment_form.style.display = "none";
-transaction_form.style.display = "none";
-goal_form.style.display = "none";
-paymentgoal_form.style.display = "none";
-debt_form.style.display = "none";
-paymentdebt_form.style.display = "none";
-
-select.addEventListener("input",()=>{
-    let select_value = select.value;
-    default_.style.display = "none";
-    wallet_form.style.display = "none";
-    income_form.style.display = "none";
-    investment_form.style.display = "none";
-    transaction_form.style.display = "none";
-    goal_form.style.display = "none";
-    paymentgoal_form.style.display = "none";
-    debt_form.style.display = "none";
-    paymentdebt_form.style.display = "none";
-
-    
-    switch (select_value) {
-        case "Cuenta":
-            wallet_form.style.display = "flex";    
-            break;
-        case "Salario":
-            income_form.style.display = "flex";    
-            
-            break;
-        case "Inversión":
-            investment_form.style.display = "flex";    
-
-            break;
-        case "Movimiento":
-            transaction_form.style.display = "flex";    
-            transaction_select_value.addEventListener("input",()=>{
-                let transaction_value = transaction_select_value.value;
-                if(transaction_value == "Transferencia"){
-                    transaction_select_transaccion.style.display = "flex"; 
-                }else{
-                    transaction_select_transaccion.style.display = "none"; 
-
-                }
-            })
-
-            
-            break;
-        case "Meta":
-            goal_form.style.display = "flex";    
-            
-            break;
-        case "Pago de Meta":
-            paymentgoal_form.style.display = "flex";    
-            
-            break;
-        case "Deuda":
-            debt_form.style.display = "flex";    
-            break;
-        case "Pago de Deuda":
-            paymentdebt_form.style.display = "flex";    
-            
-            break;
-    
-        default:
-            default_.style.display = "flex";
-            break;
-    }
-})
-
-let add_submit = document.getElementById("add-submit"); 
-add_submit.addEventListener("click",()=>{
-    let select_value = select.value;
-    switch (select_value) {
-        case "Cuenta":
-            wallet_form.requestSubmit();    
-
-            break;
-        case "Salario":
-            income_form.requestSubmit();    
-            
-            break;
-        case "Inversión":
-            investment_form.requestSubmit();    
-
-            break;
-        case "Movimiento":
-            transaction_form.requestSubmit();    
-            
-            break;
-        case "Meta":
-            goal_form.requestSubmit();    
-            
-            break;
-        case "Pago de Meta":
-            paymentgoal_form.requestSubmit();    
-            
-            break;
-        case "Deuda":
-            debt_form.requestSubmit();    
-            break;
-        case "Pago de Deuda":
-            paymentdebt_form.requestSubmit();    
-            
-            break;
-    
-        default:
-            break;
-    }
-})
+// Ocultar todos los formularios al inicio
+ocultarFormularios();
 
 document.addEventListener("DOMContentLoaded", () => {
-    // 1. Obtener la fecha actual en formato local YYYY-MM-DD
+    let tipoMovimientoSelect = document.getElementById("transaction-select-value"); // Tu input oculto del tipo
+    let bloques = document.querySelectorAll(".grupo-movimiento");
+
+    function alternarBloquesMovimiento() {
+        if (!tipoMovimientoSelect) return;
+        let valorActual = tipoMovimientoSelect.value.trim().toLowerCase();
+
+        // 1. Ocultamos todos los bloques y desactivamos sus inputs para que no viajen al servidor
+        bloques.forEach(bloque => {
+            bloque.classList.add("hidden");
+            bloque.style.display = "none";
+            
+            // Buscamos los inputs generados por tus x-select dentro de este bloque específico
+            let inputsInternos = bloque.querySelectorAll("input");
+            inputsInternos.forEach(input => input.setAttribute("disabled", "true"));
+        });
+
+        // 2. Activamos y mostramos únicamente el bloque seleccionado
+        let bloqueActivo = document.getElementById(`bloque-${valorActual}`);
+        if (bloqueActivo) {
+            bloqueActivo.classList.remove("hidden");
+            bloqueActivo.style.display = "flex";
+
+            // Volvemos a habilitar los inputs de este bloque para que sí viajen en el request
+            let inputsActivos = bloqueActivo.querySelectorAll("input");
+            inputsActivos.forEach(input => input.removeAttribute("disabled"));
+        }
+    }
+
+    // Registrar eventos para capturar el cambio inmediatamente
+    if (tipoMovimientoSelect) {
+        tipoMovimientoSelect.addEventListener("change", alternarBloquesMovimiento);
+        tipoMovimientoSelect.addEventListener("input", alternarBloquesMovimiento);
+    }
+
+    // Inicialización por defecto al cargar la página
+    alternarBloquesMovimiento();
+});
+
+function ocultarFormularios() {
+    if(wallet_form) wallet_form.style.display = "none";
+    if(income_form) income_form.style.display = "none";
+    if(investment_form) investment_form.style.display = "none";
+    if(transaction_form) transaction_form.style.display = "none";
+    if(goal_form) goal_form.style.display = "none";
+    if(paymentgoal_form) paymentgoal_form.style.display = "none";
+    if(debt_form) debt_form.style.display = "none";
+    if(paymentdebt_form) paymentdebt_form.style.display = "none";
+}
+
+function actualizarFormularioActivo() {
+    let select_value = select.value;
+    if(default_) default_.style.display = "none";
+    ocultarFormularios();
+
+    switch (select_value) {
+        case "Billetera":     if(wallet_form) wallet_form.style.display = "flex"; break;
+        case "Salario":       if(income_form) income_form.style.display = "flex"; break;
+        case "Inversión":     if(investment_form) investment_form.style.display = "flex"; break;
+        case "Movimiento":    if(transaction_form) transaction_form.style.display = "flex"; break;
+        case "Meta":          if(goal_form) goal_form.style.display = "flex"; break;
+        case "Pago de Meta":  if(paymentgoal_form) paymentgoal_form.style.display = "flex"; break;
+        case "Deuda":         if(debt_form) debt_form.style.display = "flex"; break;
+        case "Pago de Deuda": if(paymentdebt_form) paymentdebt_form.style.display = "flex"; break;
+        default:              if(default_) default_.style.display = "flex"; break;
+    }
+}
+
+if (select) {
+    select.addEventListener("input", actualizarFormularioActivo);
+    select.addEventListener("change", actualizarFormularioActivo);
+}
+
+// Lógica de validación genérica (Mantiene tu scroll y validación de bordes rojos)
+function validarFormularioActivo(formulario) {
+    if (!formulario) return true;
+    let errorDetectado = false;
+    let inputsRequeridos = formulario.querySelectorAll('.generic-x-select-input[data-required="true"]');
+
+    inputsRequeridos.forEach(inputOculto => {
+        let namePrefix = inputOculto.getAttribute('data-name-prefix');
+        let contenedorError = document.getElementById(`${namePrefix}-error-msg`);
+        let selectElement = document.getElementById(`${namePrefix}-select`);
+        
+        if (selectElement) {
+            let cajaSelect = selectElement.parentElement;
+            let valor = inputOculto.value.trim();
+
+            if (!valor || valor === '' || valor === 'Ninguno') {
+                errorDetectado = true;
+                if (contenedorError) contenedorError.classList.remove('hidden');
+                if (cajaSelect) cajaSelect.classList.add('border-red-500');
+            } else {
+                if (contenedorError) contenedorError.classList.add('hidden');
+                if (cajaSelect) cajaSelect.classList.remove('border-red-500');
+            }
+        }
+    });
+
+    if (errorDetectado) {
+        let primerError = formulario.querySelector('.border-red-500');
+        if (primerError) primerError.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return !errorDetectado;
+}
+
+let add_submit = document.getElementById("add-submit"); 
+if (add_submit) {
+    add_submit.addEventListener("click", () => {
+        if (!select) return;
+        let select_value = select.value;
+        let formularioDestino = null;
+
+        switch (select_value) {
+            case "Billetera":     formularioDestino = wallet_form; break;
+            case "Salario":       formularioDestino = income_form; break;
+            case "Inversión":     formularioDestino = investment_form; break;
+            case "Movimiento":    formularioDestino = transaction_form; break;
+            case "Meta":          formularioDestino = goal_form; break;
+            case "Pago de Meta":  formularioDestino = paymentgoal_form; break;
+            case "Deuda":         formularioDestino = debt_form; break;
+            case "Pago de Deuda": formularioDestino = paymentdebt_form; break;
+        }
+
+        if (formularioDestino && validarFormularioActivo(formularioDestino)) {
+            formularioDestino.requestSubmit();
+        }
+    });
+}
+
+// Configuración inicial de fechas
+document.addEventListener("DOMContentLoaded", () => {
     const hoy = new Date();
-    const anio = hoy.getFullYear();
-    const mes = String(hoy.getMonth() + 1).padStart(2, '0');
-    const dia = String(hoy.getDate()).padStart(2, '0');
-    const fechaFormateada = `${anio}-${mes}-${dia}`;
-
-    // 2. Definir los límites de seguridad
-    const fechaMinima = "1970-01-01";
-    const fechaMaxima = `${anio + 10}-${mes}-${dia}`;
-
-    // 3. Buscar TODOS los inputs de tipo date
+    const fechaFormateada = `${hoy.getFullYear()}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
     const inputsFecha = document.querySelectorAll('input[type="date"]');
 
     inputsFecha.forEach(input => {
-        // Aplicar restricciones nativas para el calendario
-        input.min = fechaMinima;
-        input.max = fechaMaxima;
-        input.value = fechaFormateada; // Valor por defecto hoy
+        input.min = "1970-01-01";
+        input.max = `${hoy.getFullYear() + 10}-${String(hoy.getMonth() + 1).padStart(2, '0')}-${String(hoy.getDate()).padStart(2, '0')}`;
+        input.value = fechaFormateada;
 
-        // 4. CORRECCIÓN PARA ESCRITURA MANUAL:
-        // Escuchamos cuando el usuario termina de escribir o cambia el foco
         input.addEventListener("blur", () => {
-            const fechaIntroducida = input.value;
-
-            // Si el usuario escribió una fecha incompleta o un año como 0001
-            if (!fechaIntroducida || fechaIntroducida < fechaMinima || fechaIntroducida > fechaMaxima) {
-                input.value = fechaFormateada; // Forzamos a regresar al día de hoy
+            if (!input.value || input.value < input.min || input.value > input.max) {
+                input.value = fechaFormateada;
             }
         });
     });
+    
+    if(select && select.value !== "") actualizarFormularioActivo();
+});
+
+document.addEventListener("DOMContentLoaded", function () {
+    const inputRenta = document.getElementById("investment-renta-select-value");
+    const wrapperTasa = document.getElementById("wrapper-tasa-interes");
+    const formInversion = document.getElementById("investment-form");
+
+    function evaluarTipoRenta() {
+        if (!inputRenta || !wrapperTasa) return;
+        
+        const inputTasaReal = wrapperTasa.querySelector("input");
+        const valor = inputRenta.value.trim().toLowerCase();
+
+        if (valor === "fija") {
+            // Quitamos hidden y aplicamos flex para mantener el comportamiento de alineación
+            wrapperTasa.classList.remove("hidden");
+            wrapperTasa.classList.add("flex");
+            if (inputTasaReal) inputTasaReal.setAttribute("required", "true");
+        } else {
+            // Ocultamos el bloque por completo
+            wrapperTasa.classList.add("hidden");
+            wrapperTasa.classList.remove("flex");
+            if (inputTasaReal) {
+                inputTasaReal.removeAttribute("required");
+                inputTasaReal.value = ""; // Reseteo preventivo
+            }
+        }
+    }
+
+    // 1. Monitorear cambios simulados o reales en el componente personalizado
+    if (inputRenta) {
+        // Tu componente altera el .value mediante JS, usamos un MutationObserver o intervals 
+        // si el evento 'change' nativo no se dispara en elementos ocultos.
+        inputRenta.addEventListener("change", evaluarTipoRenta);
+        inputRenta.addEventListener("input", evaluarTipoRenta);
+        
+        // Detectar cambios directos en el valor si tu select.js los escribe mediante asignación directa
+        const observer = new MutationObserver(() => evaluarTipoRenta());
+        observer.observe(inputRenta, { attributes: true, attributeFilter: ['value'] });
+    }
+
+    // 2. Control total en el Submit para interceptar campos requeridos ocultos
+    if (formInversion) {
+        formInversion.addEventListener("submit", function (e) {
+            const valorRenta = inputRenta ? inputRenta.value.trim().toLowerCase() : '';
+            const inputTasaReal = wrapperTasa ? wrapperTasa.querySelector("input") : null;
+
+            // Aseguramos que si no es fija, el required se destruya un milisegundo antes de enviar
+            if (valorRenta !== "fija" && inputTasaReal) {
+                inputTasaReal.removeAttribute("required");
+            }
+        });
+    }
+
+    // Ejecución inicial por si el formulario se renderiza con datos previos
+    evaluarTipoRenta();
+});
+let add_select_select_value = document.getElementById("add-select-select-value");
+let show_record = document.querySelectorAll(".show-record");
+
+// Inicialización: Oculta todos y muestra solo el primero (Billetera)
+show_record.forEach(e => {
+    e.style.display = "none";
+});
+if (show_record[0]) {
+    show_record[0].style.display = "";
+}
+
+// Evento para escuchar los cambios en el input oculto
+add_select_select_value.addEventListener("input", () => {
+    // 1. Ocultar todos los bloques antes de mostrar el seleccionado
+    show_record.forEach(e => {
+        e.style.display = "none";
+    });
+
+    // 2. Obtener el valor como String
+    let add_select_value = add_select_select_value.value;
+
+    // 3. Evaluar con strings y añadir los breaks obligatorios
+    switch(add_select_value) {
+        case "0":
+            if(show_record[0]) show_record[0].style.display = "";
+            break;
+        case "1":
+            if(show_record[1]) show_record[1].style.display = "";
+            break;
+        case "2":
+            if(show_record[2]) show_record[2].style.display = "";
+            break;
+        case "3":
+            if(show_record[3]) show_record[3].style.display = "";
+            break;
+        case "4":
+            if(show_record[4]) show_record[4].style.display = "";
+            break;
+        case "5":
+            if(show_record[5]) show_record[5].style.display = "";
+            break;
+        case "6":
+            if(show_record[6]) show_record[6].style.display = "";
+            break;
+        case "7":
+            if(show_record[7]) show_record[7].style.display = "";
+            break;
+        default:
+            break;
+    }
 });

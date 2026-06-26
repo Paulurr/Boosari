@@ -15,11 +15,11 @@
     >
         <x-button
             color1="var(--col3)"
-            color2="var(--col1)"
+            color2="var(--col4)"
             colortext="var(--col7)"
             type="button"
             cont="div"
-            class="pt-2 p-4 w-15 sm:w-20 md:w-30 text-xs lg:w-40 text-center flex items-center justify-center"
+            class="p-4 w-15 sm:w-20 md:w-30 text-xs lg:w-40 text-center flex items-center justify-center"
             >
             Agregar imagen
         </x-button>

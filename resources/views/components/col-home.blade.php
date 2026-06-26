@@ -29,11 +29,11 @@
     </div>
 
     {{-- Imagen / Icono --}}
-    <div class="w-full overflow-hidden relative h-3/6 bgcol1 flex items-center justify-center min-h-[120px]">
+    <div class="w-full overflow-hidden relative h-3/6 bgcol1 flex items-center justify-center min-h-30">
         @if($icono)
             <img src="{{ asset('storage/' . $icono) }}" alt="Icono" class="absolute h-full object-contain p-2">
         @else
-            <img src="{{ asset('images/account.png') }}" alt="Default" class="absolute h-full object-fill">
+            <img src="{{ asset('images/logo_boosari.webp') }}" alt="Default" class="absolute h-full object-fill">
         @endif
     </div>
 
@@ -41,24 +41,26 @@
     <div class="w-full h-2/6 p-3 flex flex-col justify-between">
         <div>
             <p class="sm:text-[14px] text-[12px] font-bold col7">
-                Total: ${{ $monto }}
+                Monto: ${{ $monto }}
             </p>
             
+            {{-- Mapeos Limpios y Condicionales --}}
             @if($origen)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
-                    <span class="font-semibold">Origen:</span> {{ $origen }}
+                    {{-- Detecta automáticamente si es texto informativo o una relación --}}
+                    <span class="font-semibold">{{ str_contains($origen, ':') ? '' : 'Origen:' }}</span> {{ $origen }}
                 </p>
             @endif
 
             @if($destino)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
-                    <span class="font-semibold">Destino:</span> {{ $destino }}
+                    <span class="font-semibold">{{ str_contains($destino, ':') ? '' : 'Destino:' }}</span> {{ $destino }}
                 </p>
             @endif
 
             @if($categoria)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
-                    <span class="font-semibold">Categoría:</span> {{ $categoria }}
+                    <span class="font-semibold">Categoria:</span> {{ $categoria }}
                 </p>
             @endif
         </div>
@@ -68,5 +70,4 @@
             {{ $fecha }}
         </p>
     </div>
-    
 </div>

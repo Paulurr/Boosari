@@ -6,6 +6,7 @@
     'color2',
     'w' => 'w-3/5',
     'maxlength' => '',
+    'required' => true
 ])
 @vite(['resources/js/label.js'])
 <label for="" class="flex flex-col {{$w}} label-cont">
@@ -13,7 +14,7 @@
         name="{{ $name }}" 
         type="{{ $type }}" 
         placeholder=" "
-        required
+        {{$required ? "required" :""}}
         maxlength="{{$maxlength}}"
         class="input-label mt-5"
         style="--input-color1:{{ $color1 }};--input-color2:{{ $color2 }};"

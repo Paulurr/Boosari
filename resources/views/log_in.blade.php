@@ -63,7 +63,7 @@
                     <div class="h-[14%] w-full flex items-center justify-center">
                         <x-button 
                             color1="var(--col3)"
-                            color2="var(--col1)"
+                            color2="var(--col4)"
                             colortext="var(--col7)"
                             class="p-2"
                         >
