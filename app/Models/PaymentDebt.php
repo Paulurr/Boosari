@@ -1,46 +1,45 @@
 <?php
-
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Importamos la clase de relación
 
 class PaymentDebt extends Model
 {
     use HasFactory;
 
-    protected $table = 'payment_debts';
-
-    /**
-     * Atributos asignables en masa.
-     */
     protected $fillable = [
         'debt_id',
         'wallet_id',
-        'category_id',
+        'category_id', // Asegúrate de tenerlo en el fillable
         'titulo',
         'icono',
         'monto',
-        'pago_minimo',
+        'pago_minimo'
     ];
 
     /**
-     * Cast de atributos.
+     * Relación con la Categoría del abono
      */
-    protected $casts = [
-        'pago_minimo' => 'boolean',
-        'monto' => 'decimal:2',
-    ];
-
-    // --- RELACIONES ---
-
-    public function debt()
+    public function category(): BelongsTo
     {
-        return $this->belongsTo(Debt::class, 'debt_id');
+        return $this->belongsTo(\App\Models\Category::class);
     }
 
-    public function wallet()
+    /**
+     * Relación con la Deuda principal (por si acaso no la tenías)
+     */
+    public function debt(): BelongsTo
     {
-        return $this->belongsTo(Wallet::class, 'wallet_id');
+        return $this->belongsTo(Debt::class);
+    }
+
+    /**
+     * Relación con la Billetera (por si acaso no la tenías)
+     */
+    public function wallet(): BelongsTo
+    {
+        return $this->belongsTo(Wallet::class);
     }
 }

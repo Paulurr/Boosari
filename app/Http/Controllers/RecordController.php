@@ -443,7 +443,7 @@ class RecordController extends Controller
             }
 
             // 3. Crear el registro mapeando tus campos fillable
-            Goal::create([
+            $goal=Goal::create([
                 'user_id'        => Auth::id(),
                 'category_id'    => $categoryId,
                 'titulo'         => trim($request->input('goal-titulo')),
@@ -540,10 +540,10 @@ class RecordController extends Controller
     }
     public function create_debt(Request $request)
     {
+        // 1. Validamos la categoría como string igual que en los demás métodos
         $request->validate([
             'debt-titulo'                 => 'required|string|max:25',
-            // Cambió de string a un ID numérico que debe existir en la tabla categories
-            'debt-category'               => 'nullable|integer|exists:categories,id', 
+            'debt-category'               => 'nullable|string|max:50', // <-- Cambiado a string para admitir el nombre plano
             'debt-monto'                  => 'required|numeric|min:0.01',
             'debt-vencimiento'            => 'required|date',
             'debt-tasa'                   => 'nullable|numeric|min:0',
@@ -562,9 +562,20 @@ class RecordController extends Controller
                 $pathIcono = $request->file('debt')->store('debts', 'public');
             }
 
+            // 2. Manejo dinámico idéntico: Busca la categoría del usuario o la crea si no existe
+            $categoryId = null;
+            if ($request->filled('debt-category')) {
+                $category = Category::firstOrCreate([
+                    'user_id'   => Auth::id(),
+                    'categoria' => trim($request->input('debt-category'))
+                ]);
+                $categoryId = $category->id;
+            }
+
+            // 3. Creación del registro mapeando la clave foránea obtenida
             Debt::create([
                 'user_id'           => Auth::id(),
-                'category_id'       => $request->input('debt-category'), // <-- Guardamos el ID directamente
+                'category_id'       => $categoryId, // <-- Guardamos el ID dinámico aquí
                 'titulo'            => trim($request->input('debt-titulo')),
                 'monto_inicial'     => $request->input('debt-monto'),
                 'monto_actual'      => $request->input('debt-monto'), 
@@ -586,62 +597,89 @@ class RecordController extends Controller
     }
     public function create_paymentdebt(Request $request)
     {
-        // 1. Validar los datos del formulario respetando la estructura de tus componentes customizados
-
+        // 1. Modificamos la validación para que admita texto en billetera (por si viene "Externa") y categoría
         $request->validate([
             'payment-titulo'              => 'required|string|max:25',
             'payment-monto'               => 'required|numeric|min:0.01',
-            'payment-target-select-value' => 'required|exists:debts,id', // ID de la deuda destino
-            'payment-wallet-select-value' => 'nullable|exists:wallets,id', // ID de la billetera origen (puede ser externa/null)
-            'payment-category'            => 'nullable|string', // Si usas ID de categoría ajustarlo a select-value o dejar nullable
+            'payment-target-select-value' => 'required|exists:debts,id', 
+            'payment-wallet-select-value' => 'nullable|string', // Cambiado a string para aceptar "Externa"
+            'payment-category'            => 'nullable|string|max:50', // Para la creación dinámica
             'payment-image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
-        // Usamos una transacción de Base de Datos para asegurar la consistencia del dinero
-        DB::transaction(function () use ($request) {
-            
-            // Obtener la deuda seleccionada
+        DB::beginTransaction(); // Cambiado a control manual para mejor gestión de excepciones
+
+        try {
             $debt = Debt::findOrFail($request->input('payment-target-select-value'));
             $montoPago = $request->input('payment-monto');
 
-            // 2. Procesar el icono o comprobante de pago si se subió
+            // Manejo del select de billetera ("Externa" o vacío -> null)
+            $walletId = $request->input('payment-wallet-select-value');
+            if ($walletId === 'Externa' || empty($walletId)) {
+                $walletId = null;
+            }
+
+            // Manejo dinámico de la categoría (Igual que en tus otros componentes)
+            $categoryId = null;
+            if ($request->filled('payment-category')) {
+                $category = \App\Models\Category::firstOrCreate([
+                    'user_id'   => Auth::id(),
+                    'categoria' => trim($request->input('payment-category'))
+                ]);
+                $categoryId = $category->id;
+            }
+
+            // Procesar la imagen si se subió
             $pathIcono = null;
             if ($request->hasFile('payment-image')) {
-                // Modifica la ruta de guardado según tus preferencias de almacenamiento
                 $pathIcono = $request->file('payment-image')->store('comprobantes_deudas', 'public');
             }
 
-            // 3. Descontar saldo de la billetera emisora (siempre que no se defina como "Externa")
-            $walletId = $request->input('payment-wallet-select-value');
-            if (!empty($walletId)) {
+            // Si se seleccionó una billetera interna, verificar saldo y descontar
+            if ($walletId !== null) {
                 $wallet = Wallet::findOrFail($walletId);
-                $wallet->decrement('monto_actual', $montoPago); // Resta el dinero gastado en pagar la deuda
+                
+                if ($wallet->monto_actual < $montoPago) {
+                    DB::rollBack();
+                    return redirect()->back()->withInput()->withErrors(['error' => 'Fondos insuficientes en la billetera seleccionada.']);
+                }
+
+                $wallet->decrement('monto_actual', $montoPago); 
             }
 
-            // 4. Registrar la transacción en la tabla payment_debts
+            // Registrar la transacción con el ID dinámico de categoría
             PaymentDebt::create([
                 'debt_id'     => $debt->id,
-                'wallet_id'   => $walletId ?: null,
-                'category_id' => null, // Puedes vincularlo con tu tabla real si manejas un select de categorías
-                'titulo'      => $request->input('payment-titulo'),
+                'wallet_id'   => $walletId,
+                'category_id' => $categoryId, // <-- Ahora guarda el ID de la categoría creada o encontrada
+                'titulo'      => trim($request->input('payment-titulo')),
                 'icono'       => $pathIcono,
                 'monto'       => $montoPago,
-                'pago_minimo' => $request->has('payment-minimo'), // Evalúa true si el checkbox está marcado
+                'pago_minimo' => $request->has('payment-minimo'), 
             ]);
 
-            // 5. Mitigar y actualizar el balance de la Deuda Principal amortizada
+            // Amortizar la deuda principal
             $debt->decrement('monto_actual', $montoPago);
 
-            // Opcional: Si el monto_actual llega a 0 o menos, podrías marcar automáticamente el estado como pagada.
+            // Verificar si la deuda se liquidó por completo
             if ($debt->refresh()->monto_actual <= 0) {
                 $debt->update([
                     'monto_actual' => 0,
                     'estado'       => 'pagada'
                 ]);
             }
-        });
 
-        return redirect()->back()->with('success', '¡Abono a la deuda registrado correctamente!');
+            DB::commit();
+            return redirect()->back()->with('success', '¡Abono a la deuda registrado correctamente!');
+
+        } catch (\Exception $e) {
+            DB::rollBack();
+            // Si falló la BD y se había subido un archivo, lo borramos
+            if (isset($pathIcono) && $pathIcono) {
+                Storage::disk('public')->delete($pathIcono);
+            }
+            return redirect()->back()->withInput()->withErrors(['error' => 'Error al procesar el pago: ' . $e->getMessage()]);
+        }
     }
    
 

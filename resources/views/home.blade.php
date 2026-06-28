@@ -44,14 +44,14 @@
                 </div>
 
                 <form action="" class="h-10 w-full flex justify-end mb-15">
-                    <input class="bgcol1 transition-all lg:w-120 lg:text-lg xl:w-180 xl:text-xl text-xs w-2/4 h-10 mb-15 col7 p-2" placeholder="Busca un Registro"/>
+                    <input class="bgcol1 transition-all  lg:text-lg  xl:text-xl text-xs w-full h-10 mb-15 col7 p-2" placeholder="Busca un Registro"/>
                     <button type="submit" class="ml-2 cursor-pointer overflow-hidden w-auto aspect-square perfil-div-nav flex items-center justify-center transition-colors rounded-full">
                         <img src="{{ asset("images/search.png") }}" alt="" class="h-full aspect-square scale-[0.75]">
                     </button>
                 </form>
             </div>
-            <div class="w-full flex justify-between mb-15">
-                <div>
+            <div class="w-full flex items-center justify-between mb-15">
+                <div class="w-2/4 ">
                     <x-select
                         title="Tipo de registro"
                         name="add-select"
@@ -115,15 +115,17 @@
                         </x-option>
                     </x-select>
                 </div>
+                <div class="h-full flex items-center justify-center">
+                    <x-button
+                        color1="var(--col3)"
+                        color2="var(--col4)"
+                        colortext="var(--col7)"
+                        class="p-4 w-autoW text-xs lg:text-sm flex justify-center items-center add-btn"
+                        >
+                        + Agregar Registro
+                    </x-button>
+                </div>
                 
-                <x-button
-                    color1="var(--col3)"
-                    color2="var(--col4)"
-                    colortext="var(--col7)"
-                    class="p-4 pb-0 pt-0 w-autoW text-xs lg:text-sm flex justify-center items-center add-btn"
-                    >
-                    + Agregar Registro
-                </x-button>
             </div>
             <div class="w-full h-auto show-record">
                 @if($wallets->count())
@@ -369,7 +371,7 @@
                                             :monto="number_format($debt->monto_actual, 2)"
                                             :origen="'Monto Inicial: $' . number_format($debt->monto_inicial, 2)"
                                             :destino="'Interés: ' . $debt->tasa_interes . '% | Prioridad: ' . ucfirst($debt->prioridad)"
-                                            :categoria="ucfirst($debt->categoria ?? 'General')"
+                                            :categoria="ucfirst($debt->category?->categoria)"
                                             :fecha="'Vence: ' . \Carbon\Carbon::parse($debt->fecha_vencimiento)->format('d/m/Y')"
                                         />
                                     @endif

@@ -4,30 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\Relations\BelongsTo; // Importante importar esto
 
 class Debt extends Model
 {
     use HasFactory;
 
-    protected $table = 'debts';
-
-    /**
-     * Atributos asignables en masa.
-     */
     protected $fillable = [
         'user_id',
+        'category_id', // Asegúrate de que esté en el fillable
         'titulo',
-        'categoria',
         'monto_inicial',
         'monto_actual',
         'fecha_vencimiento',
         'tasa_interes',
         'prioridad',
         'estado',
-        'icono',
+        'icono'
     ];
 
     /**
+     * Obtener la categoría asociada a la deuda.
+     */
+    public function category(): BelongsTo
+    {
+        return $this->belongsTo(Category::class);
+    }
+
+     /**
      * Casts de atributos para facilitar su manipulación.
      */
     protected $casts = [

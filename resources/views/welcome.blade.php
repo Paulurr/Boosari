@@ -35,7 +35,7 @@
                 </div>
             </div>
             <div class="h-auto w-full flex justify-center">
-                <div class="h-50 w-100 flex justify-evenly items-center flex-col lg:flex-row ">
+                <div class="h-35 md:h-40  {{app()->getLocale() == 'en' ? 'w-90' : 'w-150'}} flex justify-evenly items-center flex-col lg:flex-row ">
                     <x-button
                         color1="var(--col3)"
                         color2="var(--col4)"
@@ -161,7 +161,7 @@
                 <x-footer/>
 
             </div>
-            <div class="bgcol1 h-160 lg:h-150 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
+            <div class="bgcol1 h-180 flex justify-center text-center items-end p-30 lg:text-5xl text-4xl font-bold">
                 {{ __('welcome.txt_2') }}
             </div>
             
