@@ -857,3 +857,9 @@ button:hover .filtro-but-icon-p1, button:hover .filtro-but-icon-p2{
 
 
 }
+.focus-button{
+    transition: all 0.2s ease;
+    background-color: var(--col7);
+    color: var(--col1);
+    border: transparent;
+}

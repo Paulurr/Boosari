@@ -48,19 +48,19 @@
             @if($origen)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
                     {{-- Detecta automáticamente si es texto informativo o una relación --}}
-                    <span class="font-semibold">{{ str_contains($origen, ':') ? '' : 'Origen:' }}</span> {{ $origen }}
+                    <span class="font-semibold"></span> {{ $origen }}
                 </p>
             @endif
 
             @if($destino)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
-                    <span class="font-semibold">{{ str_contains($destino, ':') ? '' : 'Destino:' }}</span> {{ $destino }}
+                    <span class="font-semibold"></span> {{ $destino }}
                 </p>
             @endif
 
             @if($categoria)
                 <p class="sm:text-[12px] text-[10px] col7 truncate">
-                    <span class="font-semibold">Categoria:</span> {{ $categoria }}
+                    <span class="font-semibold"></span> {{ $categoria }}
                 </p>
             @endif
         </div>

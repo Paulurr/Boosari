@@ -17,7 +17,7 @@
         <object data="{{ asset('images/BarAppere.svg') }}" type="image/svg+xml" class="w-full object-contain"></object>
     </div>
 
-    <div class="px-4 py-10 md:px-10 lg:px-20 flex-grow">
+    <div class="px-4 py-10 md:px-10 lg:px-20 grow">
         <div class="max-w-7xl mx-auto flex flex-col md:flex-row gap-10">    
             <aside class="w-full md:w-1/4 h-fit md:sticky md:top-24 bgcol5 p-5 rounded-lg shadow-md">
                 <h2 class="col1 font-bold text-lg mb-4 border-b border-gray-600 pb-2">Índice</h2>

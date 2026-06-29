@@ -12,6 +12,7 @@ class PaymentGoal extends Model
     protected $fillable = [
         'goal_id', // o 'goal-id' según tu migración definitiva
         'wallet_id',
+        'category_id',
         'titulo',
         'icono',
         'monto'

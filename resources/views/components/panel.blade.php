@@ -1,7 +1,7 @@
 @props(['name' => '','title' => ''])
 <div id="{{ $name }}-cont" class=" top-12 left-0 w-full h-[95vh] fixed hidden items-center justify-center">
     <div class="bgcol1 h-10/12 rounded-xs overflow-hidden lg:w-220 xl:w-280 md:w-180 w-11/12 flex flex-col relative z-1">
-        <div class="bgcol3 col7 h-10 w-full p-2 pl-5 pr-5 flex justify-between">
+        <div class="bgcol4 col1 h-10 w-full p-2 pl-5 pr-5 flex justify-between">
             <span>
                 {{ $title }}
             </span>

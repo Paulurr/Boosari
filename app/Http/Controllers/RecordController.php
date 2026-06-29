@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
@@ -15,65 +14,266 @@ use App\Models\Debt;
 use App\Models\PaymentDebt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
+use Carbon\Carbon;
 
 class RecordController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
         $userId = Auth::id();
 
-        $investments = \App\Models\Investment::with(['category', 'wallet'])
-            ->where('user_id', $userId)
-            ->latest()
-            ->paginate(9, ['*'], 'investments_page');
+        // 1. Capturar los filtros (sort_by se queda como string; los demás se fuerzan a arrays si traen datos)
+        $sortBy = $request->input('sort_by', 'date_desc');
+        $rangeAmount = $request->input('range_amount') ? (array) $request->input('range_amount') : [];
+        $timeFrame = $request->input('time_frame') ? (array) $request->input('time_frame') : [];
+        $recordType = $request->input('record_type') ? (array) $request->input('record_type') : [];
+        $currentCategory = $request->input('category_id') ? (array) $request->input('category_id') : [];
 
+        // Variables requeridas por los modales/formularios de tu vista home
+        $categories = Category::all();
+        $wallets = DB::table('wallets')->where('user_id', $userId)->get();
+        $goals = DB::table('goals')->where('user_id', $userId)->get();
+        $debts = DB::table('debts')->where('user_id', $userId)->get();
 
-        // 1. Billeteras (Paginadas para que no rompan con ->links() y manejables por JS)
-        $wallets = Wallet::where('user_id', $userId)
-            ->latest()
-            ->paginate(6, ['*'], 'wallets_page');
+        // 2. Mapeos de subconsultas estandarizadas
+        $queries = [];
 
-        // 2. Ingresos programados
-        $incomes = Income::with(['wallet', 'category'])
-            ->where('user_id', $userId)
-            ->latest()
-            ->paginate(6, ['*'], 'incomes_page');
+        $subqueriesConfig = [
+            'wallet' => [
+                'table' => 'wallets',
+                'monto_col' => 'wallets.monto_actual',
+                'monto_inicial' => 'wallets.monto_inicial',
+                'extra_info' => 'wallets.tipo',
+                'fecha' => 'wallets.created_at',
+                'join_category' => false,
+                'join_wallet' => false,
+                'join_wallet_origen' => false
+            ],
+            'debt' => [
+                'table' => 'debts',
+                'monto_col' => 'debts.monto_actual',
+                'monto_inicial' => 'debts.monto_inicial',
+                'extra_info' => 'debts.prioridad',
+                'fecha' => 'debts.created_at',
+                'join_category' => true,
+                'join_wallet' => false,
+                'join_wallet_origen' => false,
+                'fecha_vencimiento_raw' => 'debts.fecha_vencimiento'
+            ],
+            'goal' => [
+                'table' => 'goals',
+                'monto_col' => 'goals.monto_objetivo',
+                'monto_inicial' => 'goals.monto_inicial',
+                'extra_info' => 'goals.estado',
+                'fecha' => 'goals.created_at',
+                'join_category' => true,
+                'join_wallet' => false,
+                'join_wallet_origen' => false,
+                'fecha_vencimiento_raw' => 'goals.fecha_limite' 
+            ],
+            'income' => [
+                'table' => 'incomes',
+                'monto_col' => 'incomes.monto',
+                'monto_inicial' => 'NULL',
+                'extra_info' => 'incomes.frecuencia',
+                'fecha' => 'COALESCE(incomes.fecha_inicio, incomes.created_at)',
+                'join_category' => true,
+                'join_wallet' => true,
+                'join_wallet_origen' => false,
+                'fk_wallet_destino' => 'incomes.wallet_id'
+            ],
+            'investment' => [
+                'table' => 'investments',
+                'monto_col' => 'investments.valor_actual',
+                'monto_inicial' => 'investments.monto_inicial',
+                'extra_info' => 'investments.tipo_renta',
+                'fecha' => 'investments.fecha_adquisicion',
+                'join_category' => true,
+                'join_wallet' => false,
+                'join_wallet_origen' => false,
+                'fecha_vencimiento_raw' => 'investments.fecha_vencimiento', 
+                'tasa_interes_raw' => 'investments.tasa_interes'
+            ],
+            'transaction' => [
+                'table' => 'transactions',
+                'monto_col' => 'transactions.monto',
+                'monto_inicial' => 'NULL',
+                'extra_info' => 'transactions.tipo',
+                'fecha' => 'COALESCE(transactions.fecha_ejecucion, transactions.created_at)',
+                'join_category' => true,
+                'join_wallet' => true,
+                'join_wallet_origen' => true,
+                'fk_wallet_destino' => 'transactions.wallet_destino_id', 
+                'fk_wallet_origen'  => 'transactions.wallet_origen_id'
+            ],
+            'paymentGoal' => [
+                'table' => 'payment_goals',
+                'monto_col' => 'payment_goals.monto',
+                'monto_inicial' => 'NULL',
+                'extra_info' => "''",
+                'fecha' => 'payment_goals.created_at',
+                'join_category' => true,
+                'join_wallet' => false,
+                'join_wallet_origen' => false,
+                'join_parent' => ['table' => 'goals', 'foreign_key' => 'payment_goals.goal_id', 'owner_col' => 'goals.user_id'],
+                'join_parent_title' => true
+            ],
+            'paymentDebt' => [
+                'table' => 'payment_debts',
+                'monto_col' => 'payment_debts.monto',
+                'monto_inicial' => 'NULL',
+                'extra_info' => "''",
+                'fecha' => 'payment_debts.created_at',
+                'join_category' => true,
+                'join_wallet' => false,
+                'join_wallet_origen' => false,
+                'join_parent' => ['table' => 'debts', 'foreign_key' => 'payment_debts.debt_id', 'owner_col' => 'debts.user_id'],
+                'join_parent_title' => true
+            ],
+        ];
 
-        // 3. Transacciones principales
-        $transactions = Transaction::with(['walletOrigen', 'walletDestino', 'category'])
-            ->where('user_id', $userId)
-            ->orderBy(DB::raw('COALESCE(fecha_ejecucion, created_at)'), 'desc')
-            ->orderBy('id', 'desc')
-            ->paginate(9, ['*'], 'transactions_page');
+        // Procesamiento dinámico para el UNION
+        foreach ($subqueriesConfig as $tipo => $config) {
+            // CORRECCIÓN: Si el array de tipos no está vacío y el tipo actual NO está seleccionado, lo omitimos
+            if (!empty($recordType) && !in_array($tipo, $recordType)) {
+                continue;
+            }
 
-        $goals = \App\Models\Goal::with(['category'])
-            ->where('user_id', $userId)
-            ->orderByRaw("FIELD(estado, 'activa', 'completada', 'expirada')") // Prioriza las activas arriba
-            ->latest()
-            ->paginate(9, ['*'], 'goals_page');
+            $query = DB::table($config['table']);
 
-        $paymentGoals = \App\Models\PaymentGoal::with(['goal', 'wallet', 'category'])
-            ->whereHas('goal', function($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-        ->latest()
-        ->paginate(9, ['*'], 'payment_goals_page');
-        $debts = \App\Models\Debt::with(['category']) // <-- Agregamos la relación aquí
-        ->where('user_id', $userId)
-        ->orderByRaw("FIELD(estado, 'pendiente', 'pagada')")
-        ->orderByRaw("FIELD(prioridad, 'alta', 'media', 'baja')")
-        ->orderBy('fecha_vencimiento', 'asc') 
-        ->paginate(6, ['*'], 'debts_page');
-        $paymentDebts = \App\Models\PaymentDebt::with(['debt', 'wallet', 'category'])
-            ->whereHas('debt', function($query) use ($userId) {
-                $query->where('user_id', $userId);
-            })
-            ->latest()
-            ->paginate(9, ['*'], 'payment_debts_page');
+            if (isset($config['join_parent'])) {
+                $query->join($config['join_parent']['table'], $config['join_parent']['foreign_key'], '=', $config['join_parent']['table'] . '.id');
+                $userColumn = $config['join_parent']['owner_col'];
+            } else {
+                $userColumn = $config['table'] . '.user_id';
+            }
 
-        // Y no olvides agregar 'paymentDebts' al compact final:
-        return view('home', compact('wallets', 'transactions', 'incomes', 'goals', 'debts', 'investments', 'paymentGoals', 'paymentDebts'));
+            if ($config['join_category']) {
+                $query->leftJoin('categories', $config['table'] . '.category_id', '=', 'categories.id');
+            }
+
+            if ($config['join_wallet']) {
+                $fkDestino = $config['fk_wallet_destino'] ?? ($config['table'] . '.wallet_id');
+                $query->leftJoin('wallets AS w_destino', $fkDestino, '=', 'w_destino.id');
+            }
+
+            if ($config['join_wallet_origen']) {
+                $fkOrigen = $config['fk_wallet_origen'] ?? ($config['table'] . '.wallet_origen_id');
+                $query->leftJoin('wallets AS w_origen', $fkOrigen, '=', 'w_origen.id');
+            }
+
+            $query->select([
+                $config['table'] . '.id',
+                $config['table'] . '.titulo',
+                $config['table'] . '.icono',
+                DB::raw("$userColumn AS user_id"),
+                $config['table'] === 'wallets' ? DB::raw("NULL AS category_id") : $config['table'] . '.category_id',
+                
+                DB::raw($config['monto_col'] . " AS monto"),
+                DB::raw($config['monto_inicial'] . " AS monto_inicial"),
+                DB::raw($config['extra_info'] . " AS extra_info"),
+                DB::raw("'$tipo' AS tipo_registro"),
+                DB::raw($config['fecha'] . " AS fecha"),
+                
+                isset($config['fecha_vencimiento_raw']) ? DB::raw($config['fecha_vencimiento_raw'] . ' AS vencimiento_registro') : DB::raw("NULL AS vencimiento_registro"),
+                isset($config['tasa_interes_raw']) ? DB::raw($config['tasa_interes_raw'] . ' AS tasa_interes_registro') : DB::raw("NULL AS tasa_interes_registro"),
+                
+                (isset($config['join_parent_title']) && $config['join_parent_title']) 
+                    ? $config['join_parent']['table'] . '.titulo AS nombre_padre' 
+                    : DB::raw("NULL AS nombre_padre"),
+                
+                $config['join_category'] ? 'categories.categoria AS categoria' : DB::raw("NULL AS categoria"),
+                $config['join_wallet'] ? 'w_destino.titulo AS billetera_destino' : DB::raw("NULL AS billetera_destino"),
+                $config['join_wallet_origen'] ? 'w_origen.titulo AS billetera_origen' : DB::raw("NULL AS billetera_origen"),
+            ])->where($userColumn, $userId);
+
+            $queries[] = $query;
+        } 
+
+        // 3. Unificar mediante UNION todas las subconsultas
+        $firstQuery = array_shift($queries);
+        
+        if (!$firstQuery) {
+            $firstQuery = DB::table('transactions')->select('id')->whereRaw('1 = 0');
+        }
+
+        foreach ($queries as $subQuery) {
+            $firstQuery->unionAll($subQuery);
+        }
+
+        // 4. Convertir en subconsulta limpia
+        $mainQuery = DB::table(DB::raw("({$firstQuery->toSql()}) as registros"))
+            ->mergeBindings($firstQuery);
+
+        // 5. Aplicación de Filtros Globales Múltiples
+        
+        // CATEGORÍAS MÚLTIPLES: cambiamos a whereIn
+        if (!empty($currentCategory)) {
+            $mainQuery->whereIn('category_id', $currentCategory);
+        }
+
+        // RANGOS DE DINERO MÚLTIPLES: Clausula condicional agrupada con OR
+        if (!empty($rangeAmount)) {
+            $mainQuery->where(function($q) use ($rangeAmount) {
+                if (in_array('low', $rangeAmount)) {
+                    $q->orWhere('monto', '<', 50);
+                }
+                if (in_array('medium', $rangeAmount)) {
+                    $q->orWhereBetween('monto', [50, 500]);
+                }
+                if (in_array('high', $rangeAmount)) {
+                    $q->orWhere('monto', '>', 500);
+                }
+            });
+        }
+
+        // PERÍODOS DE TIEMPO MÚLTIPLES: Clausula condicional agrupada con OR
+        if (!empty($timeFrame)) {
+            $mainQuery->where(function($q) use ($timeFrame) {
+                if (in_array('today', $timeFrame)) {
+                    $q->orWhereDate('fecha', today());
+                }
+                if (in_array('week', $timeFrame)) {
+                    $q->orWhereBetween('fecha', [now()->startOfWeek(), now()->endOfWeek()]);
+                }
+                if (in_array('month', $timeFrame)) {
+                    $q->orWhere(function($sub) {
+                        $sub->whereMonth('fecha', now()->month)->whereYear('fecha', now()->year);
+                    });
+                }
+                if (in_array('year', $timeFrame)) {
+                    $q->orWhereYear('fecha', now()->year);
+                }
+            });
+        }
+
+        // 6. Aplicación de Ordenamiento
+        if ($sortBy === 'amount_desc') {
+            $mainQuery->orderBy('monto', 'desc');
+        } elseif ($sortBy === 'alpha_asc') {
+            $mainQuery->orderBy('titulo', 'asc');
+        } else {
+            $mainQuery->orderBy('fecha', 'desc');
+        }
+
+        // 7. Paginación adaptada
+        $records = $mainQuery->paginate(15)->appends($request->all());
+
+        // 8. Retornar vista incluyendo todas las variables necesarias
+        return view('home', compact(
+            'records',
+            'categories',
+            'sortBy',
+            'rangeAmount',
+            'timeFrame',
+            'recordType',
+            'currentCategory',
+            'wallets',
+            'goals',
+            'debts'
+        ));
     }
+
 
     public function create_wallet(Request $request)
     {
@@ -411,14 +611,14 @@ class RecordController extends Controller
     }
    public function create_goal(Request $request)
     {
-        // 1. Validar usando las claves exactas de tu dd()
         $request->validate([
             'goal-titulo'         => 'required|string|max:25',
             'goal-category'       => 'nullable|string|max:25',
             'goal-monto-objetivo' => 'required|numeric|min:0.01',
             'goal-monto-inicial'  => 'nullable|numeric|min:0',
-            'goal-fecha-limite'   => 'required|date', // Simplificado para evitar bloqueos por zona horaria
+            'goal-fecha-limite'   => 'required|date', 
             'goal-descripcion'    => 'nullable|string|max:500',
+            'goal-image'          => 'nullable|image|mimes:jpeg,png,jpg,webp|max:2048', 
         ]);
 
         // Forzar que si es null, empiece en 0
@@ -442,12 +642,20 @@ class RecordController extends Controller
                 $categoryId = $category->id;
             }
 
-            // 3. Crear el registro mapeando tus campos fillable
-            $goal=Goal::create([
+            // 3. Manejo de la subida de la imagen
+            $imagePath = null;
+            if ($request->hasFile('goal-image') && $request->file('goal-image')->isValid()) {
+                // Guarda el archivo en storage/app/public/goals con un nombre único aleatorio
+                $imagePath = $request->file('goal-image')->store('goals', 'public');
+            }
+
+            // 4. Crear el registro mapeando tus campos fillable
+            $goal = Goal::create([
                 'user_id'        => Auth::id(),
                 'category_id'    => $categoryId,
                 'titulo'         => trim($request->input('goal-titulo')),
-                'icono'          => null,
+                // Guardamos la ruta de la imagen en 'icono'. Si no se subió nada, queda null.
+                'icono'          => $imagePath, 
                 'monto_inicial'  => $montoInicial,
                 'monto_actual'   => $montoInicial, 
                 'monto_objetivo' => $montoObjetivo,
@@ -466,28 +674,27 @@ class RecordController extends Controller
     }
     public function create_payment_goal(Request $request)
     {
-        // 1. Validar incluyendo la categoría opcional del abono
         $request->validate([
             'paygoal-titulo'              => 'required|string|max:25',
-            'paygoal-category'            => 'nullable|string|max:50', // Agregada al validador
+            'paygoal-category'            => 'nullable|string|max:50',
             'paygoal-monto'               => 'required|numeric|min:0.01',
             'paygoal-wallet-select-value' => 'nullable', 
             'paygoal-target-select-value' => 'required|exists:goals,id', 
+            'paygoal-image'               => 'nullable|image|mimes:jpeg,png,jpg,webp,gif,svg|max:2048',
         ]);
         
         DB::beginTransaction();
+        $pathIcono = null; 
 
         try {
             $monto = $request->input('paygoal-monto');
             $goalId = $request->input('paygoal-target-select-value');
             
-            // Manejo del select de billetera ("Externa" -> null)
             $walletId = $request->input('paygoal-wallet-select-value');
             if ($walletId === 'Externa' || empty($walletId)) {
                 $walletId = null;
             }
 
-            // 2. Manejo dinámico de la categoría del ABONO
             $categoryId = null;
             if ($request->filled('paygoal-category')) {
                 $category = Category::firstOrCreate([
@@ -497,34 +704,35 @@ class RecordController extends Controller
                 $categoryId = $category->id;
             }
 
+            // Subida forzada usando el objeto directo del request
+            if ($request->hasFile('paygoal-image') && $request->file('paygoal-image')->isValid()) {
+                $pathIcono = $request->file('paygoal-image')->store('comprobantes_metas', 'public');
+            }
+
             $goal = Goal::where('user_id', Auth::id())->findOrFail($goalId);
 
-            // Si el dinero proviene de una billetera interna, verificar fondos y restar
             if ($walletId !== null) {
                 $wallet = Wallet::where('user_id', Auth::id())->findOrFail($walletId);
-
                 if ($wallet->monto_actual < $monto) {
                     DB::rollBack();
-                    return redirect()->back()->withInput()->withErrors(['error' => 'Fondos insuficientes en la billetera seleccionada.']);
+                    if ($pathIcono) { Storage::disk('public')->delete($pathIcono); }
+                    return redirect()->back()->withInput()->withErrors(['error' => 'Fondos insuficientes.']);
                 }
-
                 $wallet->decrement('monto_actual', $monto);
             }
 
-            // 3. Crear registro en payment_goals con todas tus llaves foráneas
-            PaymentGoal::create([
-                'goal_id'     => $goal->id,
-                'wallet_id'   => $walletId, 
-                'category_id' => $categoryId, // ¡Guardado correctamente aquí!
-                'titulo'      => trim($request->input('paygoal-titulo')),
-                'icono'       => null,
-                'monto'       => $monto,
-            ]);
+            // Inserción explícita en la base de datos
+            $nuevoAbono = new PaymentGoal();
+            $nuevoAbono->goal_id = $goal->id;
+            $nuevoAbono->wallet_id = $walletId;
+            $nuevoAbono->category_id = $categoryId;
+            $nuevoAbono->titulo = trim($request->input('paygoal-titulo'));
+            $nuevoAbono->icono = $pathIcono;
+            $nuevoAbono->monto = $monto;
+            $nuevoAbono->save();
 
-            // Aumentar balance actual de la meta
             $goal->increment('monto_actual', $monto);
 
-            // Verificar si la meta fue alcanzada
             $goal->refresh(); 
             if ($goal->monto_actual >= $goal->monto_objetivo) {
                 $goal->update(['estado' => 'completada']);
@@ -535,20 +743,23 @@ class RecordController extends Controller
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withInput()->withErrors(['error' => 'Error al procesar el pago: ' . $e->getMessage()]);
+            if ($pathIcono) {
+                Storage::disk('public')->delete($pathIcono);
+            }
+            return redirect()->back()->withInput()->withErrors(['error' => 'Error: ' . $e->getMessage()]);
         }
     }
     public function create_debt(Request $request)
     {
-        // 1. Validamos la categoría como string igual que en los demás métodos
+        // 1. Validamos usando la clave exacta del formulario: 'debt-image'
         $request->validate([
             'debt-titulo'                 => 'required|string|max:25',
-            'debt-category'               => 'nullable|string|max:50', // <-- Cambiado a string para admitir el nombre plano
+            'debt-category'               => 'nullable|string|max:50', 
             'debt-monto'                  => 'required|numeric|min:0.01',
             'debt-vencimiento'            => 'required|date',
             'debt-tasa'                   => 'nullable|numeric|min:0',
             'debt-prioridad-select-value' => 'required|string|in:Ninguno,media,alta,baja',
-            'debt'                        => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048',
+            'debt-image'                  => 'nullable|image|mimes:jpeg,png,jpg,webp,svg|max:2048', // <-- CORREGIDO
         ]);
 
         try {
@@ -557,12 +768,13 @@ class RecordController extends Controller
                 $prioridad = 'media';
             }
 
+            // Recuperamos el archivo usando la clave correcta
             $pathIcono = null;
-            if ($request->hasFile('debt')) {
-                $pathIcono = $request->file('debt')->store('debts', 'public');
+            if ($request->hasFile('debt-image') && $request->file('debt-image')->isValid()) { // <-- CORREGIDO
+                $pathIcono = $request->file('debt-image')->store('debts', 'public');
             }
 
-            // 2. Manejo dinámico idéntico: Busca la categoría del usuario o la crea si no existe
+            // 2. Manejo dinámico de categorías
             $categoryId = null;
             if ($request->filled('debt-category')) {
                 $category = Category::firstOrCreate([
@@ -572,10 +784,10 @@ class RecordController extends Controller
                 $categoryId = $category->id;
             }
 
-            // 3. Creación del registro mapeando la clave foránea obtenida
+            // 3. Creación del registro
             Debt::create([
                 'user_id'           => Auth::id(),
-                'category_id'       => $categoryId, // <-- Guardamos el ID dinámico aquí
+                'category_id'       => $categoryId,
                 'titulo'            => trim($request->input('debt-titulo')),
                 'monto_inicial'     => $request->input('debt-monto'),
                 'monto_actual'      => $request->input('debt-monto'), 
@@ -597,6 +809,7 @@ class RecordController extends Controller
     }
     public function create_paymentdebt(Request $request)
     {
+
         // 1. Modificamos la validación para que admita texto en billetera (por si viene "Externa") y categoría
         $request->validate([
             'payment-titulo'              => 'required|string|max:25',
@@ -604,7 +817,7 @@ class RecordController extends Controller
             'payment-target-select-value' => 'required|exists:debts,id', 
             'payment-wallet-select-value' => 'nullable|string', // Cambiado a string para aceptar "Externa"
             'payment-category'            => 'nullable|string|max:50', // Para la creación dinámica
-            'payment-image'               => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'paymentdebt-image'           => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
         ]);
 
         DB::beginTransaction(); // Cambiado a control manual para mejor gestión de excepciones
@@ -631,8 +844,8 @@ class RecordController extends Controller
 
             // Procesar la imagen si se subió
             $pathIcono = null;
-            if ($request->hasFile('payment-image')) {
-                $pathIcono = $request->file('payment-image')->store('comprobantes_deudas', 'public');
+            if ($request->hasFile('paymentdebt-image')) {
+                $pathIcono = $request->file('paymentdebt-image')->store('comprobantes_deudas', 'public');
             }
 
             // Si se seleccionó una billetera interna, verificar saldo y descontar

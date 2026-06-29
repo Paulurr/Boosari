@@ -107,4 +107,3 @@ let paygoal_target = new Select("paygoal-target");
 let debt_prioridad = new Select("debt-prioridad");
 let payment_wallet = new Select("payment-wallet");
 let payment_target = new Select("payment-target");
-let add_select = new Select("add-select");

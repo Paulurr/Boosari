@@ -25,14 +25,14 @@ Route::middleware(['guest'])->group(function () {
 });
 
 // --- RUTAS PARA USUARIOS AUTENTICADOS ---
+// --- RUTAS PARA USUARIOS AUTENTICADOS ---
 Route::middleware(['usuario'])->group(function () {
     
-    // Vista principal conectada directamente al controlador unificado
-    Route::get('/home', [RecordController::class, 'index'])->name('home');
+    Route::match(['get', 'post'], '/home', [RecordController::class, 'index'])->name('records.index');
     
     Route::get('/deudas', function () { return view('deudas'); });
     
-    // Procesamiento de formularios
+    // Procesamiento de formularios de creación...
     Route::post('/wallet/create', [RecordController::class, 'create_wallet']);
     Route::post('/income/create', [RecordController::class, 'create_income']);
     Route::post('/transaction/create', [RecordController::class, 'create_transaction']);
