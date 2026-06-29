@@ -161,13 +161,16 @@ class RecordController extends Controller
                 $fkOrigen = $config['fk_wallet_origen'] ?? ($config['table'] . '.wallet_origen_id');
                 $query->leftJoin('wallets AS w_origen', $fkOrigen, '=', 'w_origen.id');
             }
-
             $query->select([
-                $config['table'] . '.id',
-                $config['table'] . '.titulo',
-                $config['table'] . '.icono',
+                $config['table'] . '.id AS id', // Asegura el ID del registro
+                $config['table'] . '.titulo AS titulo',
+                $config['table'] . '.icono AS icono',
                 DB::raw("$userColumn AS user_id"),
-                $config['table'] === 'wallets' ? DB::raw("NULL AS category_id") : $config['table'] . '.category_id',
+                
+                // SOLUCIÓN CLAVE: Fuerza el alias exacto para mapear en el UNION
+                $config['table'] === 'wallets' 
+                    ? DB::raw("NULL AS category_id") 
+                    : $config['table'] . '.category_id AS category_id',
                 
                 DB::raw($config['monto_col'] . " AS monto"),
                 DB::raw($config['monto_inicial'] . " AS monto_inicial"),
@@ -189,30 +192,50 @@ class RecordController extends Controller
 
             $queries[] = $query;
         } 
-
-        // 3. Unificar mediante UNION todas las subconsultas
+        // =========================================================================
+        // 3 y 4. Unificar mediante UNION todas las subconsultas de forma Nativa
+        // =========================================================================
         $firstQuery = array_shift($queries);
         
         if (!$firstQuery) {
-            $firstQuery = DB::table('transactions')->select('id')->whereRaw('1 = 0');
+            // Consulta vacía de respaldo si no hay tipos seleccionados
+            $firstQuery = DB::table('transactions')
+                ->select([
+                    'id', 'titulo', 'icono', 'user_id', 'category_id', 
+                    'monto', 'monto_inicial', 'extra_info', 'tipo_registro', 'fecha',
+                    'vencimiento_registro', 'tasa_interes_registro', 'nombre_padre',
+                    'categoria', 'billetera_destino', 'billetera_origen'
+                ])
+                ->whereRaw('1 = 0');
         }
 
+        // Unificar el resto de consultas de manera limpia
         foreach ($queries as $subQuery) {
             $firstQuery->unionAll($subQuery);
         }
 
-        // 4. Convertir en subconsulta limpia
-        $mainQuery = DB::table(DB::raw("({$firstQuery->toSql()}) as registros"))
-            ->mergeBindings($firstQuery);
+        // CREAR LA SUBCONSULTA PROTEGIENDO LOS BINDINGS NATIVAMENTE
+        // Al pasar directamente la instancia de la query al FROM, Laravel gestiona los bindings en orden perfecto.
+        $mainQuery = DB::table($firstQuery, 'registros');
 
-        // 5. Aplicación de Filtros Globales Múltiples
-        
-        // CATEGORÍAS MÚLTIPLES: cambiamos a whereIn
+        // =========================================================================
+        // 5. Aplicación de Filtros Globales Múltiples (Corregido con Aislamiento Estricto)
+        // =========================================================================
+
+        // CATEGORÍAS MÚLTIPLES: Forzado en un subgrupo condicional aislado
         if (!empty($currentCategory)) {
-            $mainQuery->whereIn('category_id', $currentCategory);
+            $mainQuery->where(function($q) use ($currentCategory) {
+                foreach ($currentCategory as $index => $catId) {
+                    if ($index === 0) {
+                        $q->where('category_id', '=', $catId);
+                    } else {
+                        $q->orWhere('category_id', '=', $catId);
+                    }
+                }
+            });
         }
 
-        // RANGOS DE DINERO MÚLTIPLES: Clausula condicional agrupada con OR
+        // RANGOS DE DINERO MÚLTIPLES
         if (!empty($rangeAmount)) {
             $mainQuery->where(function($q) use ($rangeAmount) {
                 if (in_array('low', $rangeAmount)) {
@@ -226,27 +249,6 @@ class RecordController extends Controller
                 }
             });
         }
-
-        // PERÍODOS DE TIEMPO MÚLTIPLES: Clausula condicional agrupada con OR
-        if (!empty($timeFrame)) {
-            $mainQuery->where(function($q) use ($timeFrame) {
-                if (in_array('today', $timeFrame)) {
-                    $q->orWhereDate('fecha', today());
-                }
-                if (in_array('week', $timeFrame)) {
-                    $q->orWhereBetween('fecha', [now()->startOfWeek(), now()->endOfWeek()]);
-                }
-                if (in_array('month', $timeFrame)) {
-                    $q->orWhere(function($sub) {
-                        $sub->whereMonth('fecha', now()->month)->whereYear('fecha', now()->year);
-                    });
-                }
-                if (in_array('year', $timeFrame)) {
-                    $q->orWhereYear('fecha', now()->year);
-                }
-            });
-        }
-
         // 6. Aplicación de Ordenamiento
         if ($sortBy === 'amount_desc') {
             $mainQuery->orderBy('monto', 'desc');

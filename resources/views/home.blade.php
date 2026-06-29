@@ -1144,19 +1144,19 @@
                         <h1 class="text-lg font-bold mb-3 col7">Período de tiempo</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
                             <x-button cont="div" name="time_frame" value="today" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
-                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame) && in_array('today', $timeFrame) ? 'focus-button' : '' }}">
+                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form">
                                 Hoy
                             </x-button>
                             <x-button cont="div" name="time_frame" value="week" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
-                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame) && in_array('week', $timeFrame) ? 'focus-button' : '' }}">
+                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form">
                                 Esta semana
                             </x-button>
                             <x-button cont="div" name="time_frame" value="month" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
-                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame) && in_array('month', $timeFrame) ? 'focus-button' : '' }}">
+                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form">
                                 Este mes
                             </x-button>
                             <x-button cont="div" name="time_frame" value="year" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
-                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame) && in_array('year', $timeFrame) ? 'focus-button' : '' }}">
+                                class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form">
                                 Todo el año
                             </x-button>
                         </div>
@@ -1193,14 +1193,13 @@
                                         color1="var(--col4)" 
                                         color2="var(--col3)" 
                                         colortext="var(--col1)" 
-                                        class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($currentCategory) && in_array($cat->id, $currentCategory) ? 'focus-button' : '' }}">
+                                        class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form">
                                         {{ $cat->categoria }}
                                     </x-button>
                                 </div>
                             @endforeach
                         </div>
                     </div>
-
                 </div>
             </form>
         </x-panel>
