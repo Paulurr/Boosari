@@ -35,20 +35,29 @@
                         {{ __('nav.log_in') }}
                     </div>
                     <div class="h-[35%] w-full flex flex-col items-center justify-evenly">
-                        <x-label 
-                            name="email"
-                            type="email"
-                            title='{{ __("forms.box1") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
-                        />
-                        <x-label 
-                            name="password"
-                            type="password"
-                            title='{{ __("forms.box2") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
-                        />
+                        <div class="w-full flex flex-col items-center">
+                            <x-label 
+                                name="email"
+                                type="email"
+                                title='{{ __("forms.box1") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                                value="{{ old('email') }}"
+                            />
+                            @error('email')
+                                <span class="text-red-500 text-xs mt-1 font-semibold">{{ __('validation.error') }}</span>
+                            @enderror
+                        </div>
+                        <div class="w-full flex flex-col items-center">
+                            <x-label 
+                                name="password"
+                                type="password"
+                                title='{{ __("forms.box2") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                                class="mb-2"
+                            />
+                        </div>
                     </div>
                     <br>
                     <div class="h-[2%] w-full flex items-center justify-center text-sm">
@@ -56,10 +65,8 @@
                         <a href="/sign_up" class="hover:underline ml-1 col4 font-bold">
                                 {{ __('forms.btn1') }}
                         </a>
-                        
                     </div>
                     <br>
-                    
                     <div class="h-[14%] w-full flex items-center justify-center">
                         <x-button 
                             color1="var(--col3)"
@@ -75,7 +82,6 @@
                     </div>
                 </div>
             </form>
-     
         </div>
     </body>
 </html>

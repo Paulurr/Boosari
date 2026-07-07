@@ -31,6 +31,8 @@ Route::middleware(['usuario'])->group(function () {
     Route::match(['get', 'post'], '/home', [RecordController::class, 'index'])->name('records.index');
     
     Route::get('/deudas', function () { return view('deudas'); });
+
+    Route::get('/info', function () { return view('deudas'); });
     
     // Procesamiento de formularios de creación...
     Route::post('/wallet/create', [RecordController::class, 'create_wallet']);
