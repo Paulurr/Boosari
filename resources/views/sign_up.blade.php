@@ -31,7 +31,7 @@
                         {{ __('nav.sign_up') }}
                     </div>
                     <div class="lg:h-150 h-200 w-full flex flex-col items-center justify-evenly">
-                        <div class="w-[90%] flex flex-col items-center gap-y-2">
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
                            <x-label 
                                 name="name"
                                 type="text"
@@ -41,12 +41,13 @@
                                 value="{{ old('name') }}"
                                 :required=false
                             />
+
                             @error('name')
-                                <span class="text-red-500 text-xs font-semibold text-left block w-full pl-1">{{ $message }}</span>
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="w-[90%] flex flex-col items-center gap-y-2">
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
                            <x-label 
                                 name="email"
                                 type="email"
@@ -56,11 +57,11 @@
                                 value="{{ old('email') }}"
                             />
                             @error('email')
-                                <span class="text-red-500 text-xs font-semibold text-left block w-full pl-1">{{ $message }}</span>
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="w-[90%] flex flex-col items-center gap-y-2">
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
                             <x-label 
                                 name="password"
                                 type="password"
@@ -69,11 +70,11 @@
                                 color2="var(--col4)"
                             />
                             @error('password')
-                                <span class="text-red-500 text-xs font-semibold text-left block w-full pl-1">{{ $message }}</span>
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
                             @enderror
                         </div>
 
-                        <div class="w-[90%] flex flex-col items-center gap-y-2">
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
                             <x-label 
                                 name="repeat_password"
                                 type="password"
@@ -82,7 +83,7 @@
                                 color2="var(--col4)"
                             />
                             @error('repeat_password')
-                                <span class="text-red-500 text-xs font-semibold text-left block w-full pl-1">{{ $message }}</span>
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
                             @enderror
                         </div>
                         
