@@ -5,7 +5,7 @@
 
 <li
     {{ $attributes->merge([
-        'class' => "border-b p-3 {$name}-option x-option",
+        'class' => "border-b border-t p-3 {$name}-option x-option",
         'data-value' => $value
     ]) }}
 >

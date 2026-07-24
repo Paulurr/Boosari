@@ -12,6 +12,6 @@ class Wallet extends Model
         'icono',
         'tipo',
         'monto_actual',
-        'monto_inicial'
+        'monto_inicial' 
     ];
 }

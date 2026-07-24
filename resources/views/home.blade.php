@@ -81,6 +81,10 @@
                         @if($record)
                             {{-- Procesamiento dinámico de datos según el tipo de registro --}}
                             @php
+                                // Inicializamos las variables por defecto para evitar cualquier Undefined variable en el componente
+                                $origen = '';
+                                $destino = '';
+
                                 // Si el campo 'categoria' del query no está vacío, lo usa. Si no, "Ninguna"
                                 $categoria = (!empty($record->categoria)) ? "Categoria: ".ucfirst($record->categoria) : '';
                                 
@@ -108,34 +112,34 @@
                                                 $tipoCard = 'Cuenta Financiera';
                                                 break;
                                         }
-                                        $origen="";
-
+                                        $origen = "";
 
                                         // 3. Lógica para el Monto Inicial y Destinos Dinámicos
-                                            if ($record->extra_info === 'credito') {
-                                                // Si es crédito, ocultamos el monto inicial y damos un destino coherente
-                                            } else {
-                                                /**
-                                                 * Como en tu controlador para 'wallets' estás haciendo un query básico:
-                                                 * DB::table('wallets')->select(..., 'monto_actual AS monto')
-                                                 * Necesitamos traer el monto_inicial. 
-                                                 * NOTA IMPORTANTE: Ve al paso de abajo para modificar tu controlador.
-                                                 */
-                                                $montoInicialFormateado = isset($record->monto_inicial) 
-                                                    ? '$' . number_format($record->monto_inicial, 2) 
-                                                    : 'No registrado';
+                                        if ($record->extra_info === 'credito') {
+                                            // SOLUCIÓN: Definimos un string vacío o un texto para crédito para que la variable exista
+                                            $destino = ''; 
+                                        } else {
+                                            /**
+                                             * Como en tu controlador para 'wallets' estás haciendo un query básico:
+                                             * DB::table('wallets')->select(..., 'monto_actual AS monto')
+                                             * Necesitamos traer el monto_inicial. 
+                                             * NOTA IMPORTANTE: Ve al paso de abajo para modificar tu controlador.
+                                             */
+                                            $montoInicialFormateado = isset($record->monto_inicial) 
+                                                ? '$' . number_format($record->monto_inicial, 2) 
+                                                : 'No registrado';
 
-                                                // Usamos el campo destino de forma súper amigable para mostrar el balance inicial
-                                                $destino = 'Monto Inicial: ' . $montoInicialFormateado;
-                                            }
+                                            // Usamos el campo destino de forma súper amigable para mostrar el balance inicial
+                                            $destino = 'Monto Inicial: ' . $montoInicialFormateado;
+                                        }
                                         break;
 
                                     case 'income':
                                         $tipoCard = "Salario" ;
                                         $origen = "";
                                         $destino = !empty($record->billetera_destino) 
-                                        ? 'Destino: ' . $record->billetera_destino 
-                                        : 'Destino: Cuenta Externa';
+                                            ? 'Destino: ' . $record->billetera_destino 
+                                            : 'Destino: Cuenta Externa';
                                         break;
 
                                     case 'transaction':
@@ -157,50 +161,50 @@
                                         }
                                         break;
 
-                                        case 'investment':
-                                            $tipoCard = 'Inversión (' . ucfirst($record->extra_info) . ')'; 
-                                            
-                                            // Origen: El capital inicial que pusiste
-                                            $montoInvertido = '$' . number_format($record->monto_inicial, 2);
-                                            $origen = 'Invertido: ' . $montoInvertido;
-                                            
-                                            // Destino: Cálculo de la ganancia real
-                                            $gananciaNeto = $record->monto - $record->monto_inicial;
-                                            $signo = $gananciaNeto >= 0 ? '+' : '';
-                                            $gananciaFormateada = $signo . '$' . number_format($gananciaNeto, 2);
-                                            
-                                            // Leemos la fecha de vencimiento unificada
-                                            $vencimiento = !empty($record->vencimiento_registro) 
-                                                ? date('d/m/Y', strtotime($record->vencimiento_registro)) 
-                                                : 'Sin fecha';
+                                    case 'investment':
+                                        $tipoCard = 'Inversión (' . ucfirst($record->extra_info) . ')'; 
+                                        
+                                        // Origen: El capital inicial que pusiste
+                                        $montoInvertido = '$' . number_format($record->monto_inicial, 2);
+                                        $origen = 'Invertido: ' . $montoInvertido;
+                                        
+                                        // Destino: Cálculo de la ganancia real
+                                        $gananciaNeto = $record->monto - $record->monto_inicial;
+                                        $signo = $gananciaNeto >= 0 ? '+' : '';
+                                        $gananciaFormateada = $signo . '$' . number_format($gananciaNeto, 2);
+                                        
+                                        // Leemos la fecha de vencimiento unificada
+                                        $vencimiento = !empty($record->vencimiento_registro) 
+                                            ? date('d/m/Y', strtotime($record->vencimiento_registro)) 
+                                            : 'Sin fecha';
 
-                                            // <-- NUEVO: Si es fija, agregamos la tasa de interés al texto
-                                            $tasaTexto = '';
-                                            if ($record->extra_info === 'fija' && !empty($record->tasa_interes_registro)) {
-                                                // Formatea quitando ceros innecesarios a la derecha (ej: 5.50 -> 5.5%)
-                                                $tasaTexto = ' | Tasa: ' . ($record->tasa_interes_registro + 0) . '%';
-                                            }
+                                        // <-- NUEVO: Si es fija, agregamos la tasa de interés al texto
+                                        $tasaTexto = '';
+                                        if ($record->extra_info === 'fija' && !empty($record->tasa_interes_registro)) {
+                                            // Formatea quitando ceros innecesarios a la derecha (ej: 5.50 -> 5.5%)
+                                            $tasaTexto = ' | Tasa: ' . ($record->tasa_interes_registro + 0) . '%';
+                                        }
 
-                                            $destino = "Ganancia: {$gananciaFormateada}{$tasaTexto} | Vence: {$vencimiento}";
-                                            break;
+                                        $destino = "Ganancia: {$gananciaFormateada}{$tasaTexto} | Vence: {$vencimiento}";
+                                        break;
 
-                                        case 'goal':
-                                            $tipoCard = 'Meta';
+                                    case 'goal':
+                                        $tipoCard = 'Meta';
+                                        
+                                        // 1. Monto Objetivo: Como lo pusimos en 'monto_col', llega en $record->monto
+                                        $montoObjetivo = '$' . number_format($record->monto, 2);
+                                        
+                                        // 2. Origen: Mostramos el Monto Inicial y el Monto Objetivo juntos de forma clara
+                                        $montoInicial = '$' . number_format($record->monto_inicial, 2);
+                                        $origen = "Meta: {$montoObjetivo} | Inicial: {$montoInicial}";
+                                        
+                                        // 3. Destino: Convertimos la fecha límite unificada (vencimiento_registro)
+                                        $fechaLimite = !empty($record->vencimiento_registro) 
+                                            ? date('d/m/Y', strtotime($record->vencimiento_registro)) 
+                                            : 'Sin límite';
                                             
-                                            // 1. Monto Objetivo: Como lo pusimos en 'monto_col', llega en $record->monto
-                                            $montoObjetivo = '$' . number_format($record->monto, 2);
-                                            
-                                            // 2. Origen: Mostramos el Monto Inicial y el Monto Objetivo juntos de forma clara
-                                            $montoInicial = '$' . number_format($record->monto_inicial, 2);
-                                            $origen = "Meta: {$montoObjetivo} | Inicial: {$montoInicial}";
-                                            
-                                            // 3. Destino: Convertimos la fecha límite unificada (vencimiento_registro)
-                                            $fechaLimite = !empty($record->vencimiento_registro) 
-                                                ? date('d/m/Y', strtotime($record->vencimiento_registro)) 
-                                                : 'Sin límite';
-                                                
-                                            $destino = "Fecha Límite: {$fechaLimite} | Estado: " . ucfirst($record->extra_info);
-                                            break;
+                                        $destino = "Fecha Límite: {$fechaLimite} | Estado: " . ucfirst($record->extra_info);
+                                        break;
 
                                     case 'debt':
                                         $tipoCard = 'Deuda';

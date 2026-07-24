@@ -281,7 +281,7 @@ class RecordController extends Controller
     {
         $request->validate([
             'wallet-titulo' => 'required|max:25',
-            'wallet-monto' => 'required|numeric|min:0',
+            'wallet-monto' => 'required|numeric|min:0|max:999999',
             'wallet-image' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:4096',
             'wallet-select-value' => 'required'
         ]);

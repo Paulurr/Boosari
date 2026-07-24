@@ -258,7 +258,7 @@
                     color1="var(--col4)"
                     color2="var(--col3)"
                     colortext="var(--col1)"
-                    class="filter-btn p-2 w-63 h-full text-start"
+                    class="p-2 w-63 h-full text-start"
                     >
                     Administrar Perfil
 
@@ -271,7 +271,7 @@
                         color1="var(--col4)"
                         color2="var(--col3)"
                         colortext="var(--col1)"
-                        class="filter-btn p-2 w-63 h-full text-start"
+                        class=" p-2 w-63 h-full text-start"
                         >
                         Configuración
 
@@ -283,8 +283,8 @@
                 <x-button
                     color1="red"
                     color2="white"
-                    colortext="text-white"
-                    class="filter-btn p-2 w-63 h-full text-start text-white"
+                    colortext="var(--col1)"
+                    class=" p-2 w-63 h-full text-start "
                     type="submit"
                     >
                     Cerrar Sesión

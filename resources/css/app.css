@@ -827,10 +827,10 @@ button:hover .filtro-but-icon-p1, button:hover .filtro-but-icon-p2{
 }
 
 .x-option{
-    background-color: var(--col3);
+    background-color: var(--col2);
     color: var(--col7);
     position: relative;
-    transition: color 0.2s ease, background-color 0.2s ease;    
+    transition: color 0.1s ease, background-color 0.1s ease;    
 
 }
 .x-option:hover{
@@ -845,8 +845,8 @@ button:hover .filtro-but-icon-p1, button:hover .filtro-but-icon-p2{
     left: 0;
     width: 5px;
     height: 100%;
-    background-color: var(--col7);
-    transition: transform 0.3s ease;
+    background-color: var(--col1);
+    transition: transform 0.2s ease;
     transform: scaleY(0);
     transform-origin: top ;
 }
