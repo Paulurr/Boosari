@@ -5,7 +5,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
 
-        <title>Sign up</title>
+        <title>{{__('nav.sign_up')}}</title>
 
         <!-- Fonts -->
         <link rel="preconnect" href="https://fonts.bunny.net">
@@ -22,44 +22,70 @@
     </head>
     <body class="w-auto pt-15 h-auto bgcol2 lg:overflow-hidden"> 
         <x-nav></x-nav>
-        <div class=" h-270 lg:h-screen w-auto  flex items-center justify-start">
-            
+        <div class=" h-270 lg:h-screen w-auto  flex items-center justify-center lg:justify-between" >
             <form method="POST" action="/sign_up" class="form-signup barpag overflow-y-auto overflow-x-hidden h-full w-full lg:h-full lg:2/5" >
                 @csrf
-                <div class="form-signup-cont h-full w-full lg:h-auto lg:w-full flex flex-col">
+                <div class="form-signup-cont h-full w-full lg:h-auto lg:w-full flex flex-col ">
                     <div class="form-signup-cont-deco"></div>
                     <div class="h-60 w-full flex items-center justify-center font-bold text-2xl">
                         {{ __('nav.sign_up') }}
                     </div>
                     <div class="lg:h-150 h-200 w-full flex flex-col items-center justify-evenly">
-                       <x-label 
-                            name="name"
-                            type="text"
-                            title='{{ __("forms.box3") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
-                        />
-                       <x-label 
-                            name="email"
-                            type="email"
-                            title='{{ __("forms.box1") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
-                        />
-                        <x-label 
-                            name="password"
-                            type="password"
-                            title='{{ __("forms.box2") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
+                           <x-label 
+                                name="name"
+                                type="text"
+                                title='{{ __("forms.box3") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                                value="{{ old('name') }}"
+                                :required=false
                             />
-                        <x-label 
-                            name="repeat_password"
-                            type="password"
-                            title='{{ __("forms.box4") }}'
-                            color1="var(--col3)"
-                            color2="var(--col4)"
+
+                            @error('name')
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
+                           <x-label 
+                                name="email"
+                                type="email"
+                                title='{{ __("forms.box1") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                                value="{{ old('email') }}"
                             />
+                            @error('email')
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
+                            <x-label 
+                                name="password"
+                                type="password"
+                                title='{{ __("forms.box2") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                            />
+                            @error('password')
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
+                            @enderror
+                        </div>
+
+                        <div class="w-[90%] flex flex-col items-center justify-center gap-y-2">
+                            <x-label 
+                                name="repeat_password"
+                                type="password"
+                                title='{{ __("forms.box4") }}'
+                                color1="var(--col3)"
+                                color2="var(--col4)"
+                            />
+                            @error('repeat_password')
+                                <span class="text-red-500 text-xs font-semibold text-left block w-[60%] pl-1">{{ $message }}</span>
+                            @enderror
+                        </div>
                         
                     </div>
                     <br>

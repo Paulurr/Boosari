@@ -147,8 +147,7 @@
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
                             <a href="" class="a-menu-nav text-sm p-2">
-                                {{ __('nav.about') }}
-                                
+                                Información
                             </a>
                             
                         </div>
@@ -208,8 +207,8 @@
                 </a>
             </li>
             <li class="li-nav">
-                <a href="/about_us" class="a-nav">
-                    {{ __('nav.about') }}
+                <a href="/info" class="a-nav">
+                    Información Educacional
                 </a>
                 
             </li>
