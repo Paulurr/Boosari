@@ -1,6 +1,12 @@
-@vite(['resources/css/app.css'])
 
-<x-nav/>
+
+<x-layout title="Sobre nosotros">
+    <x-slot:head>
+        <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    @vite(['resources/css/app.css'])
+    </x-slot:head>
+
+    <x-nav/>
 <div class="bgcol2 w-full pt-15">
     <div class="h-auto w-full">
         <object data="{{ asset('images/About_us.svg') }}" type="image/svg+xml" class="w-full object-contain"></object>
@@ -26,3 +32,4 @@
     <x-footer/>
     
 </div>
+</x-layout>

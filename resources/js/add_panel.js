@@ -119,29 +119,12 @@ function validarFormularioActivo(formulario) {
     return !errorDetectado;
 }
 
-let add_submit = document.getElementById("add-submit"); 
-if (add_submit) {
-    add_submit.addEventListener("click", () => {
-        if (!select) return;
-        let select_value = select.value;
-        let formularioDestino = null;
-
-        switch (select_value) {
-            case "Billetera":     formularioDestino = wallet_form; break;
-            case "Salario":       formularioDestino = income_form; break;
-            case "Inversión":     formularioDestino = investment_form; break;
-            case "Movimiento":    formularioDestino = transaction_form; break;
-            case "Meta":          formularioDestino = goal_form; break;
-            case "Pago de Meta":  formularioDestino = paymentgoal_form; break;
-            case "Deuda":         formularioDestino = debt_form; break;
-            case "Pago de Deuda": formularioDestino = paymentdebt_form; break;
-        }
-
-        if (formularioDestino && validarFormularioActivo(formularioDestino)) {
-            formularioDestino.requestSubmit();
-        }
-    });
-}
+// NOTA: el envío real de cada formulario ya NO se dispara aquí con
+// requestSubmit() (eso recargaba la página entera y perdíamos la
+// oportunidad de pintar los errores de validación junto a cada campo).
+// El botón "Aceptar" del panel "add" ya dispara Panel._trySubmit(), que
+// llama a window.add_panel.onSubmit (definido más abajo), así que todo el
+// envío pasa por fetch()/AJAX de forma genérica para los 8 formularios.
 
 // Configuración inicial de fechas
 document.addEventListener("DOMContentLoaded", () => {
@@ -218,4 +201,146 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // Ejecución inicial por si el formulario se renderiza con datos previos
     evaluarTipoRenta();
+});
+/**
+ * Manejo genérico de errores por input (data-error-for)
+ * ---------------------------------------------------------------------
+ * Cada formulario del panel "add" (wallet, income, investment,
+ * transaction, goal, paymentgoal, debt, paymentdebt) tiene, debajo de
+ * cada campo, un <span class="error-msg" data-error-for="nombre-del-campo">.
+ * El backend (RecordController) responde en JSON, con HTTP 422 y un
+ * objeto "errors" con la forma { "nombre-del-campo": ["mensaje", ...] }
+ * cuando la petición trae "Accept: application/json" (igual que hacía
+ * antes investment-form). Esta función genérica:
+ *
+ *   1. Previene el submit nativo del formulario (evita recargar la
+ *      página y perder el panel abierto).
+ *   2. Envía el formulario por fetch/AJAX.
+ *   3. Si el servidor responde con errores, los coloca en el span
+ *      correspondiente según data-error-for; si el campo no tiene un
+ *      span asociado (o es un error de negocio sin campo específico,
+ *      ej. "Fondos insuficientes"), lo muestra en el bloque de error
+ *      general del formulario.
+ *   4. Si todo sale bien, resetea el formulario y recarga la página
+ *      (igual que hacía antes investment-form).
+ *
+ * Devuelve la función "onSubmit" que Panel espera (debe resolver a
+ * true/false), o null si el formulario no existe en el DOM.
+ */
+function crearManejadorAjax(form, generalErrorId, generalMsgId) {
+    if (!form) return null;
+
+    form.addEventListener("submit", (e) => e.preventDefault());
+
+    return async function () {
+        const formData = new FormData(form);
+
+        // 1. Limpiar todos los mensajes de error inline previos
+        form.querySelectorAll(".error-msg").forEach(span => span.textContent = "");
+
+        const generalErrorCont = document.getElementById(generalErrorId);
+        const generalErrorMsg = document.getElementById(generalMsgId);
+        if (generalErrorCont) generalErrorCont.classList.add("hidden");
+
+        try {
+            const response = await fetch(form.action, {
+                method: "POST",
+                body: formData,
+                headers: {
+                    "X-Requested-With": "XMLHttpRequest",
+                    "Accept": "application/json",
+                    "X-CSRF-TOKEN": document.querySelector('meta[name="csrf-token"]').getAttribute('content')
+                }
+            });
+
+            const data = await response.json().catch(() => ({}));
+
+            if (!response.ok) {
+                // Si proviene de fallos de validación (HTTP 422) u otro error controlado
+                if (data.errors) {
+                    Object.keys(data.errors).forEach(fieldKey => {
+                        const valorError = data.errors[fieldKey];
+                        const errorText = Array.isArray(valorError) ? valorError[0] : valorError;
+
+                        // Buscar el span asignado al campo que falló
+                        const targetSpan = form.querySelector(`[data-error-for="${fieldKey}"]`);
+                        if (targetSpan) {
+                            targetSpan.textContent = errorText;
+                        } else if (generalErrorCont && generalErrorMsg) {
+                            // Error general o sin campo específico asociado (ej. "Fondos insuficientes")
+                            generalErrorMsg.textContent = errorText;
+                            generalErrorCont.classList.remove("hidden");
+                        }
+                    });
+                } else if (data.message && generalErrorCont && generalErrorMsg) {
+                    generalErrorMsg.textContent = data.message;
+                    generalErrorCont.classList.remove("hidden");
+                } else if (generalErrorCont && generalErrorMsg) {
+                    generalErrorMsg.textContent = "Ocurrió un error al procesar la solicitud.";
+                    generalErrorCont.classList.remove("hidden");
+                }
+
+                // Previene que Panel.js cierre el modal
+                return false;
+            }
+
+            // Guardado exitoso
+            form.reset();
+            window.location.reload();
+            return true;
+
+        } catch (error) {
+            if (generalErrorCont && generalErrorMsg) {
+                generalErrorMsg.textContent = "Error de conexión. Inténtelo de nuevo.";
+                generalErrorCont.classList.remove("hidden");
+            }
+            return false;
+        }
+    };
+}
+
+document.addEventListener("DOMContentLoaded", () => {
+    // Un manejador AJAX por cada formulario del panel "add". Si algún
+    // formulario no existe en el DOM (ej. la sección @if no se renderizó),
+    // crearManejadorAjax devuelve null y simplemente se ignora esa entrada.
+    const manejadoresPorTipo = {
+        "Billetera":     crearManejadorAjax(wallet_form, "wallet-general-error", "wallet-general-msg"),
+        "Salario":       crearManejadorAjax(income_form, "income-general-error", "income-general-msg"),
+        "Inversión":     crearManejadorAjax(investment_form, "investment-general-error", "investment-general-msg"),
+        "Movimiento":    crearManejadorAjax(transaction_form, "transaction-general-error", "transaction-general-msg"),
+        "Meta":          crearManejadorAjax(goal_form, "goal-general-error", "goal-general-msg"),
+        "Pago de Meta":  crearManejadorAjax(paymentgoal_form, "paymentgoal-general-error", "paymentgoal-general-msg"),
+        "Deuda":         crearManejadorAjax(debt_form, "debt-general-error", "debt-general-msg"),
+        "Pago de Deuda": crearManejadorAjax(paymentdebt_form, "paymentdebt-general-error", "paymentdebt-general-msg"),
+    };
+
+    if (window.add_panel) {
+        window.add_panel.onSubmit = async () => {
+            if (!select) return false;
+
+            let select_value = select.value;
+            let formularioDestino = null;
+
+            switch (select_value) {
+                case "Billetera":     formularioDestino = wallet_form; break;
+                case "Salario":       formularioDestino = income_form; break;
+                case "Inversión":     formularioDestino = investment_form; break;
+                case "Movimiento":    formularioDestino = transaction_form; break;
+                case "Meta":          formularioDestino = goal_form; break;
+                case "Pago de Meta":  formularioDestino = paymentgoal_form; break;
+                case "Deuda":         formularioDestino = debt_form; break;
+                case "Pago de Deuda": formularioDestino = paymentdebt_form; break;
+            }
+
+            // Validación local previa (campos x-select requeridos, ej. tipo de billetera)
+            if (!formularioDestino || !validarFormularioActivo(formularioDestino)) {
+                return false;
+            }
+
+            const manejador = manejadoresPorTipo[select_value];
+            if (!manejador) return false;
+
+            return await manejador();
+        };
+    }
 });

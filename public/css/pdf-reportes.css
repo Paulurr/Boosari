@@ -1,0 +1,116 @@
+
+@page {
+    margin: 25px 30px;
+}
+
+/* Clases de utilidad */
+.col1 { color: #ffffff; }
+.col2 { color: #fff9e8; }
+.col3 { color: #ffc400; }
+.col4 { color: #22a443; }
+.col5 { color: #23803B; }
+.col6 { color: #252525; }
+.col7 { color: #3e3e3e; }
+
+.bgcol1 { background-color: #ffffff; }
+.bgcol2 { background-color: #fff9e8; }
+.bgcol3 { background-color: #ffc400; }
+.bgcol4 { background-color: #22a443; }
+.bgcol5 { background-color: #23803B; }
+.bgcol6 { background-color: #252525; }
+.bgcol7 { background-color: #3e3e3e; }
+
+/* Clases personalizadas del reporte */
+.pdf-body {
+    font-family: Helvetica, Arial, sans-serif;
+    font-size: 11px;
+    color: #3e3e3e;
+    background-color: #ffffff;
+}
+
+.pdf-title {
+    font-size: 18px;
+    margin: 0 0 4px 0;
+    color: #252525;
+}
+
+.subtitle, .meta, .card .label {
+    color: #3e3e3e;
+    margin-bottom: 18px;
+}
+
+.totales {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.totales td {
+    padding: 8px;
+}
+
+.card {
+    border: 1px solid #fff9e8;
+    border-radius: 4px;
+    padding: 8px;
+    background-color: #ffffff;
+}
+.card .value {
+    font-size: 16px;
+    font-weight: bold;
+    color: #252525;
+}
+
+.charts {
+    width: 100%;
+    margin-bottom: 20px;
+}
+.charts td {
+    width: 50%;
+    text-align: center;
+    vertical-align: top;
+}
+.charts img {
+    max-width: 100%;
+}
+
+table.data {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+}
+table.data th {
+    background-color: #23803B;
+    color: #ffffff;
+    font-size: 10px;
+    padding: 6px 4px;
+    text-align: left;
+}
+table.data td {
+    font-size: 9.5px;
+    padding: 5px 4px;
+    border-bottom: 1px solid #fff9e8;
+}
+table.data tr:nth-child(even) {
+    background-color: #fff9e8;
+}
+
+.resumen-tabla {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 20px;
+}
+.resumen-tabla th {
+    background-color: #fff9e8;
+    color: #252525;
+    font-size: 10px;
+    padding: 5px;
+    text-align: left;
+}
+.resumen-tabla td {
+    font-size: 10px;
+    padding: 5px;
+    border-bottom: 1px solid #fff9e8;
+}
+
+.text-right {
+    text-align: right;
+}

@@ -12,6 +12,7 @@
 @vite(['resources/js/label.js'])
 <label for="" class="flex flex-col {{$w}} label-cont">
     <input
+        id="{{ $name }}"
         name="{{ $name }}"
         type="{{ $type }}"
         placeholder=" "

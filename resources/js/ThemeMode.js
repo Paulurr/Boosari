@@ -1,4 +1,5 @@
-const temaClaro = {
+
+const paletaBaseClara = {
     '--col1': '#ffffff',
     '--col2': '#fff9e8',
     '--col3': '#ffc400',
@@ -8,7 +9,7 @@ const temaClaro = {
     '--col7': '#3e3e3e'
 };
 
-const temaOscuro = {
+const paletaBaseOscura = {
     '--col1': '#252525',
     '--col2': '#3e3e3e',
     '--col3': '#22a443',
@@ -18,6 +19,14 @@ const temaOscuro = {
     '--col7': '#ffffff'
 };
 
+const temaClaro = (typeof window !== 'undefined' && window.PALETA_PERSONALIZADA)
+    ? { ...paletaBaseClara, ...window.PALETA_PERSONALIZADA }
+    : paletaBaseClara;
+
+const temaOscuro = (typeof window !== 'undefined' && window.PALETA_PERSONALIZADA_OSCURA)
+    ? { ...paletaBaseOscura, ...window.PALETA_PERSONALIZADA_OSCURA }
+    : paletaBaseOscura;
+
 function aplicarTema(tema) {
 
     const root = document.documentElement;
@@ -25,7 +34,7 @@ function aplicarTema(tema) {
     Object.keys(tema).forEach(function(variable) {
         root.style.setProperty(variable, tema[variable]);
     });
-
+    window.dispatchEvent(new CustomEvent('themeChanged'));
 }
 
 function moverSwitch(estado) {

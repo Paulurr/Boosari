@@ -39,7 +39,7 @@ class Select {
                     select_value.value = valor;
                 }
 
-                if (select_value.value !== "" || select_value.value !== "Ninguno") {
+                if (select_value.value !== "" && select_value.value !== "Ninguno") {
                     if (error_msg) error_msg.classList.add("hidden");
                     if (select_container) select_container.classList.remove("border-red-500");
                 }
@@ -94,6 +94,7 @@ class Select {
 let add = new Select("add");
 let income = new Select("income");
 let income_wallet = new Select("income-wallet");
+let income_frecuencia = new Select("income-frecuencia"); // <-- panel info-income (modo edición)
 let wallet = new Select("wallet");
 let investment_wallet = new Select("investment-wallet");
 let investment_renta = new Select("investment-renta");
@@ -107,3 +108,12 @@ let paygoal_target = new Select("paygoal-target");
 let debt_prioridad = new Select("debt-prioridad");
 let payment_wallet = new Select("payment-wallet");
 let payment_target = new Select("payment-target");
+// Selects propios de los paneles info-goal / info-debt (modo edición).
+// Usan nombres distintos a los del panel "add" para no duplicar IDs en el DOM.
+let goalinfo_payment_wallet = new Select("goalinfo-payment-wallet");
+let debtinfo_prioridad = new Select("debtinfo-prioridad");
+let debtinfo_payment_wallet = new Select("debtinfo-payment-wallet");
+// Selects propios de los paneles info-paymentGoal / info-paymentDebt (edición de un abono/pago puntual).
+let paymentGoalinfo_wallet = new Select("paymentGoalinfo-wallet");
+let paymentDebtinfo_wallet = new Select("paymentDebtinfo-wallet");
+let investmentinfo_estado = new Select("investmentinfo-estado");

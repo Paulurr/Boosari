@@ -611,9 +611,9 @@ html{
     position: relative;
     cursor: pointer;
     overflow: hidden;
-
+    isolation: isolate; /* <-- NUEVO: aísla el stacking context del botón completo */
 }
-
+ 
 .page-button-div::after{
     content: "";
     top: -100%;
@@ -628,14 +628,14 @@ html{
     transform: scaleY(0);
     transition: transform 0.3s ease;
     transform-origin: bottom;
-    
-
+ 
+ 
 }
 .page-button-div:hover::after{
     transform: scaleY(1);
     transition: transform 0.3s ease 0.1s;
-
-
+ 
+ 
 }
 .page-button-div::before{
     content: "";
@@ -651,16 +651,17 @@ html{
     transform: scaleY(0);
     transform-origin: bottom;
     transition: transform 0.3s ease;
-
-    
-
+ 
+ 
+ 
 }
 .page-button-div:hover::before{
     transform: scaleY(1);
-
-
+ 
+ 
 }
 .page-button-div{
+    position: relative;   
     overflow: hidden;
     border-radius: 2px;
     box-shadow: inset 0 0 0 1px var(--page-button-div1);
@@ -668,9 +669,8 @@ html{
 }
 .page-button-div:hover{
     color: var(--color-page-text);
-
+ 
 }
-
 /* inicio */
 
 /* animaciones inicio */
@@ -863,3 +863,63 @@ button:hover .filtro-but-icon-p1, button:hover .filtro-but-icon-p2{
     color: var(--col1);
     border: transparent;
 }
+
+/* Agente*/
+@keyframes agentBubbleIn {
+    from { opacity: 0; transform: translateY(8px) scale(0.98); }
+    to   { opacity: 1; transform: translateY(0) scale(1); }
+}
+.agent-bubble-in {
+    animation: agentBubbleIn 0.28s cubic-bezier(0.16, 1, 0.3, 1) both;
+}
+
+/* Puntitos de "escribiendo" */
+@keyframes agentDotPulse {
+    0%, 60%, 100% { transform: translateY(0); opacity: 0.5; }
+    30% { transform: translateY(-4px); opacity: 1; }
+}
+.agent-dot {
+    animation: agentDotPulse 1.1s ease-in-out infinite;
+}
+
+/* Item del historial: entrada + botón de borrar que aparece en hover */
+@keyframes agentHistoryIn {
+    from { opacity: 0; transform: translateX(-6px); }
+    to   { opacity: 1; transform: translateX(0); }
+}
+.agent-history-item-enter {
+    animation: agentHistoryIn 0.25s ease-out both;
+}
+.agent-delete-btn {
+    opacity: 0;
+    transform: scale(0.9);
+    transition: opacity 0.15s ease, transform 0.15s ease, background-color 0.15s ease;
+}
+.agent-history-item:hover .agent-delete-btn,
+.agent-delete-btn:focus-visible {
+    opacity: 1;
+    transform: scale(1);
+}
+
+/* Salida suave al borrar una conversación de la lista */
+.agent-history-item-leave {
+    transition: opacity 0.18s ease, transform 0.18s ease, max-height 0.22s ease, margin 0.22s ease, padding 0.22s ease;
+    opacity: 0;
+    transform: translateX(-8px);
+    max-height: 0 !important;
+    margin: 0 !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    overflow: hidden;
+}
+
+/* Pulso sutil en el botón de enviar al estar deshabilitado (procesando) */
+#agent-send:disabled {
+    animation: agentSendPulse 1.4s ease-in-out infinite;
+}
+@keyframes agentSendPulse {
+    0%, 100% { opacity: 0.5; }
+    50% { opacity: 0.8; }
+}
+
+

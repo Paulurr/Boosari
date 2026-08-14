@@ -15,25 +15,32 @@ use App\Models\PaymentDebt;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
-
+use Illuminate\Support\Facades\Validator;
+use Illuminate\Support\Facades\Http;
+use PhpOffice\PhpSpreadsheet\Spreadsheet;
+use PhpOffice\PhpSpreadsheet\Writer\Xlsx;
+use PhpOffice\PhpSpreadsheet\Chart\Chart;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeries;
+use PhpOffice\PhpSpreadsheet\Chart\DataSeriesValues;
+use PhpOffice\PhpSpreadsheet\Chart\Legend;
+use PhpOffice\PhpSpreadsheet\Chart\PlotArea;
+use PhpOffice\PhpSpreadsheet\Chart\Title;
+use PhpOffice\PhpSpreadsheet\Style\Fill;
+use PhpOffice\PhpSpreadsheet\Style\Border;
+use PhpOffice\PhpSpreadsheet\Style\Alignment;
+use Barryvdh\DomPDF\Facade\Pdf;
 class RecordController extends Controller
 {
-    public function index(Request $request)
+    private function buildFilteredRecordsQuery(Request $request)
     {
         $userId = Auth::id();
 
-        // 1. Capturar los filtros (sort_by se queda como string; los demás se fuerzan a arrays si traen datos)
         $sortBy = $request->input('sort_by', 'date_desc');
         $rangeAmount = $request->input('range_amount') ? (array) $request->input('range_amount') : [];
         $timeFrame = $request->input('time_frame') ? (array) $request->input('time_frame') : [];
         $recordType = $request->input('record_type') ? (array) $request->input('record_type') : [];
         $currentCategory = $request->input('category_id') ? (array) $request->input('category_id') : [];
-
-        // Variables requeridas por los modales/formularios de tu vista home
-        $categories = Category::all();
-        $wallets = DB::table('wallets')->where('user_id', $userId)->get();
-        $goals = DB::table('goals')->where('user_id', $userId)->get();
-        $debts = DB::table('debts')->where('user_id', $userId)->get();
+        $search = trim((string) $request->input('search', ''));
 
         // 2. Mapeos de subconsultas estandarizadas
         $queries = [];
@@ -249,6 +256,35 @@ class RecordController extends Controller
                 }
             });
         }
+
+        // PERÍODO DE TIEMPO MÚLTIPLE (antes se capturaba pero nunca se aplicaba a la consulta)
+        if (!empty($timeFrame)) {
+            $mainQuery->where(function($q) use ($timeFrame) {
+                if (in_array('today', $timeFrame)) {
+                    $q->orWhereDate('fecha', now()->toDateString());
+                }
+                if (in_array('week', $timeFrame)) {
+                    $q->orWhereBetween('fecha', [now()->startOfWeek(), now()->endOfWeek()]);
+                }
+                if (in_array('month', $timeFrame)) {
+                    $q->orWhereBetween('fecha', [now()->startOfMonth(), now()->endOfMonth()]);
+                }
+                if (in_array('year', $timeFrame)) {
+                    $q->orWhereBetween('fecha', [now()->startOfYear(), now()->endOfYear()]);
+                }
+            });
+        }
+
+        // BÚSQUEDA POR TEXTO: título del registro, categoría, info extra (tipo/estado/etc.) o nombre del registro padre (meta/deuda)
+        if ($search !== '') {
+            $mainQuery->where(function($q) use ($search) {
+                $like = '%' . $search . '%';
+                $q->where('titulo', 'like', $like)
+                  ->orWhere('categoria', 'like', $like)
+                  ->orWhere('extra_info', 'like', $like)
+                  ->orWhere('nombre_padre', 'like', $like);
+            });
+        }
         // 6. Aplicación de Ordenamiento
         if ($sortBy === 'amount_desc') {
             $mainQuery->orderBy('monto', 'desc');
@@ -258,10 +294,312 @@ class RecordController extends Controller
             $mainQuery->orderBy('fecha', 'desc');
         }
 
-        // 7. Paginación adaptada
-        $records = $mainQuery->paginate(15)->appends($request->all());
+        return $mainQuery;
+    }
 
-        // 8. Retornar vista incluyendo todas las variables necesarias
+    /**
+     * =====================================================================
+     *  EXPORTAR A EXCEL (.xlsx) — respeta filtros, orden y búsqueda actuales
+     *  Genera 2 hojas: "Registros" (detalle) y "Resumen" (totales + gráficas
+     *  nativas de Excel: pastel por tipo y barras por categoría).
+     * =====================================================================
+     */
+    public function exportExcel(Request $request)
+    {
+        $registros = $this->buildFilteredRecordsQuery($request)->get();
+
+        $tipoLabels = [
+            'wallet' => 'Billetera', 'debt' => 'Deuda', 'goal' => 'Meta', 'income' => 'Ingreso',
+            'investment' => 'Inversión', 'transaction' => 'Transacción',
+            'paymentGoal' => 'Pago de meta', 'paymentDebt' => 'Pago de deuda',
+        ];
+
+        $spreadsheet = new Spreadsheet();
+
+        // ================= HOJA 1: REGISTROS =================
+        $sheet = $spreadsheet->getActiveSheet();
+        $sheet->setTitle('Registros');
+
+        $headers = ['Fecha', 'Tipo', 'Título', 'Categoría', 'Monto', 'Monto Inicial', 'Info Extra', 'Billetera Origen', 'Billetera Destino', 'Registro Relacionado', 'Vencimiento'];
+        $sheet->fromArray($headers, null, 'A1');
+
+        $headerRange = 'A1:' . chr(64 + count($headers)) . '1';
+        $sheet->getStyle($headerRange)->applyFromArray([
+            'font' => ['bold' => true, 'color' => ['rgb' => 'FFFFFF']],
+            'fill' => ['fillType' => Fill::FILL_SOLID, 'startColor' => ['rgb' => '2F5597']],
+            'alignment' => ['horizontal' => Alignment::HORIZONTAL_CENTER],
+        ]);
+
+        $row = 2;
+        $totalPorTipo = [];
+        $totalPorCategoria = [];
+
+        foreach ($registros as $r) {
+            $tipoLabel = $tipoLabels[$r->tipo_registro] ?? $r->tipo_registro;
+            $categoria = $r->categoria ?? 'Sin categoría';
+
+            $sheet->setCellValue("A{$row}", $r->fecha ? Carbon::parse($r->fecha)->format('d/m/Y H:i') : '');
+            $sheet->setCellValue("B{$row}", $tipoLabel);
+            $sheet->setCellValue("C{$row}", $r->titulo);
+            $sheet->setCellValue("D{$row}", $categoria);
+            $sheet->setCellValue("E{$row}", (float) $r->monto);
+            $sheet->setCellValue("F{$row}", $r->monto_inicial !== null ? (float) $r->monto_inicial : null);
+            $sheet->setCellValue("G{$row}", $r->extra_info);
+            $sheet->setCellValue("H{$row}", $r->billetera_origen);
+            $sheet->setCellValue("I{$row}", $r->billetera_destino);
+            $sheet->setCellValue("J{$row}", $r->nombre_padre);
+            $sheet->setCellValue("K{$row}", $r->vencimiento_registro ? Carbon::parse($r->vencimiento_registro)->format('d/m/Y') : '');
+
+            $totalPorTipo[$tipoLabel] = ($totalPorTipo[$tipoLabel] ?? 0) + (float) $r->monto;
+            $totalPorCategoria[$categoria] = ($totalPorCategoria[$categoria] ?? 0) + (float) $r->monto;
+
+            $row++;
+        }
+        $lastRow = $row - 1;
+
+        if ($lastRow >= 2) {
+            $sheet->getStyle("E2:F{$lastRow}")->getNumberFormat()->setFormatCode('#,##0.00');
+            $sheet->getStyle("A1:K{$lastRow}")->getBorders()->getAllBorders()->setBorderStyle(Border::BORDER_THIN);
+        }
+
+        foreach (range('A', 'K') as $col) {
+            $sheet->getColumnDimension($col)->setAutoSize(true);
+        }
+        $sheet->freezePane('A2');
+        $sheet->setAutoFilter($headerRange);
+
+        // ================= HOJA 2: RESUMEN + GRÁFICAS =================
+        $resumen = $spreadsheet->createSheet();
+        $resumen->setTitle('Resumen');
+
+        $resumen->setCellValue('A1', 'Total por tipo de registro');
+        $resumen->getStyle('A1')->getFont()->setBold(true);
+        $resumen->fromArray(['Tipo', 'Total'], null, 'A2');
+        $resumen->getStyle('A2:B2')->getFont()->setBold(true);
+        $r = 3;
+        foreach ($totalPorTipo as $tipo => $total) {
+            $resumen->setCellValue("A{$r}", $tipo);
+            $resumen->setCellValue("B{$r}", round($total, 2));
+            $r++;
+        }
+        $tipoTableEnd = $r - 1;
+
+        $catStart = $r + 2;
+        $resumen->setCellValue("A{$catStart}", 'Total por categoría');
+        $resumen->getStyle("A{$catStart}")->getFont()->setBold(true);
+        $resumen->setCellValue('A' . ($catStart + 1), 'Categoría');
+        $resumen->setCellValue('B' . ($catStart + 1), 'Total');
+        $resumen->getStyle('A' . ($catStart + 1) . ':B' . ($catStart + 1))->getFont()->setBold(true);
+        arsort($totalPorCategoria);
+        $r = $catStart + 2;
+        foreach ($totalPorCategoria as $categoria => $total) {
+            $resumen->setCellValue("A{$r}", $categoria);
+            $resumen->setCellValue("B{$r}", round($total, 2));
+            $r++;
+        }
+        $catTableEnd = $r - 1;
+
+        $resumen->getColumnDimension('A')->setAutoSize(true);
+        $resumen->getColumnDimension('B')->setAutoSize(true);
+
+        // --- Gráfica de pastel: distribución por tipo ---
+        if ($tipoTableEnd >= 3) {
+            $count = $tipoTableEnd - 2;
+            $labels = [new DataSeriesValues('String', "Resumen!\$A\$3:\$A\${$tipoTableEnd}", null, $count)];
+            $values = [new DataSeriesValues('Number', "Resumen!\$B\$3:\$B\${$tipoTableEnd}", null, $count)];
+            $categoryLabels = [new DataSeriesValues('String', "Resumen!\$A\$3:\$A\${$tipoTableEnd}", null, $count)];
+
+            $series = new DataSeries(DataSeries::TYPE_PIECHART, null, range(0, count($values) - 1), $labels, $categoryLabels, $values);
+            $plotArea = new PlotArea(null, [$series]);
+            $legend = new Legend(Legend::POSITION_RIGHT, null, false);
+            $chart1 = new Chart('grafica_tipos', new Title('Distribución por tipo de registro'), $legend, $plotArea);
+            $chart1->setTopLeftPosition('D2');
+            $chart1->setBottomRightPosition('L20');
+            $resumen->addChart($chart1);
+        }
+
+        // --- Gráfica de barras: total por categoría (top 10) ---
+        if ($catTableEnd >= $catStart + 2) {
+            $catEndCapped = min($catTableEnd, $catStart + 11); // top 10
+            $count = $catEndCapped - ($catStart + 2) + 1;
+            $labels = [new DataSeriesValues('String', "Resumen!\$A\$" . ($catStart + 2) . ":\$A\${$catEndCapped}", null, $count)];
+            $values = [new DataSeriesValues('Number', "Resumen!\$B\$" . ($catStart + 2) . ":\$B\${$catEndCapped}", null, $count)];
+            $categoryLabels = [new DataSeriesValues('String', "Resumen!\$A\$" . ($catStart + 2) . ":\$A\${$catEndCapped}", null, $count)];
+
+            $series2 = new DataSeries(DataSeries::TYPE_BARCHART, DataSeries::GROUPING_CLUSTERED, range(0, count($values) - 1), $labels, $categoryLabels, $values);
+            $series2->setPlotDirection(DataSeries::DIRECTION_COL);
+            $plotArea2 = new PlotArea(null, [$series2]);
+            $legend2 = new Legend(Legend::POSITION_RIGHT, null, false);
+            $chart2 = new Chart('grafica_categorias', new Title('Top categorías por monto'), $legend2, $plotArea2);
+            $chart2->setTopLeftPosition('D22');
+            $chart2->setBottomRightPosition('L40');
+            $resumen->addChart($chart2);
+        }
+
+        $spreadsheet->setActiveSheetIndex(0);
+
+        $filename = 'registros_' . now()->format('Y-m-d_His') . '.xlsx';
+
+        $writer = new Xlsx($spreadsheet);
+        $writer->setIncludeCharts(true);
+
+        return response()->streamDownload(function () use ($writer) {
+            $writer->save('php://output');
+        }, $filename, [
+            'Content-Type' => 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        ]);
+    }
+
+    /**
+     * =====================================================================
+     *  EXPORTAR A PDF — respeta filtros, orden y búsqueda actuales.
+     *  Incluye resumen, totales y gráficas (pastel + barras) generadas con
+     *  QuickChart.io e incrustadas como imagen base64 (Dompdf no ejecuta
+     *  JS/canvas, así que no puede dibujar Chart.js directamente).
+     * =====================================================================
+     */
+    public function exportPdf(Request $request)
+    {
+        $registros = $this->buildFilteredRecordsQuery($request)->get();
+
+        $tipoLabels = [
+            'wallet' => 'Billetera', 'debt' => 'Deuda', 'goal' => 'Meta', 'income' => 'Ingreso',
+            'investment' => 'Inversión', 'transaction' => 'Transacción',
+            'paymentGoal' => 'Pago de meta', 'paymentDebt' => 'Pago de deuda',
+        ];
+
+        $totalPorTipo = [];
+        $totalPorCategoria = [];
+        $totalGeneral = 0;
+
+        foreach ($registros as $r) {
+            $tipoLabel = $tipoLabels[$r->tipo_registro] ?? $r->tipo_registro;
+            $categoria = $r->categoria ?? 'Sin categoría';
+            $totalPorTipo[$tipoLabel] = ($totalPorTipo[$tipoLabel] ?? 0) + (float) $r->monto;
+            $totalPorCategoria[$categoria] = ($totalPorCategoria[$categoria] ?? 0) + (float) $r->monto;
+            $totalGeneral += (float) $r->monto;
+        }
+        arsort($totalPorCategoria);
+        $topCategorias = array_slice($totalPorCategoria, 0, 8, true);
+
+        $chartTipoImg = $this->fetchChartAsBase64(
+            $this->buildQuickChartUrl('pie', array_keys($totalPorTipo), array_values($totalPorTipo), 'Por tipo de registro')
+        );
+        $chartCategoriaImg = $this->fetchChartAsBase64(
+            $this->buildQuickChartUrl('bar', array_keys($topCategorias), array_values($topCategorias), 'Top categorías')
+        );
+
+        $pdf = Pdf::loadView('exports.records_pdf', [
+            'registros' => $registros,
+            'tipoLabels' => $tipoLabels,
+            'totalPorTipo' => $totalPorTipo,
+            'totalPorCategoria' => $totalPorCategoria,
+            'totalGeneral' => $totalGeneral,
+            'chartTipoImg' => $chartTipoImg,
+            'chartCategoriaImg' => $chartCategoriaImg,
+            'filtros' => [
+                'busqueda' => $request->input('search'),
+                'orden' => $request->input('sort_by', 'date_desc'),
+            ],
+            'generadoEl' => now()->format('d/m/Y H:i'),
+        ])->setPaper('a4', 'portrait');
+
+        $filename = 'registros_' . now()->format('Y-m-d_His') . '.pdf';
+
+        return $pdf->download($filename);
+    }
+
+    /**
+     * Construye la URL de QuickChart.io (servicio gratuito) para generar
+     * la imagen de una gráfica que sí puede incrustarse en un PDF con Dompdf.
+     */
+    private function buildQuickChartUrl(string $type, array $labels, array $data, string $title): string
+    {
+        $config = [
+            'type' => $type,
+            'data' => [
+                'labels' => $labels,
+                'datasets' => [[
+                    'label' => $title,
+                    'data' => array_map(fn ($v) => round($v, 2), $data),
+                    'backgroundColor' => ['#2F5597', '#8FAADC', '#548235', '#BF8F00', '#C00000', '#7030A0', '#00B0F0', '#ED7D31'],
+                ]],
+            ],
+            'options' => [
+                'plugins' => ['title' => ['display' => true, 'text' => $title]],
+            ],
+        ];
+
+        return 'https://quickchart.io/chart?width=500&height=300&backgroundColor=white&c=' . urlencode(json_encode($config));
+    }
+
+    /**
+     * Descarga la imagen de la gráfica y la convierte a base64 para
+     * incrustarla directamente en el HTML del PDF.
+     */
+    private function fetchChartAsBase64(string $url): ?string
+    {
+        try {
+            $response = Http::timeout(8)->get($url);
+            if ($response->successful()) {
+                return 'data:image/png;base64,' . base64_encode($response->body());
+            }
+        } catch (\Exception $e) {
+            // Si falla la generación de la gráfica (p. ej. sin salida a
+            // internet), el PDF se genera igual, solo sin esa imagen.
+        }
+
+        return null;
+    }
+
+    public function index(Request $request)
+    {
+        $userId = Auth::id();
+
+        // 1. Capturar los filtros (sort_by se queda como string; los demás se fuerzan a arrays si traen datos)
+        $sortBy = $request->input('sort_by', 'date_desc');
+        $rangeAmount = $request->input('range_amount') ? (array) $request->input('range_amount') : [];
+        $timeFrame = $request->input('time_frame') ? (array) $request->input('time_frame') : [];
+        $recordType = $request->input('record_type') ? (array) $request->input('record_type') : [];
+        $currentCategory = $request->input('category_id') ? (array) $request->input('category_id') : [];
+        $search = trim((string) $request->input('search', ''));
+
+        // Variables requeridas por los modales/formularios de tu vista home
+        $categories = Category::all();
+        $wallets = DB::table('wallets')->where('user_id', $userId)->get();
+        $goals = DB::table('goals')->where('user_id', $userId)->get();
+        $debts = DB::table('debts')->where('user_id', $userId)->get();
+
+        $mainQuery = $this->buildFilteredRecordsQuery($request);
+
+
+        // 7. Paginación adaptada
+        $records = $mainQuery->paginate(9)->appends($request->all());
+
+        // 8. Si la petición viene por AJAX (barra de búsqueda / filtros), devolvemos
+        // la misma vista "home" ya renderizada (con todo lo necesario para que
+        // los filtros y la búsqueda queden sincronizados), y el JS se encarga de
+        // tomar solo el fragmento de resultados que necesita actualizar.
+        if ($request->ajax() || $request->wantsJson()) {
+            return response()->json([
+                'status' => 'success',
+                'html'   => view('home', compact(
+                    'records',
+                    'categories',
+                    'sortBy',
+                    'rangeAmount',
+                    'timeFrame',
+                    'recordType',
+                    'currentCategory',
+                    'search',
+                    'wallets',
+                    'goals',
+                    'debts'
+                ))->render(),
+            ]);
+        }
+
+        // 9. Retornar vista incluyendo todas las variables necesarias
         return view('home', compact(
             'records',
             'categories',
@@ -270,12 +608,51 @@ class RecordController extends Controller
             'timeFrame',
             'recordType',
             'currentCategory',
+            'search',
             'wallets',
             'goals',
             'debts'
         ));
     }
 
+
+    /**
+     * Respuesta de éxito consciente de AJAX.
+     * Si la petición viene del panel "add" (fetch con Accept: application/json),
+     * responde en JSON para que add_panel.js pueda cerrar el modal y
+     * recargar el listado. Si no, conserva el comportamiento clásico de
+     * Laravel (redirect + mensaje flash).
+     */
+    private function successResponse(Request $request, string $message)
+    {
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'message' => $message,
+            ], 200);
+        }
+
+        return redirect()->back()->with('success', $message);
+    }
+
+    /**
+     * Respuesta de error de negocio (no de validación) consciente de AJAX.
+     * En JSON se envía bajo la clave "error" para que, al no coincidir con
+     * ningún data-error-for de un campo específico, add_panel.js lo pinte
+     * en el bloque de error general del formulario correspondiente.
+     */
+    private function errorResponse(Request $request, string $message, int $status = 422, bool $withInput = false)
+    {
+        if ($request->wantsJson()) {
+            return response()->json([
+                'success' => false,
+                'errors'  => ['error' => $message],
+            ], $status);
+        }
+
+        $redirect = redirect()->back()->withErrors(['error' => $message]);
+        return $withInput ? $redirect->withInput() : $redirect;
+    }
 
     public function create_wallet(Request $request)
     {
@@ -300,7 +677,7 @@ class RecordController extends Controller
             'monto_inicial' => $request->input('wallet-monto')
         ]);
 
-        return back()->with('success', 'Billetera creada correctamente');
+        return $this->successResponse($request, 'Billetera creada correctamente');
     }
 
    public function create_transaction(Request $request)
@@ -355,8 +732,8 @@ class RecordController extends Controller
             ]);
 
             // 4. Cargar y verificar las instancias de billetera vinculadas al usuario
-            $origen = $walletOrigenId ? Wallet::where('user_id', Auth::id())->findOrFail($walletOrigenId) : null;
-            $destino = $walletDestinoId ? Wallet::where('user_id', Auth::id())->findOrFail($walletDestinoId) : null;
+            $origen = $walletOrigenId ? Wallet::where('user_id', Auth::id())->lockForUpdate()->findOrFail($walletOrigenId) : null;
+            $destino = $walletDestinoId ? Wallet::where('user_id', Auth::id())->lockForUpdate()->findOrFail($walletDestinoId) : null;
 
             // Validaciones de reglas de negocio financieras
             if (!$destino) {
@@ -364,11 +741,13 @@ class RecordController extends Controller
             }
 
             if ($tipo === 'ingreso' && $destino->tipo === 'credito') {
-                return back()->withErrors(['error' => 'Operación inválida: No se pueden registrar ingresos directos a una tarjeta de crédito.']);
+                DB::rollBack();
+                return $this->errorResponse($request, 'Operación inválida: No se pueden registrar ingresos directos a una tarjeta de crédito.');
             }
 
             if ($tipo === 'transferencia' && $origen && $origen->tipo === 'credito') {
-                return back()->withErrors(['error' => 'Operación inválida: No puedes transferir fondos usando una tarjeta de crédito como origen.']);
+                DB::rollBack();
+                return $this->errorResponse($request, 'Operación inválida: No puedes transferir fondos usando una tarjeta de crédito como origen.');
             }
 
             // 5. Ejecutar operaciones matemáticas de balances
@@ -416,11 +795,11 @@ class RecordController extends Controller
             ]);
 
             DB::commit();
-            return back()->with('success', 'Movimiento procesado de manera correcta.');
+            return $this->successResponse($request, 'Movimiento procesado de manera correcta.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Error al procesar: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error al procesar: ' . $e->getMessage());
         }
     }
 
@@ -489,6 +868,16 @@ class RecordController extends Controller
             $hoy = now()->startOfDay();
             $fechaIteracion = $fechaInicio->copy();
 
+            // Límite de seguridad: si la fecha de inicio quedó muy atrás con una
+            // frecuencia alta (ej. "diario" desde hace 5 años), este bucle podía
+            // generar miles de transacciones en una sola petición e inflar el
+            // saldo de la billetera de golpe sin que el usuario lo esperara.
+            // Con el límite, se ponen al día solo los últimos 500 movimientos
+            // pendientes y el resto queda pendiente para el comando programado
+            // (ProcessRecurringIncome) que corre periódicamente.
+            $maxBackfill = 500;
+            $iteraciones = 0;
+
             if ($fechaIteracion->lte($hoy)) {
                 do {
                     Transaction::create([
@@ -510,13 +899,15 @@ class RecordController extends Controller
                             ->increment('monto_actual', $income->monto);
                     }
 
+                    $iteraciones++;
+
                     if ($frecuencia === 'ninguno') {
                         break;
                     }
 
                     $fechaIteracion = $this->avanzarFecha($fechaIteracion, $frecuencia)->startOfDay();
 
-                } while ($fechaIteracion->lte($hoy));
+                } while ($fechaIteracion->lte($hoy) && $iteraciones < $maxBackfill);
             }
 
             if ($frecuencia !== 'ninguno') {
@@ -527,11 +918,11 @@ class RecordController extends Controller
             DB::commit();
             
             // Ya funciona todo bien, regresamos el redireccionamiento normal quitando el dd()
-            return back()->with('success', 'Ingreso creado correctamente.');
+            return $this->successResponse($request, 'Ingreso creado correctamente.');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return back()->withErrors(['error' => 'Error: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error: ' . $e->getMessage());
         }
     }
 
@@ -545,72 +936,109 @@ class RecordController extends Controller
             default: return $fecha;
         }
     }
-
     public function investment_create(Request $request)
-    {
-        // 1. Validación estricta usando las claves de tus inputs
-        $request->validate([
-            'investment-titulo'              => 'required|max:25',
-            'investment-category'            => 'nullable|max:50',
-            'investment-monto'               => 'required|numeric|min:0.01',
-            'investment-wallet-select-value' => 'required', 
-            'investment-renta-select-value'  => 'required|in:fija,variable', 
-            'investment-tasa'                => 'required_if:investment-renta-select-value,fija|nullable|numeric|min:0',
-            'investment-vencimiento'         => 'required|date',
-            'investment'                     => 'nullable|image|mimes:png,jpg,jpeg,webp|max:4096',
-        ]);
+        {
+            // Mensajes personalizados en español para validaciones
+            $messages = [
+                'required' => 'El campo :attribute es obligatorio.',
+                'numeric'  => 'El campo :attribute debe ser un valor numérico.',
+                'date'     => 'El campo :attribute debe ser una fecha válida.',
+            ];
 
+            // Nombres amigables para los atributos
+            $attributes = [
+                'investment-titulo'              => 'Nombre de Inversión',
+                'investment-monto'               => 'Monto Inicial',
+                'investment-wallet-select-value' => 'Billetera Origen',
+                'investment-renta-select-value'  => 'Tipo de Renta',
+                'investment-tasa'                => 'Tasa de Interés',
+                'investment-vencimiento'         => 'Fecha de Vencimiento',
+            ];
 
-        DB::beginTransaction();
+            $validator = Validator::make($request->all(), [
+                'investment-titulo'              => 'required|max:25',
+                'investment-category'            => 'nullable|max:50',
+                'investment-monto'               => 'required|numeric|min:0.01',
+                'investment-wallet-select-value' => 'required', 
+                'investment-renta-select-value'  => 'required|in:fija,variable', 
+                'investment-tasa'                => 'required_if:investment-renta-select-value,fija|nullable|numeric|min:0',
+                'investment-vencimiento'         => 'required|date',
+                'investment-image'               => 'nullable|image|mimes:png,jpg,jpeg,webp|max:4096',
+            ], $messages, $attributes);
 
-        try {
-            // Procesar subida de archivo
-            $ruta = null;
-            if ($request->hasFile('investment')) {
-                $ruta = $request->file('investment')->store('investments', 'public');
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    // Antes se usaba ->all() (lista plana de mensajes), lo que impedía
+                    // que add_panel.js pudiera asociar cada error con su campo
+                    // (data-error-for). ->errors() devuelve el MessageBag completo,
+                    // que se serializa como { "campo": ["mensaje", ...] }.
+                    'errors'  => $validator->errors()
+                ], 422);
             }
 
-            $monto = $request->input('investment-monto');
-            $walletId = $request->input('investment-wallet-select-value');
-            $tipoRenta = strtolower($request->input('investment-renta-select-value'));
+            DB::beginTransaction();
 
-            // Obtener la billetera origen
-            $wallet = Wallet::where('user_id', Auth::id())->findOrFail($walletId);
+            try {
+                $ruta = null;
+                if ($request->hasFile('investment-image')) {
+                    $ruta = $request->file('investment-image')->store('investments', 'public');
+                }
 
-            // Comprobación de fondos
-            if ($wallet->monto_actual < $monto) {
-                throw new \Exception('Fondos insuficientes en la billetera origen elegida.');
+                $monto = $request->input('investment-monto');
+                $walletId = $request->input('investment-wallet-select-value');
+                $tipoRenta = strtolower($request->input('investment-renta-select-value'));
+
+                $wallet = Wallet::where('user_id', Auth::id())->lockForUpdate()->findOrFail($walletId);
+
+                if ($wallet->monto_actual < $monto) {
+                    return response()->json([
+                        'success' => false,
+                        'errors'  => ['error' => 'Fondos insuficientes en la billetera origen elegida.']
+                    ], 422);
+                }
+
+                $categoryId = null;
+                if ($request->filled('investment-category')) {
+                    $category = Category::firstOrCreate([
+                        'user_id'   => Auth::id(),
+                        'categoria' => trim($request->input('investment-category'))
+                    ]);
+                    $categoryId = $category->id;
+                }
+
+                Investment::create([
+                    'user_id'           => Auth::id(),
+                    'wallet_id'         => $wallet->id,
+                    'titulo'            => $request->input('investment-titulo'),
+                    'category_id'       => $categoryId,
+                    'icono'             => $ruta, 
+                    'monto_inicial'     => $monto,
+                    'valor_actual'      => $monto,
+                    'ganancia'          => 0.00,
+                    'tipo_renta'        => $tipoRenta,
+                    'tasa_interes'      => ($tipoRenta === 'fija') ? $request->input('investment-tasa') : null,
+                    'fecha_vencimiento' => $request->input('investment-vencimiento'),
+                    'estado'            => 'activa',
+                ]);
+
+                $wallet->decrement('monto_actual', $monto);
+
+                DB::commit();
+
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Inversión registrada correctamente.'
+                ], 200);
+
+            } catch (\Exception $e) {
+                DB::rollBack();
+                return response()->json([
+                    'success' => false,
+                    'errors'  => ['Error al procesar la inversión: ' . $e->getMessage()]
+                ], 500);
             }
-
-            Investment::create([
-                'user_id'           => Auth::id(),
-                'wallet_id'         => $wallet->id,
-                'titulo'            => $request->input('investment-titulo'),
-                // 'categoria' no existe en tu migración directa (tienes category_id), 
-                // si manejas la string en 'icono' o usas un string temporal, lo asignamos a icono:
-                'icono'             => $ruta, 
-                'monto_inicial'     => $monto,
-                'valor_actual'      => $monto, // 
-                'ganancia'          => 0.00,
-                'tipo_renta'        => $tipoRenta,
-                'tasa_interes'      => ($tipoRenta === 'fija') ? $request->input('investment-tasa') : null,
-                'fecha_vencimiento' => $request->input('investment-vencimiento'),
-                'estado'            => 'activa',
-            ]);
-
-            // 4. Afectar el saldo de la billetera origen
-            $wallet->decrement('monto_actual', $monto);
-
-            DB::commit();
-            return back()->with('success', 'Inversión registrada y procesada correctamente.');
-
-        } catch (\Exception $e) {
-            DB::rollBack();
-            return back()->withErrors(['error' => 'Error al procesar la inversión: ' . $e->getMessage()]);
         }
-        
-        
-    }
    public function create_goal(Request $request)
     {
         $request->validate([
@@ -628,7 +1056,7 @@ class RecordController extends Controller
         $montoObjetivo = $request->input('goal-monto-objetivo');
 
         if ((float)$montoInicial > (float)$montoObjetivo) {
-            return redirect()->back()->withErrors(['error' => 'El monto inicial no puede ser mayor que el monto objetivo.']);
+            return $this->errorResponse($request, 'El monto inicial no puede ser mayor que el monto objetivo.');
         }
 
         DB::beginTransaction();
@@ -667,11 +1095,11 @@ class RecordController extends Controller
             ]);
 
             DB::commit();
-            return redirect()->back()->with('success', '¡Meta creada exitosamente!');
+            return $this->successResponse($request, '¡Meta creada exitosamente!');
 
         } catch (\Exception $e) {
             DB::rollBack();
-            return redirect()->back()->withErrors(['error' => 'Error al crear la meta: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error al crear la meta: ' . $e->getMessage());
         }
     }
     public function create_payment_goal(Request $request)
@@ -714,11 +1142,11 @@ class RecordController extends Controller
             $goal = Goal::where('user_id', Auth::id())->findOrFail($goalId);
 
             if ($walletId !== null) {
-                $wallet = Wallet::where('user_id', Auth::id())->findOrFail($walletId);
+                $wallet = Wallet::where('user_id', Auth::id())->lockForUpdate()->findOrFail($walletId);
                 if ($wallet->monto_actual < $monto) {
                     DB::rollBack();
                     if ($pathIcono) { Storage::disk('public')->delete($pathIcono); }
-                    return redirect()->back()->withInput()->withErrors(['error' => 'Fondos insuficientes.']);
+                    return $this->errorResponse($request, 'Fondos insuficientes.', 422, true);
                 }
                 $wallet->decrement('monto_actual', $monto);
             }
@@ -741,14 +1169,14 @@ class RecordController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', '¡Aporte realizado correctamente!');
+            return $this->successResponse($request, '¡Aporte realizado correctamente!');
 
         } catch (\Exception $e) {
             DB::rollBack();
             if ($pathIcono) {
                 Storage::disk('public')->delete($pathIcono);
             }
-            return redirect()->back()->withInput()->withErrors(['error' => 'Error: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error: ' . $e->getMessage(), 422, true);
         }
     }
     public function create_debt(Request $request)
@@ -800,13 +1228,13 @@ class RecordController extends Controller
                 'icono'             => $pathIcono,
             ]);
 
-            return redirect()->back()->with('success', '¡Deuda registrada exitosamente!');
+            return $this->successResponse($request, '¡Deuda registrada exitosamente!');
 
         } catch (\Exception $e) {
             if (isset($pathIcono) && $pathIcono) {
                 Storage::disk('public')->delete($pathIcono);
             }
-            return redirect()->back()->withInput()->withErrors(['error' => 'Error al registrar: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error al registrar: ' . $e->getMessage(), 422, true);
         }
     }
     public function create_paymentdebt(Request $request)
@@ -852,11 +1280,14 @@ class RecordController extends Controller
 
             // Si se seleccionó una billetera interna, verificar saldo y descontar
             if ($walletId !== null) {
-                $wallet = Wallet::findOrFail($walletId);
-                
+                // CORREGIDO: faltaba el filtro por user_id — sin él, cualquier usuario
+                // podía pasar el wallet_id de otra persona y descontarle saldo a una
+                // billetera ajena (IDOR). También se agrega lockForUpdate.
+                $wallet = Wallet::where('user_id', Auth::id())->lockForUpdate()->findOrFail($walletId);
+
                 if ($wallet->monto_actual < $montoPago) {
                     DB::rollBack();
-                    return redirect()->back()->withInput()->withErrors(['error' => 'Fondos insuficientes en la billetera seleccionada.']);
+                    return $this->errorResponse($request, 'Fondos insuficientes en la billetera seleccionada.', 422, true);
                 }
 
                 $wallet->decrement('monto_actual', $montoPago); 
@@ -885,7 +1316,7 @@ class RecordController extends Controller
             }
 
             DB::commit();
-            return redirect()->back()->with('success', '¡Abono a la deuda registrado correctamente!');
+            return $this->successResponse($request, '¡Abono a la deuda registrado correctamente!');
 
         } catch (\Exception $e) {
             DB::rollBack();
@@ -893,7 +1324,7 @@ class RecordController extends Controller
             if (isset($pathIcono) && $pathIcono) {
                 Storage::disk('public')->delete($pathIcono);
             }
-            return redirect()->back()->withInput()->withErrors(['error' => 'Error al procesar el pago: ' . $e->getMessage()]);
+            return $this->errorResponse($request, 'Error al procesar el pago: ' . $e->getMessage(), 422, true);
         }
     }
    

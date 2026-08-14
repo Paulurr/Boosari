@@ -4,7 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\BelongsTo; // Importante importar esto
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Debt extends Model
 {
@@ -12,7 +13,7 @@ class Debt extends Model
 
     protected $fillable = [
         'user_id',
-        'category_id', // Asegúrate de que esté en el fillable
+        'category_id',
         'titulo',
         'monto_inicial',
         'monto_actual',
@@ -20,36 +21,28 @@ class Debt extends Model
         'tasa_interes',
         'prioridad',
         'estado',
-        'icono'
+        'icono',
     ];
 
-    /**
-     * Obtener la categoría asociada a la deuda.
-     */
+    protected $casts = [
+        'fecha_vencimiento' => 'date',
+        'monto_inicial'     => 'decimal:2',
+        'monto_actual'      => 'decimal:2',
+        'tasa_interes'      => 'decimal:2',
+    ];
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
+    }
+
     public function category(): BelongsTo
     {
         return $this->belongsTo(Category::class);
     }
 
-     /**
-     * Casts de atributos para facilitar su manipulación.
-     */
-    protected $casts = [
-        'monto_inicial'     => 'decimal:2',
-        'monto_actual'      => 'decimal:2',
-        'tasa_interes'      => 'decimal:2',
-        'fecha_vencimiento' => 'date',
-    ];
-
-    // --- RELACIONES ---
-
-    public function user()
+    public function payments(): HasMany
     {
-        return $this->belongsTo(User::class);
-    }
-
-    public function payments()
-    {
-        return $this->hasMany(PaymentDebt::class, 'debt_id');
+        return $this->hasMany(PaymentDebt::class);
     }
 }

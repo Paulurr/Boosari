@@ -34,5 +34,10 @@ return [
             'channel' => env('SLACK_BOT_USER_DEFAULT_CHANNEL'),
         ],
     ],
+    'coze' => [
+        'base_url' => env('COZE_API_BASE', 'https://api.coze.com'),
+        'api_key'  => env('COZE_API_KEY'),
+        'bot_id'   => env('COZE_BOT_ID'),
+    ],
 
 ];

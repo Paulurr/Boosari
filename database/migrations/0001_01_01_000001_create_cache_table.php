@@ -12,20 +12,19 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('cache', function (Blueprint $table) {
-            $table->string('key',25)->primary();
+            $table->string('key', 191)->primary();
             $table->mediumText('value');
             $table->integer('expiration')->index();
         });
+
         Schema::create('cache_locks', function (Blueprint $table) {
-            $table->string('key',25)->primary();
-            $table->string('owner',25);
+            $table->string('key', 191)->primary();
+            $table->string('owner');
             $table->integer('expiration')->index();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
+    
     public function down(): void
     {
         Schema::dropIfExists('cache');

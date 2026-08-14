@@ -11,15 +11,18 @@ class Investment extends Model
 
     protected $fillable = [
         'user_id',
-        'titulo',
-        'categoria',
-        'monto_inicial',
-        'monto_actual',
+        'category_id',
         'wallet_id',
+        'titulo',
+        'icono',
+        'monto_inicial',
+        'valor_actual',
+        'ganancia',
         'tipo_renta',
         'tasa_interes',
+        'estado',
+        'fecha_adquisicion',
         'fecha_vencimiento',
-        'imagen'
     ];
 
     // Relación con el usuario
@@ -32,5 +35,9 @@ class Investment extends Model
     public function wallet()
     {
         return $this->belongsTo(Wallet::class);
+    }
+    public function category()
+    {
+        return $this->belongsTo(Category::class);
     }
 }

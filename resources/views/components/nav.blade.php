@@ -146,8 +146,8 @@
                             </a>
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
-                            <a href="" class="a-menu-nav text-sm p-2">
-                                Información
+                            <a href="agent" class="a-menu-nav text-sm p-2">
+                                Agente
                             </a>
                             
                         </div>
@@ -207,8 +207,8 @@
                 </a>
             </li>
             <li class="li-nav">
-                <a href="/info" class="a-nav">
-                    Información Educacional
+                <a href="/agent" class="a-nav">
+                    Agente
                 </a>
                 
             </li>
@@ -252,7 +252,7 @@
 
     <div class="line-nav w-full h-1"></div>
     <div id="perfil-menu-nav" class="perfil-menu-nav flex flex-col p-2">
-        <div class="w-full h-full">
+        <a href="/profile" class="w-full h-full">
              <x-button
                     color1="var(--col4)"
                     color2="var(--col3)"
@@ -263,8 +263,8 @@
 
             </x-button>
 
-        </div>
-        <div class="w-full h-full">
+        </a>
+        <a href="/config" class="w-full h-full">
                 
             <x-button
                         color1="var(--col4)"
@@ -275,7 +275,7 @@
                         Configuración
 
             </x-button>
-        </div>
+        </a>
         
         <form method="POST" action="/log_out" class="w-full h-full">
             @csrf
