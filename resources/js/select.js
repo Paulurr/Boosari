@@ -117,3 +117,4 @@ let debtinfo_payment_wallet = new Select("debtinfo-payment-wallet");
 let paymentGoalinfo_wallet = new Select("paymentGoalinfo-wallet");
 let paymentDebtinfo_wallet = new Select("paymentDebtinfo-wallet");
 let investmentinfo_estado = new Select("investmentinfo-estado");
+

@@ -7,6 +7,11 @@
  *
  * La Zona de peligro SÍ son modales (x-panel), así que se registran
  * con window.registerPanel, igual que cualquier otro panel de la app.
+ *
+ * NOTA: cuando un Admin gestiona la cuenta de OTRA persona, los
+ * modales de "eliminar registros" / "eliminar cuenta" no incluyen el
+ * input de contraseña (el backend ya no lo exige en ese caso), así
+ * que aquí se lee ese input de forma defensiva (puede ser null).
  */
 document.addEventListener('DOMContentLoaded', () => {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content;
@@ -109,10 +114,17 @@ document.addEventListener('DOMContentLoaded', () => {
         cancelBtnId: 'info-profile-cancel-btn',
         errorScopeId: 'info-profile-error',
         onSubmit: async (form) => {
-            const { ok, data } = await apiRequest(form.dataset.action, 'PUT', {
+            const rolesSelect = form.querySelector('[name="info-profile-roles_id"]');
+
+            const body = {
                 name: form.querySelector('[name="info-profile-name"]').value,
                 email: form.querySelector('[name="info-profile-email"]').value,
-            });
+            };
+            if (rolesSelect) {
+                body.roles_id = rolesSelect.value;
+            }
+
+            const { ok, data } = await apiRequest(form.dataset.action, 'PUT', body);
 
             if (!ok) {
                 mostrarError(document.getElementById('info-profile-error'), primerError(data, 'No se pudo actualizar la información.'));
@@ -120,6 +132,14 @@ document.addEventListener('DOMContentLoaded', () => {
             }
 
             sincronizarNombreCorreo(data.data.name, data.data.email);
+
+            if (rolesSelect) {
+                // El rol cambió: recargamos para que toda la página (etiqueta
+                // de rol, permisos de eliminar, etc.) quede consistente.
+                window.location.reload();
+                return true;
+            }
+
             return true;
         },
     });
@@ -132,8 +152,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 limpiarError(resetPanelEl);
                 const input = resetPanelEl.querySelector('[name="reset_confirm_password"]');
 
+                // Si no hay input (Admin gestionando a otra persona), se manda
+                // sin confirm_password; el backend no lo exige en ese caso.
                 const { ok, data } = await apiRequest(resetPanelEl.dataset.action, 'DELETE', {
-                    confirm_password: input.value,
+                    confirm_password: input ? input.value : undefined,
                 });
 
                 if (!ok) {
@@ -155,8 +177,10 @@ document.addEventListener('DOMContentLoaded', () => {
                 limpiarError(deletePanelEl);
                 const input = deletePanelEl.querySelector('[name="delete_confirm_password"]');
 
+                // Si no hay input (Admin gestionando a otra persona), se manda
+                // sin confirm_password; el backend no lo exige en ese caso.
                 const { ok, data } = await apiRequest(deletePanelEl.dataset.action, 'DELETE', {
-                    confirm_password: input.value,
+                    confirm_password: input ? input.value : undefined,
                 });
 
                 if (!ok) {
