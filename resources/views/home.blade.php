@@ -14,7 +14,7 @@
 
     <x-nav/>
      <h1 class="col7 text-center pt-25 pb-15 text-4xl font-bold">
-            Registros
+            {{ (__('main.title')) }}
         </h1>
         <object data="{{ asset('images/BarAppere (3).svg') }}" type="image/svg+xml" class="w-full pointer-events-none h-full object-contain rotate-180 mb-15"></object>
         <div class="lg:pl-30  lg:pr-30 md:pl-15 md:pr-15 pl-2 pr-2 h-auto flex flex-col items-center justify-start">
@@ -29,14 +29,14 @@
                         <div class="filtro-but-icon-p2"></div>
                         <div class="filtro-but-icon-p1"></div>
                     </div>
-                    Filtros
+                    {{ __('main.filter') }}
                 </x-button>
                 <div class="w-10">
 
                 </div>
 
                 <form action="{{ route('records.index') }}" method="GET" id="search-form" class="h-10 w-full flex justify-end mb-15">
-                    <input type="text" name="search" id="search-input" value="{{ $search ?? '' }}" class="bgcol1 transition-all  lg:text-lg  xl:text-xl text-xs w-full h-10 mb-15 col7 p-2" placeholder="Busca un Registro"/>
+                    <input type="text" name="search" id="search-input" value="{{ $search ?? '' }}" class="bgcol1 transition-all  lg:text-lg  xl:text-xl text-xs w-full h-10 mb-15 col7 p-2" placeholder="{{ __('main.search') }}"/>
                     <button type="submit" class="ml-2 cursor-pointer overflow-hidden w-auto aspect-square perfil-div-nav flex items-center justify-center transition-colors rounded-full">
                         <img src="{{ asset("images/search.png") }}" alt="" class="h-full aspect-square scale-[0.75]">
                     </button>
@@ -51,7 +51,7 @@
                         colortext="var(--col7)"
                         class="p-4 w-autoW text-xs lg:text-sm flex justify-center items-center add-btn"
                         >
-                        + Agregar Registro
+                        + {{ __('main.add') }}
                     </x-button>
                 </div>
                 
@@ -85,71 +85,71 @@
                                             $fechaFormateada = \Carbon\Carbon::parse($record->fecha)->format('d/m/Y');
 
                                             switch($record->tipo_registro) {
-                                                case 'wallet':
+                                                case 'wallet': //traducido
                                                     $name = 'info-wallet'; // <-- 2. Asignamos el nombre para la billetera
                                                     // 1. Clasificación del tipo de billetera para el título de la tarjeta
                                                     switch($record->extra_info) {
                                                         case 'efectivo':
-                                                            $tipoCard = 'Billetera de Efectivo';
+                                                            $tipoCard = __('main.cash');
                                                             break;
                                                         case 'debito':
-                                                            $tipoCard = 'Cuenta de Débito';
+                                                            $tipoCard = __('main.debit');
                                                             break;
                                                         case 'ahorro':
-                                                            $tipoCard = 'Cuenta de Ahorros';
+                                                            $tipoCard = __('main.savings');
                                                             break;
                                                         case 'credito':
-                                                            $tipoCard = 'Tarjeta de Crédito';
+                                                            $tipoCard = __('main.credit_card');
                                                             break;
                                                         default:
-                                                            $tipoCard = 'Cuenta Financiera';
+                                                            $tipoCard = __('main.financial');
                                                             break;
                                                     }
                                                     $origen = "";
 
                                                     // 3. Lógica para el Monto Inicial y Destinos Dinámicos
-                                                    if ($record->extra_info === 'credito') {
+                                                    if ($record->extra_info === __('main.credit')) {
                                                         $destino = '';
                                                     } else {
                                                         $montoInicialFormateado = isset($record->monto_inicial)
                                                             ? '$' . number_format($record->monto_inicial, 2)
-                                                            : 'No registrado';
+                                                            : __('main.unregistered');
 
-                                                        $destino = 'Monto Inicial: ' . $montoInicialFormateado;
+                                                        $destino = __('main.initial_amount') . ': ' . $montoInicialFormateado;
                                                     }
                                                     break;
 
-                                                case 'income':
+                                                case 'income': //traducido
                                                     $name = 'info-income';
-                                                    $tipoCard = "Salario";
+                                                    $tipoCard = __('main.income');
                                                     $origen = "";
                                                     $destino = !empty($record->billetera_destino)
-                                                        ? 'Destino: ' . $record->billetera_destino
-                                                        : 'Destino: Cuenta Externa';
+                                                        ? __('main.destination') . ': ' . $record->billetera_destino
+                                                        : __('main.destination') . ': ' . __('main.external_account');
                                                     break;
 
-                                                case 'transaction':
+                                                case 'transaction': //traducido
                                                     $name = 'info-transaction';
                                                     if ($record->extra_info === 'ingreso') {
-                                                        $tipoCard = 'Ingreso';
+                                                        $tipoCard = __('main.income');
                                                         $origen = '';
-                                                        $destino = !empty($record->billetera_destino) ? 'Destino: ' . $record->billetera_destino : 'Destino: Sin asignar';
+                                                        $destino = !empty($record->billetera_destino) ? __('main.destination') . ': ' . $record->billetera_destino : __('main.destination') . ': ' . __('main.not_assigned');
                                                     } elseif ($record->extra_info === 'gasto') {
-                                                        $tipoCard = 'Gasto';
+                                                        $tipoCard = __('main.expense');
                                                         $origen = '';
-                                                        $destino = !empty($record->billetera_destino) ? 'Cuenta: ' . $record->billetera_destino : 'Cuenta: Sin asignar';
+                                                        $destino = !empty($record->billetera_destino) ? __('main.account') . ': ' . $record->billetera_destino : __('main.account') . ': ' . __('main.not_assigned');
                                                     } else {
-                                                        $tipoCard = 'Transferencia';
-                                                        $origen = !empty($record->billetera_origen) ? 'Desde: ' . $record->billetera_origen : 'Desde: Cuenta Emisora';
-                                                        $destino = !empty($record->billetera_destino) ? 'Hacia: ' . $record->billetera_destino : 'Hacia: Cuenta Receptora';
+                                                        $tipoCard = __('main.wire_transfer');
+                                                        $origen = !empty($record->billetera_origen) ? __('main.from') . ': ' . $record->billetera_origen : __('main.from') . ': ' . __('main.issuing_account');
+                                                        $destino = !empty($record->billetera_destino) ? __('main.to') . ': ' . $record->billetera_destino : __('main.to') . ': ' . __('main.receiving_account');
                                                     }
                                                     break;
 
-                                                case 'investment':
+                                                case 'investment': //traducido
                                                     $name = 'info-investment';
-                                                    $tipoCard = 'Inversión (' . ucfirst($record->extra_info) . ')';
+                                                    $tipoCard = __('main.investment') . ' (' . ucfirst($record->extra_info) . ')';
                                                     $montoInvertido = '$' . number_format($record->monto_inicial, 2);
-                                                    $origen = 'Invertido: ' . $montoInvertido;
+                                                    $origen = __('main.invested') . ': ' . $montoInvertido;
 
                                                     $gananciaNeto = $record->monto - $record->monto_inicial;
                                                     $signo = $gananciaNeto >= 0 ? '+' : '';
@@ -157,57 +157,57 @@
 
                                                     $vencimiento = !empty($record->vencimiento_registro)
                                                         ? date('d/m/Y', strtotime($record->vencimiento_registro))
-                                                        : 'Sin fecha';
+                                                        : __('main.no_date');
 
                                                     $tasaTexto = '';
-                                                    if ($record->extra_info === 'fija' && !empty($record->tasa_interes_registro)) {
-                                                        $tasaTexto = ' | Tasa: ' . ($record->tasa_interes_registro + 0) . '%';
+                                                    if ($record->extra_info === __('main.fixed') && !empty($record->tasa_interes_registro)) {
+                                                        $tasaTexto = ' | ' . __('main.rate') . ': ' . ($record->tasa_interes_registro + 0) . '%';
                                                     }
 
-                                                    $destino = "Ganancia: {$gananciaFormateada}{$tasaTexto} | Vence: {$vencimiento}";
+                                                    $destino = " " . __('main.profit') . ": {$gananciaFormateada}{$tasaTexto} | " . __('main.expires') . ": {$vencimiento}";
                                                     break;
 
-                                                case 'goal':
+                                                case 'goal': //traducido
                                                     $name = 'info-goal';
-                                                    $tipoCard = 'Meta';
+                                                    $tipoCard = __('main.goal');
                                                     $montoObjetivo = '$' . number_format($record->monto, 2);
                                                     $montoInicial = '$' . number_format($record->monto_inicial, 2);
-                                                    $origen = "Meta: {$montoObjetivo} | Inicial: {$montoInicial}";
+                                                    $origen = " " . __('main.goal') . ": {$montoObjetivo} | " . __('main.initial_amount') . ": {$montoInicial}";
 
                                                     $fechaLimite = !empty($record->vencimiento_registro)
                                                         ? date('d/m/Y', strtotime($record->vencimiento_registro))
-                                                        : 'Sin límite';
+                                                        : __('main.no_limit');
 
-                                                    $destino = "Fecha Límite: {$fechaLimite} | Estado: " . ucfirst($record->extra_info);
+                                                    $destino = " " . __('main.deadline') . ": {$fechaLimite} | " . __('main.status') . ": " . ucfirst($record->extra_info);
                                                     break;
 
-                                                case 'debt':
+                                                case 'debt': //traducido
                                                     $name = 'info-debt';
-                                                    $tipoCard = 'Deuda';
+                                                    $tipoCard = __('main.debt');
                                                     $montoOriginal = '$' . number_format($record->monto_inicial, 2);
-                                                    $origen = 'Monto Inicial: ' . $montoOriginal;
+                                                    $origen = " " . __('main.initial_amount') . ": {$montoOriginal}";
 
                                                     $vencimiento = !empty($record->vencimiento_registro)
                                                         ? date('d/m/Y', strtotime($record->vencimiento_registro))
-                                                        : 'Sin fecha';
+                                                        : __('main.no_date');
 
                                                     $prioridad = !empty($record->extra_info) ? ucfirst($record->extra_info) : 'No definida';
-                                                    $destino = "Prioridad: {$prioridad} | Vence: {$vencimiento}";
+                                                    $destino = " " . __('main.priority') . ": {$prioridad} | " . __('main.expires') . ": {$vencimiento}";
                                                     break;
 
-                                                case 'paymentGoal':
+                                                case 'paymentGoal': //traducido
                                                     $name = 'info-paymentGoal';
-                                                    $tipoCard = 'Abono a Meta';
-                                                    $metaAsociada = !empty($record->nombre_padre) ? $record->nombre_padre : 'Meta no encontrada';
-                                                    $origen = 'Meta: ' . $metaAsociada;
+                                                    $tipoCard = __('main.payment_goal');
+                                                    $metaAsociada = !empty($record->nombre_padre) ? $record->nombre_padre : __('main.goal_not_found');
+                                                    $origen = " " . __('main.goal') . ": {$metaAsociada}";
                                                     $destino = '';
                                                     break;
 
-                                                case 'paymentDebt':
+                                                case 'paymentDebt': //traducido 
                                                     $name = 'info-paymentDebt';
-                                                    $tipoCard = 'Pago de Deuda';
-                                                    $deudaAsociada = !empty($record->nombre_padre) ? $record->nombre_padre : 'Deuda no encontrada';
-                                                    $origen = 'Deuda: ' . $deudaAsociada;
+                                                    $tipoCard = __('main.debt_payment');
+                                                    $deudaAsociada = !empty($record->nombre_padre) ? $record->nombre_padre : __('main.debt_not_found');
+                                                    $origen = " " . __('main.debt') . ": {$deudaAsociada}";
                                                     $destino = '';
                                                     break;
                                             }
@@ -233,7 +233,7 @@
                     @endfor
                 @else
                     <div class="h-100 text-center flex items-center justify-center">
-                        No se encontraron registros que coincidan con los filtros aplicados.
+                        {{ __('main.missing') }}
                     </div>
                 @endif
 
@@ -255,7 +255,7 @@
                 
                 <!-- Mensaje de estado -->
                 <p id="wallet-status" class="text-center col3 py-4">
-                    Selecciona un registro para ver los detalles...
+                    {{ __('main.select') }}
                 </p>
 
                 <!-- Estructura de detalles -->
@@ -270,7 +270,7 @@
                             <div class="modal-edit-only hidden mb-5">
                                 <x-label
                                     name="wallet-titulo-input"
-                                    title="Nombre de la billetera"
+                                    :title="__('main.wallet_name')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -286,7 +286,7 @@
                     <div class="grid grid-cols-2 gap-6">
                         <!-- Monto Actual -->
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto Actual</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.current_amount') }}</p>
                             
                             <!-- MODO LECTURA: clase modal-read-only y data-field -->
                             <p id="wallet-monto-actual" data-field="monto_actual" class="modal-read-only text-lg font-bold col4"></p>
@@ -295,7 +295,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="wallet-monto-actual-input"
-                                    title="Monto Actual ($)"
+                                    :title="__('main.current_amount')"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -306,7 +306,7 @@
 
                         <!-- Monto Inicial -->
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto Inicial</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.initial_amount') }}</p>
                             
                             <!-- MODO LECTURA: clase modal-read-only y data-field -->
                             <p id="wallet-monto-inicial" data-field="monto_inicial" class="modal-read-only text-lg font-bold col7"></p>
@@ -315,7 +315,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="wallet-monto-inicial-input"
-                                    title="Monto Inicial ($)"
+                                    :title="__('main.initial_amount')"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -329,14 +329,14 @@
                     <div id="wallet-movement-section" class="modal-edit-only pt-6 border-t-3 col4 hidden">
                         <label class="flex items-center space-x-2 cursor-pointer font-semibold text-xs uppercase">
                             <input type="checkbox" id="wallet-add-movement-check" class="rounded">
-                            <span>¿Registrar un nuevo movimiento?</span>
+                            <span>{{ __('main.new_transaction') }}</span>
                         </label>
 
                         <div id="wallet-movement-fields" class="space-y-4 hidden mt-4">
                             <div class="col7 w-70">
                                 <x-label
                                     name="wallet-mov-titulo"
-                                    title="Concepto / Título"
+                                    :title="__('main.concept_title')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -345,7 +345,7 @@
                                 />
                             </div>
                             <div>
-                                <label class="block text-xs font-semibold uppercase mb-1">Monto del movimiento</label>
+                                <label class="block text-xs font-semibold uppercase mb-1">{{ __('main.transaction_amount') }}</label>
                                 <p id="wallet-mov-tipo-indicator" class="text-xs mt-1 font-semibold"></p>
                             </div>
                         </div>
@@ -357,13 +357,13 @@
                         <div class="relative w-full h-48">
                             <canvas id="wallet-chart"></canvas>
                             <p id="wallet-chart-empty" class="hidden text-center col7 text-sm opacity-75">
-                                Realiza un movimiento de dinero para visualizar tu gráfica.
+                                {{ __('main.transaction_move') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="text-right text-xs">
-                        Registrado el: <span id="wallet-fecha"></span>
+                        {{ __('main.recorded_on') }}: <span id="wallet-fecha"></span>
                     </div>
                 </div>
 
@@ -377,7 +377,7 @@
                 
                 <!-- Mensaje de estado al cargar -->
                 <p id="transaction-status" class="text-center col3 py-4">
-                    Selecciona un registro para ver los detalles...
+                    {{ __('main.select') }}
                 </p>
 
                 <!-- Contenedor de detalles -->
@@ -397,7 +397,7 @@
                             <div class="modal-edit-only w-50 hidden mb-2">
                                 <x-label
                                     name="transaction-titulo-input"
-                                    title="Concepto / Título"
+                                    :title="__('main.concept_title')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -423,7 +423,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="transaction-monto-input"
-                                    title="Monto ($)"
+                                    :title="__('main.amount') . ' ($)'"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -441,7 +441,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="transaction-categoria-input"
-                                    title="Categoría"
+                                    :title="__('main.category')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -455,17 +455,17 @@
                     <!-- Cuentas Origen / Destino (Solo Lectura Informativo) -->
                     <div class="grid grid-cols-2 gap-6 pt-6 col7">
                         <div>
-                            <p class="text-xs font-semibold uppercase opacity-75">Cuenta Origen</p>
+                            <p class="text-xs font-semibold uppercase opacity-75">{{ __('main.issuing_account') }}</p>
                             <p id="transaction-origen" class="text-sm font-semibold mt-1">N/A</p>
                         </div>
                         <div>
-                            <p class="text-xs font-semibold uppercase opacity-75">Cuenta Destino</p>
+                            <p class="text-xs font-semibold uppercase opacity-75">{{ __('main.receiving_account') }}</p>
                             <p id="transaction-destino" class="text-sm font-semibold mt-1">N/A</p>
                         </div>
                     </div>
 
                     <div class="text-right text-xs col7">
-                        Fecha del movimiento: <span id="transaction-fecha"></span>
+                        {{ __('main.recorded_on') }}: <span id="transaction-fecha"></span>
                     </div>
                 </div>
 
@@ -473,12 +473,12 @@
         </x-panel>
         <x-panel 
             name="info-income" 
-            title="Ingreso Programado"
+            :title="__('main.scheduled_income')"
             :info="true">
             <div id="income-container" class="p-6">
                 
                 <p id="income-status" class="text-center col3 py-8 block">
-                    Cargando información...
+                    {{ __('main.loading') }}
                 </p>
 
                 <div id="income-details" class="space-y-8 hidden">
@@ -495,7 +495,7 @@
                                     <input type="checkbox" id="income-activo-input" class="sr-only peer">
                                     <div class="w-11 h-6 bg-gray-300 peer-focus:outline-none rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:border-gray-300 after:border after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-500"></div>
                                 </label>
-                                <span class="text-xs font-semibold col7">Generar movimientos automáticos</span>
+                                <span class="text-xs font-semibold col7">{{ __('main.programed_transaction') }}</span>
                             </div>
                         </div>
                     </div>
@@ -507,12 +507,12 @@
                             <x-label-image name="incomeinfo" />
                         </div>
                         <div class="flex-1">
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Título / Concepto</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.concept_title') }}</p>
                             <h3 id="income-titulo" class="modal-read-only text-xl font-bold col4"></h3>
                             <div class="modal-edit-only hidden w-50" >
                                 <x-label
                                     name="income-titulo-input"
-                                    title="Título / Concepto"
+                                    :title="__('main.concept_title')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -530,7 +530,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="income-monto-input"
-                                    title="Monto ($)"
+                                    :title="__('main.amount') . ' ($)'"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -549,12 +549,12 @@
                                     title=""
                                     name="income-frecuencia"
                                     first="Ninguno">
-                                    <x-option name="income-frecuencia" value="ninguno">Ninguno</x-option>
-                                    <x-option name="income-frecuencia" value="diario">Diario</x-option>
-                                    <x-option name="income-frecuencia" value="semanal">Semanal</x-option>
-                                    <x-option name="income-frecuencia" value="quincenal">Quincenal</x-option>
-                                    <x-option name="income-frecuencia" value="mensual">Mensual</x-option>
-                                    <x-option name="income-frecuencia" value="anual">Anual</x-option>
+                                    <x-option name="income-frecuencia" value="ninguno">{{ __('main.none') }}</x-option>
+                                    <x-option name="income-frecuencia" value="diario">{{ __('main.daily') }}</x-option>
+                                    <x-option name="income-frecuencia" value="semanal">{{ __('main.weekly') }}</x-option>
+                                    <x-option name="income-frecuencia" value="quincenal">{{ __('main.biweekly') }}</x-option>
+                                    <x-option name="income-frecuencia" value="mensual">{{ __('main.monthly') }}</x-option>
+                                    <x-option name="income-frecuencia" value="anual">{{ __('main.yearly') }}</x-option>
                                 </x-select>
                             </div>
                         </div>
@@ -562,7 +562,7 @@
 
                     <!-- Próxima Ejecución -->
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Próxima Ejecución</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.next_run') }}</p>
                         <p id="income-fecha" class="modal-read-only text-sm font-semibold"></p>
                         <input type="datetime-local" id="income-fecha-input" class="modal-edit-only hidden w-full border p-1.5 rounded bg-transparent col7 text-sm">
                     </div>
@@ -570,11 +570,11 @@
                     <!-- Info Relacional (Lectura) -->
                     <div class="grid grid-cols-2 gap-6 text-xs pt-6 border-t-3 col4">
                         <div>
-                            <span class="opacity-75">Billetera:</span>
+                            <span class="opacity-75">{{ __('main.wallet') }}:</span>
                             <p id="income-wallet" class="font-bold col7"></p>
                         </div>
                         <div>
-                            <span class="opacity-75">Categoría:</span>
+                            <span class="opacity-75">{{ __('main.category') }}:</span>
                             <p id="income-category" class="font-bold col7"></p>
                         </div>
                     </div>
@@ -584,12 +584,12 @@
         </x-panel>
         <x-panel
             name="info-goal"
-            title="Información de Meta"
+            :title="__('main.goal_info')"
             :info="true">
             <div id="info-goal-container" class="p-6">
 
                 <p id="goal-status" class="text-center col3 py-8 block">
-                    Selecciona una meta para ver los detalles...
+                    {{ __('main.goal_select') }}
                 </p>
 
                 <div id="goal-details" class="space-y-8 hidden">
@@ -604,7 +604,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="goal-titulo-input"
-                                    title="Nombre de la meta"
+                                    :title="__('main.goal_title')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -620,7 +620,7 @@
                     <!-- Progreso -->
                     <div class="col7">
                         <div class="flex justify-between items-center mb-1">
-                            <p class="text-xs font-semibold uppercase col7">Progreso</p>
+                            <p class="text-xs font-semibold uppercase col7">{{ __('main.progress') }}</p>
                             <p id="goal-progreso-pct" class="text-xs font-bold col7"></p>
                         </div>
                         <div class="w-full h-2 rounded-full bg-gray-300 overflow-hidden">
@@ -634,12 +634,12 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto Objetivo</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.goal_target_amount') }}</p>
                             <p id="goal-monto-objetivo" data-field="monto_objetivo" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="goal-monto-objetivo-input"
-                                    title="Monto Objetivo ($)"
+                                    :title="__('main.goal_target_amount') . ' ($)'"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -649,14 +649,14 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Fecha Límite</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.deadline') }}</p>
                             <p id="goal-fecha-limite" class="modal-read-only text-sm font-semibold mt-1"></p>
                             <input type="date" id="goal-fecha-limite-input" class="modal-edit-only hidden w-full border p-1.5 rounded bg-transparent col7 text-sm">
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Descripción</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.description') }}</p>
                         <p id="goal-descripcion" class="modal-read-only text-sm"></p>
                         <textarea id="goal-descripcion-input" rows="3" maxlength="255" class="modal-edit-only hidden w-full border p-2 rounded bg-transparent col7 text-sm resize-none"></textarea>
                     </div>
@@ -665,14 +665,14 @@
                     <div id="goal-payment-section" class="modal-edit-only pt-6 border-t-3 col4 hidden">
                         <label class="flex items-center space-x-2 cursor-pointer font-semibold text-xs uppercase">
                             <input type="checkbox" id="goal-add-payment-check" class="rounded">
-                            <span>¿Registrar un abono a esta meta?</span>
+                            <span>{{ __('main.ask_goal_payment') }}</span>
                         </label>
 
                         <div id="goal-payment-fields" class="space-y-4 hidden  mt-4">
                             <div class="col7 w-70">
                                 <x-label
                                     name="goal-payment-titulo"
-                                    title="Concepto del abono"
+                                    :title="__('main.payment_goal_concept')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -683,7 +683,7 @@
                             <div class="col7 w-70">
                                 <x-label
                                     name="goal-payment-monto"
-                                    title="Monto a Aportar ($)"
+                                    :title="__('main.contribution_amount') . ' ($)'"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -691,7 +691,7 @@
                                     :required="false"
                                 />
                             </div>
-                            <x-select title="Billetera de origen :" name="goalinfo-payment-wallet" first="Externa">
+                            <x-select :title="__('main.issuing_account')" name="goalinfo-payment-wallet" first="Externa">
                                 <x-option name="goalinfo-payment-wallet" value="">Externa</x-option>
                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                     <x-option name="goalinfo-payment-wallet" value="{{ $wallet->id }}">
@@ -699,28 +699,28 @@
                                     </x-option>
                                 @endforeach
                             </x-select>
-                            <span class="text-xs -mt-4 block">Si eliges una billetera, se le descontará el monto del abono.</span>
+                            <span class="text-xs -mt-4 block">{{ __('main.wallet_selection') }}</span>
                         </div>
                     </div>
 
                     <!-- MODO LECTURA: Gráfica de abonos -->
                     <div class="modal-read-only pt-6 border-t-3 col4">
-                        <p class="text-xs font-semibold uppercase col7 mb-3">Historial de Abonos</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-3">{{ __('main.contribution_history') }}</p>
                         <div class="relative w-full h-48">
                             <canvas id="goal-chart"></canvas>
                             <p id="goal-chart-empty" class="hidden text-center col7 text-sm opacity-75">
-                                Registra un abono para visualizar tu progreso.
+                                {{ __('main.payment_advice') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6 text-xs">
                         <div>
-                            <span class="opacity-75">Categoría:</span>
+                            <span class="opacity-75">{{ __('main.category') }}:</span>
                             <p id="goal-category" class="font-bold col7"></p>
                         </div>
                         <div>
-                            <span class="opacity-75">Monto Inicial:</span>
+                            <span class="opacity-75">{{ __('main.initial_amount') }}:</span>
                             <p id="goal-monto-inicial" class="font-bold col7"></p>
                         </div>
                     </div>
@@ -734,7 +734,7 @@
             <div id="info-debt-container" class="p-6">
 
                 <p id="debt-status" class="text-center col3 py-8 block">
-                    Selecciona una deuda para ver los detalles...
+                    {{ __('main.debt_select') }}
                 </p>
 
                 <div id="debt-details" class="space-y-8 hidden">
@@ -749,7 +749,7 @@
                             <div class="modal-edit-only mb-3 hidden">
                                 <x-label
                                     name="debt-titulo-input"
-                                    title="Nombre de la deuda"
+                                    :title="__('main.debt_name')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -765,26 +765,26 @@
                     <!-- Restante -->
                     <div class="col7">
                         <div class="flex justify-between items-center mb-1">
-                            <p class="text-xs font-semibold uppercase col7">Pagado</p>
+                            <p class="text-xs font-semibold uppercase col7">{{ __('main.paid') }}</p>
                             <p id="debt-progreso-pct" class="text-xs font-bold col7"></p>
                         </div>
                         <div class="w-full h-2 rounded-full bg-gray-300 overflow-hidden">
                             <div id="debt-progreso-bar" class="h-full bg-red-500" style="width:0%"></div>
                         </div>
                         <div class="flex justify-between text-xs mt-2 opacity-75">
-                            <span id="debt-monto-actual">Resta: $0.00</span>
-                            <span id="debt-monto-inicial-txt">Original: $0.00</span>
+                            <span id="debt-monto-actual">{{ __('main.minus') }}: $0.00</span>
+                            <span id="debt-monto-inicial-txt">{{ __('main.original') }}: $0.00</span>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Tasa de Interés (%)</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.interest_rate') }}</p>
                             <p id="debt-tasa" data-field="tasa_interes" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="debt-tasa-input"
-                                    title="Tasa de Interés (%)"
+                                    :title="__('main.interest_rate')"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -795,20 +795,20 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Fecha de Vencimiento</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.expiration_date') }}</p>
                             <p id="debt-fecha-vencimiento" class="modal-read-only text-sm font-semibold mt-1"></p>
                             <input type="date" id="debt-fecha-vencimiento-input" class="modal-edit-only hidden w-full border p-1.5 rounded bg-transparent col7 text-sm">
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Prioridad de Alerta</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.alert_priority') }}</p>
                         <p id="debt-prioridad-txt" class="modal-read-only text-sm font-semibold capitalize mt-1"></p>
                         <div class="modal-edit-only hidden">
                             <x-select title="" name="debtinfo-prioridad" first="Media">
-                                <x-option name="debtinfo-prioridad" value="media">Media (Normal)</x-option>
-                                <x-option name="debtinfo-prioridad" value="alta">Alta (Urgente)</x-option>
-                                <x-option name="debtinfo-prioridad" value="baja">Baja (Flexible)</x-option>
+                                <x-option name="debtinfo-prioridad" value="media">{{ __('main.mid') }}</x-option>
+                                <x-option name="debtinfo-prioridad" value="alta">{{ __('main.tall') }}</x-option>
+                                <x-option name="debtinfo-prioridad" value="baja">{{ __('main.low') }}</x-option>
                             </x-select>
                         </div>
                     </div>
@@ -817,14 +817,14 @@
                     <div id="debt-payment-section" class="modal-edit-only pt-6 border-t-3 col4 hidden">
                         <label class="flex items-center space-x-2 cursor-pointer font-semibold text-xs uppercase">
                             <input type="checkbox" id="debt-add-payment-check" class="rounded">
-                            <span>¿Registrar un pago a esta deuda?</span>
+                            <span>{{ __('main.debt_pay') }}</span>
                         </label>
 
                         <div id="debt-payment-fields" class="space-y-4 hidden mt-4">
                             <div class=" w-50">
                                 <x-label
                                     name="debt-payment-titulo"
-                                    title="Concepto del pago"
+                                    :title="__('main.payment_goal_concept')"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -835,7 +835,7 @@
                             <div>
                                 <x-label
                                     name="debt-payment-monto"
-                                    title="Monto a Pagar ($)"
+                                    :title="__('main.amount_to_pay')"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"

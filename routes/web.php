@@ -7,6 +7,7 @@ use App\Http\Controllers\InfoController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\PasswordResetController;
 
 Route::get('/lang/{locale}', function ($locale) {
     if (! in_array($locale, ['es', 'en'])) {
@@ -26,7 +27,20 @@ Route::middleware(['guest'])->group(function () {
 
     Route::post('/sign_up', [AuthController::class, 'sign_up']);
     Route::post('/log_in', [AuthController::class, 'log_in']);
-});
+    Route::get('/recover_account', function () { return view('recover_account'); });
+    
+    // Mostrar formulario para ingresar el correo
+    Route::get('/forgot_password', [PasswordResetController::class, 'showLinkRequestForm'])->name('password.request');
+    
+    // Recibir el correo y enviar el enlace
+    Route::post('/forgot_password', [PasswordResetController::class, 'sendResetLinkEmail'])->name('password.email');
+    
+    // Vista enviada al correo del usuario (Nombre 'password.reset' requerido por Laravel)
+    Route::get('/reset-password/{token}', [PasswordResetController::class, 'showResetForm'])->name('password.reset');
+    
+    // Guardar la nueva contraseña
+    Route::post('/reset-password', [PasswordResetController::class, 'resetPassword'])->name('password.update');
+    });
 
 
 Route::middleware(['usuario'])->group(function () {
