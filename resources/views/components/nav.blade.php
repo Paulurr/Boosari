@@ -276,7 +276,20 @@
 
             </x-button>
         </a>
-        
+
+        @if (in_array((int) auth()->user()->roles_id, [2, 3]))
+            <a href="{{ route('usuarios.index') }}" class="w-full h-full">
+                <x-button
+                    color1="var(--col4)"
+                    color2="var(--col3)"
+                    colortext="var(--col1)"
+                    class="p-2 w-63 h-full text-start"
+                    >
+                    Gestión de Usuarios
+                </x-button>
+            </a>
+        @endif
+
         <form method="POST" action="/log_out" class="w-full h-full">
             @csrf
                 <x-button

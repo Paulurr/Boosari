@@ -7,7 +7,11 @@ use App\Http\Controllers\InfoController;
 use App\Http\Controllers\AgentController;
 use App\Http\Controllers\ConfiguracionController;
 use App\Http\Controllers\ProfileController;
+
 use App\Http\Controllers\PasswordResetController;
+
+use App\Http\Controllers\UserManagementController;
+
 
 Route::get('/lang/{locale}', function ($locale) {
     if (! in_array($locale, ['es', 'en'])) {
@@ -59,6 +63,19 @@ Route::middleware(['usuario'])->group(function () {
     Route::patch('/config/agente', [ConfiguracionController::class, 'actualizarAgente'])->name('config.agente');
     Route::patch('/config/colores', [ConfiguracionController::class, 'actualizarColores'])->name('config.colores');
     Route::delete('/config/colores', [ConfiguracionController::class, 'restaurarColores'])->name('config.colores.restaurar');
+
+    // ---------------- Gestión de usuarios (Moderador y Admin) ----------------
+    // "editar" y "eliminar" un usuario se reutilizan de /profile?id=,
+    // que ya trae permisos, edición y el modal de eliminación con
+    // confirmación de contraseña. Aquí solo van listado y creación.
+    Route::middleware(['moderador'])->prefix('usuarios')->name('usuarios.')->group(function () {
+        Route::get('/', [UserManagementController::class, 'index'])->name('index');
+
+        Route::middleware(['admin'])->group(function () {
+            Route::get('/crear', [UserManagementController::class, 'create'])->name('create');
+            Route::post('/crear', [UserManagementController::class, 'store'])->name('store');
+        });
+    });
 
     // ---------------- Agente IA ----------------
     Route::get('/agent', [AgentController::class, 'index'])->name('agent.index');
@@ -122,7 +139,7 @@ Route::middleware(['usuario'])->group(function () {
     Route::post('/debt/create', [RecordController::class, 'create_debt']);
     Route::post('/payment-debt/create', [RecordController::class, 'create_paymentdebt']);
 
-    // ---------------- Sesión ----------------
+    // ---------------- Sesión ---------------- //
     Route::get('/log_out', function () { return abort(404); });
     Route::post('/log_out', [AuthController::class, 'log_out']);
 });
