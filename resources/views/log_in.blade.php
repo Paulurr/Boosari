@@ -52,12 +52,6 @@
                                  {{ __('forms.btn1') }}
                          </a>
                      </div>
-                     <div class="h-[2%] w-full flex items-center justify-center text-sm mt-7">
-                         ¿Olvidaste tu contraseña?
-                         <a href="/recover_account" class="hover:underline ml-1 col4 font-bold">
-                            Recuperar cuenta
-                         </a>
-                     </div>
                      <br>
                      <div class="h-[14%] w-full flex items-center justify-center">
                          <x-button 

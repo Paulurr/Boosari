@@ -147,7 +147,7 @@
                         </div>
                         <div class="li-menu-nav rounded-br-md rounded-tr-md overflow-hidden">
                             <a href="agent" class="a-menu-nav text-sm p-2">
-                                Agente
+                                {{ __('nav.agent') }}
                             </a>
                             
                         </div>
@@ -208,7 +208,7 @@
             </li>
             <li class="li-nav">
                 <a href="/agent" class="a-nav">
-                    Agente
+                    {{ __('nav.agent') }}
                 </a>
                 
             </li>
@@ -259,7 +259,7 @@
                     colortext="var(--col1)"
                     class="p-2 w-63 h-full text-start"
                     >
-                    Administrar Perfil
+                    {{ __('nav.profile_config') }}
 
             </x-button>
 
@@ -272,7 +272,7 @@
                         colortext="var(--col1)"
                         class=" p-2 w-63 h-full text-start"
                         >
-                        Configuración
+                        {{ __('nav.settings') }}
 
             </x-button>
         </a>
@@ -285,7 +285,7 @@
                     colortext="var(--col1)"
                     class="p-2 w-63 h-full text-start"
                     >
-                    Gestión de Usuarios
+                    {{ __('nav.user_management') }}
                 </x-button>
             </a>
         @endif
@@ -299,7 +299,7 @@
                     class=" p-2 w-63 h-full text-start "
                     type="submit"
                     >
-                    Cerrar Sesión
+                    {{ __('nav.log_out') }}
                 </x-button>
 
         </form>
