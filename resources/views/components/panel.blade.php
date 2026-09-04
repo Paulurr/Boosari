@@ -27,7 +27,7 @@
                         class="modal-close p-2 col7 {{ $name }}-close"
                         type="button"
                         >
-                        Cancelar
+                        {{ __('main.cancel') }}
                     </x-button>
                     <x-button
                         color1="var(--col4)"
@@ -36,7 +36,7 @@
                         class="modal-btn-submit {{$name}}-submit p-2 col7"
                         id="{{$name}}-submit"
                         >
-                        Enviar
+                        {{ __('main.submit') }}
                     </x-button>
                 @else
                     {{-- Modo Lectura: Salir, Eliminar, Editar --}}
@@ -47,7 +47,7 @@
                         class="modal-close {{ $name }}-close p-2 col7"
                         type="button"
                         >
-                        Salir
+                        {{ __('main.exit') }}
                     </x-button>
                     @if($showDelete)
                         <x-button
@@ -57,7 +57,7 @@
                             class="modal-btn-delete {{$name}}-delete p-2 col7"
                             type="button"
                             >
-                            Eliminar
+                            {{ __('main.delete') }}
                         </x-button>
                     @endif
                     <x-button
@@ -67,7 +67,7 @@
                         class="modal-btn-edit {{$name}}-edit p-2 col7"
                         type="button"
                         >
-                        Editar
+                        {{ __('main.edit') }}
                     </x-button>
 
                     {{-- Modo Edición: Cancelar, Aceptar (Ocultos por defecto) --}}
@@ -78,7 +78,7 @@
                         class="modal-btn-cancel {{$name}}-cancelEdit p-2 col7 hidden"
                         type="button"
                         >
-                        Cancelar
+                        {{ __('main.cancel') }}
                     </x-button>
                     <x-button
                         color1="var(--col4)"
@@ -87,7 +87,7 @@
                         class="modal-btn-submit {{$name}}-submit p-2 col7 hidden"
                         type="button"
                         >
-                        Aceptar
+                        {{ __('main.submit') }}
                     </x-button>
                 @endif
             </div>

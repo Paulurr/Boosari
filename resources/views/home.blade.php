@@ -249,7 +249,7 @@
         <object data="{{ asset('images/BarAppere (2).svg') }}" type="image/svg+xml" class="w-full h-full pointer-events-none object-contain border-b-3-3 col3 mt-15"></object>
         <x-panel 
             name="info-wallet" 
-            title="Información de registro"
+            title="{{ __('main.record_info') }}"
             :info="true">
             <div id="info-wallet-container" class="p-6">
                 
@@ -261,7 +261,7 @@
                 <!-- Estructura de detalles -->
                 <div id="wallet-details" class="space-y-8 hidden">
                     <div class="flex items-center space-x-4">
-                        <img id="wallet-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="wallet-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="walletinfo" />
                         </div>
@@ -353,7 +353,7 @@
 
                     <!-- MODO LECTURA: Gráfica de últimos 8 movimientos -->
                     <div class="modal-read-only pt-6 border-t-3 col4">
-                        <p class="text-xs font-semibold uppercase col7 mb-3">Últimos 8 Movimientos</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-3">{{ __('main.last_8_movements') }}</p>
                         <div class="relative w-full h-48">
                             <canvas id="wallet-chart"></canvas>
                             <p id="wallet-chart-empty" class="hidden text-center col7 text-sm opacity-75">
@@ -371,7 +371,7 @@
         </x-panel>
         <x-panel 
             name="info-transaction" 
-            title="Información de Movimiento"
+            title="{{ __('main.movement_info') }}"
             :info="true">
             <div id="info-transaction-container" class="p-6">
                 
@@ -385,7 +385,7 @@
                     
                     <!-- Cabecera / Icono / Título -->
                     <div class="flex items-center space-x-4">
-                        <img id="transaction-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="transaction-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="transactioninfo" />
                         </div>
@@ -416,7 +416,7 @@
                         
                         <!-- Monto -->
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.amount') }}</p>
                             
                             <p id="transaction-monto" data-field="monto" class="modal-read-only text-lg font-bold col7"></p>
                             
@@ -434,7 +434,7 @@
 
                         <!-- Categoría -->
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Categoría</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.category') }}</p>
                             
                             <p id="transaction-categoria" data-field="categoria" class="modal-read-only text-lg font-bold col7"></p>
                             
@@ -502,7 +502,7 @@
 
                     <!-- Icono y Título -->
                     <div class="flex items-center space-x-4">
-                        <img id="income-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="income-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="incomeinfo" />
                         </div>
@@ -525,7 +525,7 @@
                     <!-- Monto y Frecuencia -->
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.amount') }}</p>
                             <p id="income-monto" class="modal-read-only text-lg font-bold text-green-500"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
@@ -540,7 +540,7 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Frecuencia</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.frequency') }}</p>
                             <p id="income-frecuencia" class="modal-read-only text-sm font-semibold capitalize mt-1"></p>
 
                             {{-- MODO EDICIÓN: mismo componente x-select usado en el panel "Añadir registro" --}}
@@ -548,7 +548,7 @@
                                 <x-select
                                     title=""
                                     name="income-frecuencia"
-                                    first="Ninguno">
+                                    first="{{ __('main.none') }}">
                                     <x-option name="income-frecuencia" value="ninguno">{{ __('main.none') }}</x-option>
                                     <x-option name="income-frecuencia" value="diario">{{ __('main.daily') }}</x-option>
                                     <x-option name="income-frecuencia" value="semanal">{{ __('main.weekly') }}</x-option>
@@ -595,7 +595,7 @@
                 <div id="goal-details" class="space-y-8 hidden">
 
                     <div class="flex items-center space-x-4">
-                        <img id="goal-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="goal-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="goalinfo" />
                         </div>
@@ -691,8 +691,8 @@
                                     :required="false"
                                 />
                             </div>
-                            <x-select :title="__('main.issuing_account')" name="goalinfo-payment-wallet" first="Externa">
-                                <x-option name="goalinfo-payment-wallet" value="">Externa</x-option>
+                            <x-select :title="__('main.issuing_account')" name="goalinfo-payment-wallet" first="{{ __('main.external') }}">
+                                <x-option name="goalinfo-payment-wallet" value="">{{ __('main.external') }}</x-option>
                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                     <x-option name="goalinfo-payment-wallet" value="{{ $wallet->id }}">
                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual, 2) }})
@@ -729,7 +729,7 @@
         </x-panel>
         <x-panel
             name="info-debt"
-            title="Información de Deuda"
+            title="{{ __('main.debt_info') }}"
             :info="true">
             <div id="info-debt-container" class="p-6">
 
@@ -740,7 +740,7 @@
                 <div id="debt-details" class="space-y-8 hidden">
 
                     <div class="flex items-center space-x-4">
-                        <img id="debt-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="debt-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="debtinfo" />
                         </div>
@@ -805,7 +805,7 @@
                         <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.alert_priority') }}</p>
                         <p id="debt-prioridad-txt" class="modal-read-only text-sm font-semibold capitalize mt-1"></p>
                         <div class="modal-edit-only hidden">
-                            <x-select title="" name="debtinfo-prioridad" first="Media">
+                            <x-select title="" name="debtinfo-prioridad" first="{{ __('main.mid') }}">
                                 <x-option name="debtinfo-prioridad" value="media">{{ __('main.mid') }}</x-option>
                                 <x-option name="debtinfo-prioridad" value="alta">{{ __('main.tall') }}</x-option>
                                 <x-option name="debtinfo-prioridad" value="baja">{{ __('main.low') }}</x-option>
@@ -843,40 +843,40 @@
                                     :required="false"
                                 />
                             </div>
-                            <x-select title="Billetera de origen :" name="debtinfo-payment-wallet" first="Externa">
-                                <x-option name="debtinfo-payment-wallet" value="">Externa</x-option>
+                            <x-select title="{{ __('main.source_wallet') }} :" name="debtinfo-payment-wallet" first="{{ __('main.external') }}">
+                                <x-option name="debtinfo-payment-wallet" value="">{{ __('main.external') }}</x-option>
                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                     <x-option name="debtinfo-payment-wallet" value="{{ $wallet->id }}">
                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual, 2) }})
                                     </x-option>
                                 @endforeach
                             </x-select>
-                            <span class="text-xs -mt-4 block">Si eliges una billetera, se le descontará el monto del pago.</span>
+                            <span class="text-xs -mt-4 block">{{ __('main.debt_payment_wallet_note') }}</span>
                             <label class="flex items-center gap-2 cursor-pointer text-xs font-medium">
                                 <input type="checkbox" id="debt-payment-minimo" class="w-4 h-4 rounded cursor-pointer">
-                                ¿Este abono corresponde al pago mínimo obligatorio?
+                                {{ __('main.minimum_payment_question') }}
                             </label>
                         </div>
                     </div>
 
                     <!-- MODO LECTURA: Gráfica de pagos -->
                     <div class="modal-read-only pt-6 border-t-3 col4">
-                        <p class="text-xs font-semibold uppercase col7 mb-3">Historial de Pagos</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-3">{{ __('main.payment_history') }}</p>
                         <div class="relative w-full h-48">
                             <canvas id="debt-chart"></canvas>
                             <p id="debt-chart-empty" class="hidden text-center col7 text-sm opacity-75">
-                                Registra un pago para visualizar la reducción de tu deuda.
+                                {{ __('main.record_payment_note') }}
                             </p>
                         </div>
                     </div>
 
                     <div class="grid grid-cols-2 gap-6 text-xs">
                         <div>
-                            <span class="opacity-75">Categoría:</span>
+                            <span class="opacity-75">{{ __('main.category') }}:</span>
                             <p id="debt-category" class="font-bold col7"></p>
                         </div>
                         <div>
-                            <span class="opacity-75">Monto Inicial:</span>
+                            <span class="opacity-75">{{ __('main.initial_amount') }}:</span>
                             <p id="debt-monto-inicial" class="font-bold col7"></p>
                         </div>
                     </div>
@@ -885,25 +885,25 @@
         </x-panel>
         <x-panel
             name="info-paymentGoal"
-            title="Abono a Meta"
+            title="{{ __('main.goal_contribution') }}"
             :info="true">
             <div id="info-paymentGoal-container" class="p-6">
 
                 <p id="paymentGoal-status" class="text-center col3 py-8 block">
-                    Selecciona un abono para ver los detalles...
+                    {{ __('main.select_contribution_prompt') }}
                 </p>
 
                 <div id="paymentGoal-details" class="space-y-8 hidden">
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Meta</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.goal') }}</p>
                         <p id="paymentGoal-goal-titulo" class="font-bold col4"></p>
                     </div>
 
                     <div class="bgcol4 h-1 w-full"></div>
 
                     <div class="flex items-center space-x-4">
-                        <img id="paymentGoal-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="paymentGoal-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="paymentGoalinfo" />
                         </div>
@@ -912,7 +912,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="paymentGoal-titulo-input"
-                                    title="Concepto del abono"
+                                    title="{{ __('main.contribution_concept') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -924,12 +924,12 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.amount') }}</p>
                             <p id="paymentGoal-monto" data-field="monto" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="paymentGoal-monto-input"
-                                    title="Monto ($)"
+                                    title="{{ __('main.amount_dollar') }}"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -939,24 +939,24 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Fecha</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.date') }}</p>
                             <p id="paymentGoal-fecha" class="text-sm font-semibold mt-1"></p>
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Billetera de origen</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.source_wallet') }}</p>
                         <p id="paymentGoal-wallet" class="modal-read-only text-sm font-semibold"></p>
                         <div class="modal-edit-only hidden">
-                            <x-select title="Billetera de origen :" name="paymentGoalinfo-wallet" first="Externa">
-                                <x-option name="paymentGoalinfo-wallet" value="">Externa</x-option>
+                            <x-select title="{{ __('main.source_wallet') }} :" name="paymentGoalinfo-wallet" first="{{ __('main.external') }}">
+                                <x-option name="paymentGoalinfo-wallet" value="">{{ __('main.external') }}</x-option>
                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                     <x-option name="paymentGoalinfo-wallet" value="{{ $wallet->id }}">
                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual, 2) }})
                                     </x-option>
                                 @endforeach
                             </x-select>
-                            <span class="text-xs -mt-4 block">Si cambias la billetera, se ajusta el saldo de la anterior y la nueva.</span>
+                            <span class="text-xs -mt-4 block">{{ __('main.wallet_change_balance_note') }}</span>
                         </div>
                     </div>
                 </div>
@@ -964,25 +964,25 @@
         </x-panel>
         <x-panel
             name="info-paymentDebt"
-            title="Pago de Deuda"
+            title="{{ __('main.debt_payment') }}"
             :info="true">
             <div id="info-paymentDebt-container" class="p-6">
 
                 <p id="paymentDebt-status" class="text-center col3 py-8 block">
-                    Selecciona un pago para ver los detalles...
+                    {{ __('main.select_payment_prompt') }}
                 </p>
 
                 <div id="paymentDebt-details" class="space-y-8 hidden">
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Deuda</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.debt') }}</p>
                         <p id="paymentDebt-debt-titulo" class="font-bold col4"></p>
                     </div>
 
                     <div class="bgcol4 h-1 w-full"></div>
 
                     <div class="flex items-center space-x-4">
-                        <img id="paymentDebt-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="paymentDebt-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="paymentDebtinfo" />
                         </div>
@@ -994,7 +994,7 @@
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="paymentDebt-titulo-input"
-                                    title="Concepto del pago"
+                                    title="{{ __('main.payment_concept') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1006,12 +1006,12 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.amount') }}</p>
                             <p id="paymentDebt-monto" data-field="monto" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="paymentDebt-monto-input"
-                                    title="Monto ($)"
+                                    title="{{ __('main.amount_dollar') }}"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -1021,31 +1021,31 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Fecha</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.date') }}</p>
                             <p id="paymentDebt-fecha" class="text-sm font-semibold mt-1"></p>
                         </div>
                     </div>
 
                     <div>
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Billetera de origen</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.source_wallet') }}</p>
                         <p id="paymentDebt-wallet" class="modal-read-only text-sm font-semibold"></p>
                         <div class="modal-edit-only hidden">
-                            <x-select title="Billetera de origen :" name="paymentDebtinfo-wallet" first="Externa">
-                                <x-option name="paymentDebtinfo-wallet" value="">Externa</x-option>
+                            <x-select title="{{ __('main.source_wallet') }} :" name="paymentDebtinfo-wallet" first="{{ __('main.external') }}">
+                                <x-option name="paymentDebtinfo-wallet" value="">{{ __('main.external') }}</x-option>
                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                     <x-option name="paymentDebtinfo-wallet" value="{{ $wallet->id }}">
                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual, 2) }})
                                     </x-option>
                                 @endforeach
                             </x-select>
-                            <span class="text-xs -mt-4 block">Si cambias la billetera, se ajusta el saldo de la anterior y la nueva.</span>
+                            <span class="text-xs -mt-4 block">{{ __('main.wallet_change_balance_note') }}</span>
                         </div>
                     </div>
 
                     <div class="modal-edit-only hidden">
                         <label class="flex items-center space-x-2 cursor-pointer font-semibold text-xs uppercase">
                             <input type="checkbox" id="paymentDebt-minimo-input" class="rounded">
-                            <span>¿Fue un pago mínimo?</span>
+                            <span>{{ __('main.was_minimum_payment') }}</span>
                         </label>
                     </div>
                 </div>
@@ -1053,18 +1053,18 @@
         </x-panel>
         <x-panel
             name="info-investment"
-            title="Información de Inversión"
+            title="{{ __('main.investment_info') }}"
             :info="true">
             <div id="info-investment-container" class="p-6">
 
                 <p id="investment-status" class="text-center col3 py-8 block">
-                    Selecciona una inversión para ver los detalles...
+                    {{ __('main.select_investment_prompt') }}
                 </p>
 
                 <div id="investment-details" class="space-y-8 hidden">
 
                     <div class="flex items-center space-x-4">
-                        <img id="investment-icono" src="" alt="Icono" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
+                        <img id="investment-icono" src="" alt="{{ __('main.icon_alt') }}" class="modal-read-only w-16 h-16 object-contain rounded border p-1">
                         <div class="modal-edit-only hidden">
                             <x-label-image name="investmentinfo" />
                         </div>
@@ -1073,7 +1073,7 @@
                             <div class="modal-edit-only hidden w-50 mb-3">
                                 <x-label
                                     name="investment-titulo-input"
-                                    title="Nombre de la inversión"
+                                    title="{{ __('main.investment_name') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1092,7 +1092,7 @@
                     <!-- Ganancia / Rentabilidad -->
                     <div class="col7">
                         <div class="flex justify-between items-center mb-1">
-                            <p class="text-xs font-semibold uppercase col7">Ganancia</p>
+                            <p class="text-xs font-semibold uppercase col7">{{ __('main.profit') }}</p>
                             <p id="investment-rentabilidad" class="text-xs font-bold"></p>
                         </div>
                         <p id="investment-ganancia" class="modal-read-only text-lg font-bold"></p>
@@ -1100,12 +1100,12 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Monto Invertido</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.invested_amount') }}</p>
                             <p id="investment-monto-inicial" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="investment-monto-inicial-input"
-                                    title="Monto Invertido ($)"
+                                    title="{{ __('main.invested_amount_dollar') }}"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -1115,12 +1115,12 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Valor Actual</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.current_value') }}</p>
                             <p id="investment-valor-actual" data-field="valor_actual" class="modal-read-only text-lg font-bold col7"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="investment-valor-actual-input"
-                                    title="Valor Actual ($)"
+                                    title="{{ __('main.current_value_dollar') }}"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -1132,12 +1132,12 @@
 
                     <div class="grid grid-cols-2 gap-6">
                         <div id="investment-tasa-field">
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Tasa de Interés (%)</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.interest_rate_percent') }}</p>
                             <p id="investment-tasa" class="modal-read-only text-sm font-semibold mt-1"></p>
                             <div class="modal-edit-only hidden">
                                 <x-label
                                     name="investment-tasa-input"
-                                    title="Tasa de Interés (%)"
+                                    title="{{ __('main.interest_rate_percent') }}"
                                     type="number"
                                     color1="var(--col3)"
                                     color2="var(--col7)"
@@ -1148,7 +1148,7 @@
                         </div>
 
                         <div>
-                            <p class="text-xs font-semibold uppercase col7 mb-1">Fecha de Vencimiento</p>
+                            <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.expiration_date') }}</p>
                             <p id="investment-fecha-vencimiento" class="modal-read-only text-sm font-semibold mt-1"></p>
                             <input type="date" id="investment-fecha-vencimiento-input" class="modal-edit-only hidden w-full border p-1.5 rounded bg-transparent col7 text-sm">
                         </div>
@@ -1156,17 +1156,17 @@
 
                     <!-- MODO EDICIÓN: Estado de la inversión -->
                     <div class="modal-edit-only hidden">
-                        <p class="text-xs font-semibold uppercase col7 mb-1">Estado</p>
-                        <x-select title="" name="investmentinfo-estado" first="Activa">
-                            <x-option name="investmentinfo-estado" value="activa">Activa</x-option>
-                            <x-option name="investmentinfo-estado" value="finalizada">Finalizada</x-option>
-                            <x-option name="investmentinfo-estado" value="cancelada">Cancelada</x-option>
+                        <p class="text-xs font-semibold uppercase col7 mb-1">{{ __('main.status') }}</p>
+                        <x-select title="" name="investmentinfo-estado" first="{{ __('main.active') }}">
+                            <x-option name="investmentinfo-estado" value="activa">{{ __('main.active') }}</x-option>
+                            <x-option name="investmentinfo-estado" value="finalizada">{{ __('main.finished') }}</x-option>
+                            <x-option name="investmentinfo-estado" value="cancelada">{{ __('main.cancelled') }}</x-option>
                         </x-select>
                     </div>
 
                     <!-- MODO LECTURA: Gráfica Invertido vs Valor Actual -->
                     <div class="modal-read-only pt-6 border-t-3 col4">
-                        <p class="text-xs font-semibold uppercase col7 mb-3">Invertido vs. Valor Actual</p>
+                        <p class="text-xs font-semibold uppercase col7 mb-3">{{ __('main.invested') }} vs. {{ __('main.current_value') }}</p>
                         <div class="relative w-full h-48">
                             <canvas id="investment-chart"></canvas>
                         </div>
@@ -1174,93 +1174,93 @@
 
                     <div class="grid grid-cols-2 gap-6 text-xs pt-6 border-t-3 col4">
                         <div>
-                            <span class="opacity-75">Billetera de origen:</span>
+                            <span class="opacity-75">{{ __('main.source_wallet') }}:</span>
                             <p id="investment-wallet" class="font-bold col7"></p>
                         </div>
                         <div>
-                            <span class="opacity-75">Categoría:</span>
+                            <span class="opacity-75">{{ __('main.category') }}:</span>
                             <p id="investment-category" class="font-bold col7"></p>
                         </div>
                     </div>
 
                     <div class="text-right text-xs col7">
-                        Fecha de adquisición: <span id="investment-fecha-adquisicion"></span>
+                        {{ __('main.acquisition_date') }}: <span id="investment-fecha-adquisicion"></span>
                     </div>
                 </div>
             </div>
         </x-panel>
         <x-panel
             name="add"
-            title="Añadir registro"
+            title="{{ __('main.add_record') }}"
         >
             <div class="w-full h-full overflow-y-auto barpag">
                 <div class="w-full h-auto">
                     
                     <x-select
-                        title="Seleccionar tipo:"
+                        title="{{ __('main.select_type') }}"
                         name="add">
                         <x-option
                             name="add"
                             value="Ninguno"
                         >
-                            Ninguno
+                            {{ __('main.none') }}
                         </x-option>  
                         <x-option
                             name="add"
                             value="Billetera"
                         >
-                            Billetera
+                            {{ __('main.wallet') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Salario"
                         >
-                            Salario
+                            {{ __('main.salary') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Inversión"
                         >
-                            Inversión
+                            {{ __('main.investment') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Movimiento"
                         >
-                            Movimiento
+                            {{ __('main.movement') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Meta"
                         >
-                            Meta
+                            {{ __('main.goal') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Pago de Meta"
                         >
-                            Pago de Meta
+                            {{ __('main.payment_goal') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Deuda"
                         >
-                            Deuda
+                            {{ __('main.debt') }}
                         </x-option>    
                         <x-option
                             name="add"
                             value="Pago de Deuda"
                         >
-                            Pago de Deuda
+                            {{ __('main.debt_payment') }}
                         </x-option>    
                     </x-select>
                     <div id="-default" class="flex items-center justify-center text-xl h-100 w-full ">
-                        Ningun tipo de registro seleccionado
+                        {{ __('main.no_record_type_selected') }}
                     </div>
                     <form action="/wallet/create" method="POST" enctype="multipart/form-data" id="wallet-form" class="w-full flex items-center justify-center flex-col ">
                         @csrf
                         <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                            Nueva Billetera
+                            {{ __('main.new_wallet') }}
                         </h2>
 
                         <!-- Contenedor para errores generales -->
@@ -1271,7 +1271,7 @@
                         <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center ">
                             <x-label 
                             name="wallet-titulo"
-                            title='Nombre de Billetera'
+                            title="{{ __('main.wallet_name') }}"
                             maxlength="25"
                                 color1="var(--col3)"
                                 color2="var(--col4)"
@@ -1290,7 +1290,7 @@
                                     
                                     <x-label 
                                     name="wallet-monto"
-                                    title='Monto'
+                                    title="{{ __('main.amount') }}"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
                                     w="w-full"
@@ -1299,42 +1299,42 @@
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="wallet-monto"></span>
                                     
                                     <x-select
-                                    title="Seleccionar tipo:"
+                                    title="{{ __('main.select_type') }}"
                                     name="wallet"
                                     :required="true">
                                     <x-option
                                             name="wallet"
                                             value="ninguno"
                                         >
-                                        Ninguno
+                                        {{ __('main.none') }}
                                         </x-option>
                                         <x-option
                                             name="wallet"
                                             value="efectivo"
 
                                         >
-                                        Efectivo
+                                        {{ __('main.cash') }}
                                     </x-option>
                                         <x-option
                                             name="wallet"
                                                 value="debito"
 
                                             >
-                                            Debito
+                                            {{ __('main.debit') }}
                                         </x-option>
                                         <x-option
                                         name="wallet"
                                             value="credito"
                                         
                                         >
-                                            Credito   
+                                            {{ __('main.credit_card') }}   
                                         </x-option>
                                         <x-option
                                         name="wallet"
                                             value="ahorro"
 
                                         >
-                                            Ahorro 
+                                            {{ __('main.savings') }} 
                                         </x-option>
                                     </x-select>
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="wallet-select-value"></span>
@@ -1347,7 +1347,7 @@
                         <form action="/income/create" method="POST" enctype="multipart/form-data" id="income-form" class="w-full flex items-center justify-center flex-col ">
                             @csrf
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nuevo Salario
+                                {{ __('main.new_salary') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -1358,7 +1358,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center ">
                                 <x-label 
                                     name="income-titulo"
-                                    title='Nombre de Salario'
+                                    title="{{ __('main.salary') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1376,7 +1376,7 @@
                                 <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
                                     <x-label 
                                         name="income-category"
-                                        title='Categoria'
+                                        title="{{ __('main.category') }}"
                                         color1="var(--col3)"
                                         color2="var(--col4)"
                                         w="w-full"
@@ -1384,7 +1384,7 @@
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="income-category"></span>
                                     <x-label 
                                         name="income-monto"
-                                        title='Monto'
+                                        title="{{ __('main.amount') }}"
                                         color1="var(--col3)"
                                         color2="var(--col4)"
                                         type="number"
@@ -1393,7 +1393,7 @@
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="income-monto"></span>
                                             
                                         <x-select
-                                            title="Seleccionar tipo:"
+                                            title="{{ __('main.select_type') }}"
                                             name="income"
                                             :required="true">
                                             <x-option
@@ -1402,40 +1402,40 @@
 
                                                 
                                             >
-                                                Ninguno
+                                                {{ __('main.none') }}
                                             </x-option>
                                             <x-option
                                                 name="income"
                                             value="diario"
 
                                             >
-                                                Diario
+                                                {{ __('main.daily') }}
                                             </x-option>
                                             <x-option
                                                 name="income"
                                             value="semanal"
 
                                             >
-                                                Semanal
+                                                {{ __('main.weekly') }}
                                             </x-option>
                                             <x-option
                                                 name="income"
                                             value="quincenal"
 
                                             >
-                                                Quincenal   
+                                                {{ __('main.biweekly') }}   
                                             </x-option>
                                             <x-option
                                                 name="income"
                                             value="anual"
 
                                             >
-                                                Anual   
+                                                {{ __('main.yearly') }}   
                                             </x-option>
                                         </x-select>
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="income-select-value"></span>
                                         <div class="text-center">
-                                            El ingreso se aplicará automáticamente según los días que correspondan al tipo seleccionado.
+                                            {{ __('main.income_frequency_note') }}
                                         </div>
                                         <input type="date" class="border cursor-pointer p-2 col7 bgcol3 mt-2" required name="income-ejecucion">
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="income-ejecucion"></span>
@@ -1446,12 +1446,12 @@
 
                             <div class="mb-60 h-auto w-3/5 flex flex-col items-center justify-center">
                                 <x-select
-                                    title="Seleccionar Billetera:"
+                                    title="{{ __('main.select_wallet') }}"
                                     name="income-wallet"
                                     :required="true">
 
                                     <x-option name="income-wallet">
-                                    Ninguno
+                                    {{ __('main.none') }}
                                     </x-option>
 
                                     @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
@@ -1477,7 +1477,7 @@
                             @csrf
                             @if($wallets->whereIn('tipo', ['ahorro', 'debito', 'efectivo'])->isNotEmpty())
                                 <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                    Nueva Inversión
+                                    {{ __('main.new_investment') }}
                                 </h2>
 
                                 <!-- Contenedor para errores generales (ej: fondos insuficientes) -->
@@ -1489,7 +1489,7 @@
                                 <div class="mb-6 h-auto w-3/5 flex flex-col items-center justify-center">
                                     <x-label 
                                         name="investment-titulo"
-                                        title="Nombre de Inversión"
+                                        title="{{ __('main.investment_name') }}"
                                         maxlength="25"
                                         color1="var(--col3)"
                                         color2="var(--col4)"
@@ -1513,7 +1513,7 @@
                                             <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                                 <x-label 
                                                     name="investment-category"
-                                                    title="Categoria"
+                                                    title="{{ __('main.category') }}"
                                                     color1="var(--col3)"
                                                     color2="var(--col4)"
                                                     w="w-full"
@@ -1525,7 +1525,7 @@
                                             <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                                 <x-label 
                                                     name="investment-monto"
-                                                    title="Monto Inicial"
+                                                    title="{{ __('main.initial_amount') }}"
                                                     color1="var(--col3)"
                                                     color2="var(--col4)"
                                                     type="number"
@@ -1538,8 +1538,8 @@
                                         <div class="w-full flex flex-col lg:flex-row items-end mb-6">
                                             <!-- Billetera Origen -->
                                             <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
-                                                <x-select :required="true" title="Billetera origen:" name="investment-wallet">
-                                                    <x-option name="investment-wallet" value="Ninguno">Ninguno</x-option>
+                                                <x-select :required="true" title="{{ __('main.source_wallet') }}:" name="investment-wallet">
+                                                    <x-option name="investment-wallet" value="Ninguno">{{ __('main.none') }}</x-option>
                                                     @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                                         <x-option name="investment-wallet" value="{{ $wallet->id }}">
                                                             {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})
@@ -1551,10 +1551,10 @@
 
                                             <!-- Tipo de Renta -->
                                             <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
-                                                <x-select :required="true" title="Tipo de Renta:" name="investment-renta" id="investment-renta-select">
-                                                    <x-option name="investment-renta" value="Ninguno">Ninguno</x-option>
-                                                    <x-option name="investment-renta" value="variable">Variable / Acciones</x-option>
-                                                    <x-option name="investment-renta" value="fija">Fija / Plazo Fijo</x-option>
+                                                <x-select :required="true" title="{{ __('main.investment_type') }}" name="investment-renta" id="investment-renta-select">
+                                                    <x-option name="investment-renta" value="Ninguno">{{ __('main.none') }}</x-option>
+                                                    <x-option name="investment-renta" value="variable">{{ __('main.variable_stocks') }}</x-option>
+                                                    <x-option name="investment-renta" value="fija">{{ __('main.fixed_term') }}</x-option>
                                                 </x-select>
                                                 <span class="error-msg text-red-500 text-xs mt-1" data-error-for="investment-renta-select-value"></span>
                                             </div>
@@ -1565,7 +1565,7 @@
                                             <div id="wrapper-tasa-interes" class="w-full lg:w-1/2 lg:pr-2 hidden flex-col">
                                                 <x-label 
                                                     name="investment-tasa"
-                                                    title="Tasa Interés Anual (%)"
+                                                    title="{{ __('main.annual_interest_rate') }}"
                                                     color1="var(--col3)"
                                                     color2="var(--col4)"
                                                     type="number"
@@ -1576,7 +1576,7 @@
 
                                             <!-- Fecha Vencimiento -->
                                             <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
-                                                <span class="text-xs font-semibold mb-1" style="color: var(--col3)">Fecha Vencimiento</span>
+                                                <span class="text-xs font-semibold mb-1" style="color: var(--col3)">{{ __('main.expiration_date') }}</span>
                                                 <input type="date" class="border cursor-pointer p-2 w-full lg:w-40 col7 bgcol3 rounded-md" name="investment-vencimiento" required>
                                                 <span class="error-msg text-red-500 text-xs mt-1" data-error-for="investment-vencimiento"></span>
                                             </div>
@@ -1585,7 +1585,7 @@
                                     </div>                  
                                 </div>
                             @else
-                                Cree una Billetera de tipo debito, efectivo o ahorro antes de crear una inversión
+                                {{ __('main.need_wallet_for_investment') }}
                             @endif
                         </form>
                         
@@ -1594,7 +1594,7 @@
                             @if($wallets->whereIn('tipo', ['ahorro', 'debito', 'efectivo'])->isNotEmpty())
 
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nuevo Movimiento
+                                {{ __('main.new_movement') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -1605,7 +1605,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center ">
                                 <x-label 
                                     name="transaction-titulo"
-                                    title='Nombre de Movimiento'
+                                    title="{{ __('main.movement') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1623,7 +1623,7 @@
                                 <div class="w-full h-full  flex items-center justify-evenly flex-col p-5">
                                     <x-label 
                                         name="transaction-category"
-                                        title='Categoria'
+                                        title="{{ __('main.category') }}"
                                         color1="var(--col3)"
                                         color2="var(--col4)"
                                         w="w-full"
@@ -1632,7 +1632,7 @@
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="transaction-category"></span>
                                     <x-label 
                                         name="transaction-monto"
-                                        title='Monto'
+                                        title="{{ __('main.amount') }}"
                                         color1="var(--col3)"
                                         color2="var(--col4)"
                                         type="number"
@@ -1640,10 +1640,10 @@
                                         />
                                     <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="transaction-monto"></span>
                                             
-                                        <x-select title="Seleccionar tipo:" name="transaction" id="transaction-tipo-select" first="Ingreso">
-                                            <x-option name="transaction" value="Ingreso">Ingreso</x-option>
-                                            <x-option name="transaction" value="Gasto">Gasto</x-option>
-                                            <x-option name="transaction" value="Transferencia">Transferencia</x-option>
+                                        <x-select title="{{ __('main.select_type') }}" name="transaction" id="transaction-tipo-select" first="{{ __('main.income') }}">
+                                            <x-option name="transaction" value="Ingreso">{{ __('main.income') }}</x-option>
+                                            <x-option name="transaction" value="Gasto">{{ __('main.expense') }}</x-option>
+                                            <x-option name="transaction" value="Transferencia">{{ __('main.transfer') }}</x-option>
                                         </x-select>
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="transaction-select-value"></span>
                                     
@@ -1652,7 +1652,7 @@
                             </div>
                             {{-- 2. BLOQUE INGRESO: Solo destino (Sin Crédito) --}}
                                 <div id="bloque-ingreso" class="grupo-movimiento w-full flex flex-col items-center">
-                                    <x-select title="Billetera destino (Ingreso):" name="transaction-destino-ingreso" first="Seleccione...">
+                                    <x-select title="{{ __('main.destination_wallet_income') }}" name="transaction-destino-ingreso" first="{{ __('main.select_ellipsis') }}">
                                         @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                             <x-option name="transaction-destino-ingreso" value="{{ $wallet->id }}">{{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})</x-option>
                                         @endforeach
@@ -1662,7 +1662,7 @@
 
                                 {{-- 3. BLOQUE GASTO: Solo origen/destino de pago (Todas las cuentas) --}}
                                 <div id="bloque-gasto" class="grupo-movimiento w-full  flex-col items-center hidden">
-                                    <x-select title="Billetera de pago (Gasto):" name="transaction-destino-gasto" first="Seleccione...">
+                                    <x-select title="{{ __('main.payment_wallet_expense') }}" name="transaction-destino-gasto" first="{{ __('main.select_ellipsis') }}">
                                         @foreach($wallets as $wallet)
                                             <x-option name="transaction-destino-gasto" value="{{ $wallet->id }}">{{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})</x-option>
                                         @endforeach
@@ -1673,8 +1673,8 @@
                                 {{-- 4. BLOQUE TRANSFERENCIA: Origen (Sin crédito) y Destino (Todas) --}}
                                 <div id="bloque-transferencia" class="grupo-movimiento w-full  flex-col items-center hidden">
                                     <div class="mb-5 w-full flex flex-col items-center">
-                                        <x-select title="Billetera origen:" name="transaction-origen" first="Externa">
-                                            <x-option name="transaction-origen" value="Externa">Externa</x-option>
+                                        <x-select title="{{ __('main.source_wallet') }}:" name="transaction-origen" first="{{ __('main.external') }}">
+                                            <x-option name="transaction-origen" value="Externa">{{ __('main.external') }}</x-option>
                                             @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                                 <x-option name="transaction-origen" value="{{ $wallet->id }}">{{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})</x-option>
                                             @endforeach
@@ -1682,7 +1682,7 @@
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="transaction-origen-select-value"></span>
                                     </div>
                                     <div class="w-full flex flex-col items-center">
-                                        <x-select title="Billetera destino:" name="transaction-destino" first="Seleccione...">
+                                        <x-select title="{{ __('main.destination_wallet') }}" name="transaction-destino" first="{{ __('main.select_ellipsis') }}">
                                             @foreach($wallets as $wallet)
                                                 <x-option name="transaction-destino" value="{{ $wallet->id }}">{{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})</x-option>
                                             @endforeach
@@ -1691,7 +1691,7 @@
                                     </div>
                                 </div>
                             @else
-                                Cree una Billetera de tipo debito, efectivo o ahorro antes de crear un movimiento
+                                {{ __('main.need_wallet_for_transaction') }}
                             @endif
                         </form>
 
@@ -1699,7 +1699,7 @@
                             @csrf
                             
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nueva Meta de Ahorro
+                                {{ __('main.new_savings_goal') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -1710,7 +1710,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center">
                                 <x-label 
                                     name="goal-titulo"
-                                    title="Nombre de la meta"
+                                    title="{{ __('main.goal_name') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1732,7 +1732,7 @@
                                         <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                             <x-label 
                                                 name="goal-category"
-                                                title="Categoría"
+                                                title="{{ __('main.category') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 w="w-full"
@@ -1742,7 +1742,7 @@
                                         <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                             <x-label 
                                                 name="goal-monto-objetivo"
-                                                title="Monto Objetivo ($)"
+                                                title="{{ __('main.goal_target_amount_dollar') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 type="number"
@@ -1756,7 +1756,7 @@
                                         <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                             <x-label 
                                                 name="goal-monto-inicial"
-                                                title="Monto Inicial (Opcional)"
+                                                title="{{ __('main.goal_initial_amount_optional') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 type="number"
@@ -1766,20 +1766,20 @@
                                             <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="goal-monto-inicial"></span>
                                         </div>
                                         <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
-                                            <span class="text-xs mb-1" style="color: var(--col3)">Fecha Límite</span>
+                                            <span class="text-xs mb-1" style="color: var(--col3)">{{ __('main.deadline') }}</span>
                                             <input type="date" class="border cursor-pointer p-2 w-full col7 bgcol3 rounded-md h-10" name="goal-fecha-limite" required>
                                             <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="goal-fecha-limite"></span>
                                         </div>
                                     </div>
 
                                     <div class="w-full flex flex-col">
-                                        <span class="text-xs mb-1">Descripción / Notas</span>
+                                        <span class="text-xs mb-1">{{ __('main.description_notes') }}</span>
                                         <textarea 
                                             name="goal-descripcion" 
                                             rows="3" 
                                             maxlength="255"
                                             class="border p-2 w-full col7 bgcol3 rounded-md resize-none outline-none transition-colors text-sm"
-                                            placeholder="¿Para qué estás ahorrando dinero?... (Opcional)"
+                                            placeholder="{{ __('main.goal_savings_placeholder') }}"
                                         ></textarea>
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="goal-descripcion"></span>
                                     </div>
@@ -1795,7 +1795,7 @@
                             @csrf
                             @if($goals->isNotEmpty())
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nuevo Pago de Meta
+                                {{ __('main.new_goal_payment') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -1806,7 +1806,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center">
                                 <x-label 
                                     name="paygoal-titulo"
-                                    title="Concepto del pago / abono"
+                                    title="{{ __('main.payment_contribution_concept') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1828,7 +1828,7 @@
                                         <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                             <x-label 
                                                 name="paygoal-category"
-                                                title="Categoría"
+                                                title="{{ __('main.category') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 w="w-full"
@@ -1839,7 +1839,7 @@
                                         <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                             <x-label 
                                                 name="paygoal-monto"
-                                                title="Monto a Aportar ($)"
+                                                title="{{ __('main.contribution_amount_dollar') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 type="number"
@@ -1853,8 +1853,8 @@
                                         
                                         
                                         <div class="w-full lg:w-1/2 flex items-center flex-col">
-                                            <x-select title="Billetera de origen :" name="paygoal-wallet" first="Externa">
-                                                <x-option name="paygoal-wallet" value="">Externa</x-option>
+                                            <x-select title="{{ __('main.source_wallet') }} :" name="paygoal-wallet" first="{{ __('main.external') }}">
+                                                <x-option name="paygoal-wallet" value="">{{ __('main.external') }}</x-option>
                                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                                     <x-option name="paygoal-wallet" value="{{ $wallet->id }}">
                                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})
@@ -1867,8 +1867,8 @@
                                         </div>
 
                                         <div class="w-full lg:w-1/2">
-                                            <x-select title="Meta a destinar:" name="paygoal-target" :required="true" first="Seleccionar Meta:">
-                                                <x-option name="paygoal-target" value="">Seleccionar Meta:</x-option>
+                                            <x-select title="{{ __('main.target_goal') }}" name="paygoal-target" :required="true" first="{{ __('main.select_goal_placeholder') }}">
+                                                <x-option name="paygoal-target" value="">{{ __('main.select_goal_placeholder') }}</x-option>
                                                 @foreach($goals as $goal)
                                                     <x-option name="paygoal-target" value="{{ $goal->id }}">
                                                         {{ $goal->titulo }} (Faltan: ${{ number_format($goal->monto_objetivo - $goal->monto_actual, 2) }})
@@ -1884,7 +1884,7 @@
                             </div>
                             @else
                                 <div class="w-full text-center">
-                                        Cree una meta antes de poder ahorrar.
+                                        {{ __('main.need_goal_before_saving') }}
                                 </div>
                             @endif
 
@@ -1895,7 +1895,7 @@
                             @csrf
                             
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Nueva Deuda Principal
+                                {{ __('main.new_main_debt') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -1907,7 +1907,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center">
                                 <x-label 
                                     name="debt-titulo"
-                                    title="¿A quién o qué le debes? (Ej: Tarjeta Visa, Préstamo)"
+                                    title="{{ __('main.debt_to_whom_placeholder') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -1931,7 +1931,7 @@
                                         <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                             <x-label 
                                                 name="debt-category"
-                                                title="Categoría (Ej: Bancos, Educación)"
+                                                title="{{ __('main.category_example_placeholder') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 w="w-full"
@@ -1942,7 +1942,7 @@
                                         <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                             <x-label 
                                                 name="debt-monto"
-                                                title="Monto Inicial de la Deuda ($)"
+                                                title="{{ __('main.debt_initial_amount') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 type="number"
@@ -1957,7 +1957,7 @@
                                 </div>              
                                 <div class="w-full flex flex-col lg:flex-row items-center">
                                     <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
-                                            <span class="text-xs">Fecha de vencimiento: </span>
+                                            <span class="text-xs">{{ __('main.expiration_date') }}: </span>
                                         <input type="date" class="border cursor-pointer p-2 w-full col7 bgcol3 rounded-md h-10" name="debt-vencimiento" required>
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="debt-vencimiento"></span>
 
@@ -1965,7 +1965,7 @@
                                     <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                         <x-label 
                                             name="debt-tasa"
-                                            title="Tasa de Interés % (0 si no aplica)"
+                                            title="{{ __('main.interest_rate_optional') }}"
                                             color1="var(--col3)"
                                             color2="var(--col4)"
                                             type="number"
@@ -1979,11 +1979,11 @@
                                 {{-- Fila 3: Prioridad de Alerta --}}
                                 <div class="w-full flex flex-col xl:flex-row gap-4">
                                     <div class="w-full flex flex-col">
-                                        <x-select title="Prioridad de Alerta :" :required="true" name="debt-prioridad" first="Ninguno">
-                                            <x-option name="debt-prioridad" value="Ninguno">Ninguno</x-option>
-                                            <x-option name="debt-prioridad" value="media">Media (Normal)</x-option>
-                                            <x-option name="debt-prioridad" value="alta">Alta (Urgente)</x-option>
-                                            <x-option name="debt-prioridad" value="baja">Baja (Flexible)</x-option>
+                                        <x-select title="{{ __('main.alert_priority') }} :" :required="true" name="debt-prioridad" first="{{ __('main.none') }}">
+                                            <x-option name="debt-prioridad" value="Ninguno">{{ __('main.none') }}</x-option>
+                                            <x-option name="debt-prioridad" value="media">{{ __('main.mid') }}</x-option>
+                                            <x-option name="debt-prioridad" value="alta">{{ __('main.tall') }}</x-option>
+                                            <x-option name="debt-prioridad" value="baja">{{ __('main.low') }}</x-option>
                                         </x-select>
                                         <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="debt-prioridad-select-value"></span>
                                     </div>
@@ -1997,7 +1997,7 @@
                             
                             @if($debts->isNotEmpty())
                             <h2 class="mt-15 mb-15 h-auto text-xl sm:text-4xl font-bold w-4/5 text-center">
-                                Registrar Pago de Deuda
+                                {{ __('main.register_debt_payment') }}
                             </h2>
 
                             <!-- Contenedor para errores generales -->
@@ -2009,7 +2009,7 @@
                             <div class="mb-10 h-auto w-3/5 flex flex-col items-center justify-center">
                                 <x-label 
                                     name="payment-titulo"
-                                    title="Concepto del pago (Ej: Abono capital Enero, Pago mínimo)"
+                                    title="{{ __('main.debt_payment_concept_placeholder') }}"
                                     maxlength="25"
                                     color1="var(--col3)"
                                     color2="var(--col4)"
@@ -2033,7 +2033,7 @@
                                         <div class="w-full lg:w-1/2 lg:pr-2 mb-6 lg:mb-0 flex flex-col">
                                             <x-label 
                                                 name="payment-category"
-                                                title="Categoría (Opcional)"
+                                                title="{{ __('main.category_optional') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 w="w-full"
@@ -2044,7 +2044,7 @@
                                         <div class="w-full lg:w-1/2 lg:pl-2 flex flex-col">
                                             <x-label 
                                                 name="payment-monto"
-                                                title="Monto a Pagar ($)"
+                                                title="{{ __('main.amount_to_pay') }}"
                                                 color1="var(--col3)"
                                                 color2="var(--col4)"
                                                 type="number"
@@ -2058,22 +2058,22 @@
                                     <div class="w-full flex flex-col lg:flex-row gap-4">
                                         {{-- Billetera Origen --}}
                                         <div class="w-full lg:w-1/2 flex items-center flex-col">
-                                            <x-select title="Billetera de origen :" name="payment-wallet" first="Externa">
-                                                <x-option name="payment-wallet" value="">Externa</x-option>
+                                            <x-select title="{{ __('main.source_wallet') }} :" name="payment-wallet" first="{{ __('main.external') }}">
+                                                <x-option name="payment-wallet" value="">{{ __('main.external') }}</x-option>
                                                 @foreach($wallets->where('tipo', '!=', 'credito')->values() as $wallet)
                                                     <x-option name="payment-wallet" value="{{ $wallet->id }}">
                                                         {{ $wallet->titulo }} (${{ number_format($wallet->monto_actual) }})
                                                     </x-option>
                                                 @endforeach
                                             </x-select>
-                                            <span class="text-xs mt-1">(No se muestran billeteras de crédito)</span>
+                                            <span class="text-xs mt-1">({{ __('main.credit_wallets_hidden_note') }})</span>
                                             <span class="error-msg text-red-500 text-xs mt-1 self-start" data-error-for="payment-wallet-select-value"></span>
                                         </div>
 
                                         {{-- Deuda Destino --}}
                                         <div class="w-full lg:w-1/2">
-                                            <x-select title="Deuda a aplicar pago:" name="payment-target" :required="true" first="Seleccionar Deuda:">
-                                                <x-option name="payment-target" value="">Seleccionar Deuda:</x-option>
+                                            <x-select title="{{ __('main.debt_to_apply_payment') }}" name="payment-target" :required="true" first="{{ __('main.select_debt_placeholder') }}">
+                                                <x-option name="payment-target" value="">{{ __('main.select_debt_placeholder') }}</x-option>
                                                 @foreach($debts as $debt)
                                                     <x-option name="payment-target" value="{{ $debt->id }}">
                                                         {{ $debt->titulo }} (Resta: ${{ number_format($debt->monto_actual, 2) }})
@@ -2094,7 +2094,7 @@
                                             class="w-4 h-4 rounded cursor-pointer"
                                         >
                                         <label for="payment-minimo" class="text-sm font-medium  select-none cursor-pointer">
-                                            ¿Este abono corresponde al pago mínimo obligatorio?
+                                            {{ __('main.minimum_payment_question') }}
                                         </label>
                                     </div>
 
@@ -2102,7 +2102,7 @@
                             </div>
                             @else
                                 <div class="w-full text-center py-8 ">
-                                    No tienes deudas pendientes registradas que requieran pagos.
+                                    {{ __('main.no_pending_debts') }}
                                 </div>
                             @endif
                         </form>
@@ -2110,7 +2110,7 @@
                     </div>
             </div>
         </x-panel>
-        <x-panel name="filter" title="Filtros">
+        <x-panel name="filter" title="{{ __('main.filter') }}">
             <form action="{{ route('records.index') }}" method="POST" id="filter-form" class="w-full h-full overflow-y-auto barpag p-10">
                 @csrf
 
@@ -2120,67 +2120,67 @@
                 <div class="w-full h-auto">
                     
                     <div class="w-full h-auto pt-5">
-                        <h1 class="text-lg font-bold mb-3 col7">Ordenar por</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.sort_by') }}</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
                             <x-button cont="div" name="sort_by" value="date_desc" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex font-normal items-center justify-center text-xs lg:text-sm filter-btn-form {{ ($sortBy ?? 'date_desc') === 'date_desc' ? 'focus-button' : '' }}">
-                                Más recientes primero
+                                {{ __('main.most_recent_first') }}
                             </x-button>
                             <x-button cont="div" name="sort_by" value="amount_desc" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ ($sortBy ?? '') === 'amount_desc' ? 'focus-button' : '' }}">
-                                Mayor monto
+                                {{ __('main.highest_amount') }}
                             </x-button>
                             <x-button cont="div" name="sort_by" value="alpha_asc" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ ($sortBy ?? '') === 'alpha_asc' ? 'focus-button' : '' }}">
-                                De la A a la Z
+                                {{ __('main.alphabetical_az') }}
                             </x-button>
                         </div>
                     </div>
 
                     <div class="w-full h-auto pt-5">
-                        <h1 class="text-lg font-bold mb-3 col7">Rango de dinero</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.money_range') }}</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
                             <x-button cont="div" name="range_amount" value="low" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($rangeAmount) && in_array('low', $rangeAmount) ? 'focus-button' : '' }}">
-                                Montos bajos (Menos de $50)
+                                {{ __('main.low_amounts') }}
                             </x-button>
                             <x-button cont="div" name="range_amount" value="medium" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($rangeAmount) && in_array('medium', $rangeAmount) ? 'focus-button' : '' }}">
-                                Montos medios ($50 - $500)
+                                {{ __('main.medium_amounts') }}
                             </x-button>
                             <x-button cont="div" name="range_amount" value="high" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($rangeAmount) && in_array('high', $rangeAmount) ? 'focus-button' : '' }}">
-                                Montos altos (Más de $500)
+                                {{ __('main.high_amounts') }}
                             </x-button>
                         </div>
                     </div>
 
                     <div class="w-full h-auto pt-5">
-                        <h1 class="text-lg font-bold mb-3 col7">Período de tiempo</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.time_period') }}</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
                             <x-button cont="div" name="time_frame" value="today" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame ?? []) && in_array('today', $timeFrame ?? []) ? 'focus-button' : '' }}">
-                                Hoy
+                                {{ __('main.today') }}
                             </x-button>
                             <x-button cont="div" name="time_frame" value="week" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame ?? []) && in_array('week', $timeFrame ?? []) ? 'focus-button' : '' }}">
-                                Esta semana
+                                {{ __('main.this_week') }}
                             </x-button>
                             <x-button cont="div" name="time_frame" value="month" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame ?? []) && in_array('month', $timeFrame ?? []) ? 'focus-button' : '' }}">
-                                Este mes
+                                {{ __('main.this_month') }}
                             </x-button>
                             <x-button cont="div" name="time_frame" value="year" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                 class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($timeFrame ?? []) && in_array('year', $timeFrame ?? []) ? 'focus-button' : '' }}">
-                                Todo el año
+                                {{ __('main.this_year') }}
                             </x-button>
                         </div>
                     </div>
 
                     <div class="w-full h-auto pt-5">
-                        <h1 class="text-lg font-bold mb-3 col7">Tipo de registro</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.record_type') }}</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
-                            @foreach(['wallet' => 'Billetera', 'income' => 'Salario', 'transaction' => 'Transacción', 'investment' => 'Inversión', 'goal' => 'Meta', 'paymentGoal' => 'Pago de meta', 'debt' => 'Deuda', 'paymentDebt' => 'Pago de deuda'] as $key => $label)
+                            @foreach(['wallet' => __('main.wallet'), 'income' => __('main.salary'), 'transaction' => __('main.transaction'), 'investment' => __('main.investment'), 'goal' => __('main.goal'), 'paymentGoal' => __('main.payment_goal'), 'debt' => __('main.debt'), 'paymentDebt' => __('main.debt_payment')] as $key => $label)
                                 <x-button cont="div" name="record_type" value="{{ $key }}" color1="var(--col4)" color2="var(--col3)" colortext="var(--col1)" 
                                     class="p-2 flex items-center justify-center text-xs lg:text-sm filter-btn-form {{ is_array($recordType) && in_array($key, $recordType) ? 'focus-button' : '' }}">
                                     {{ $label }}
@@ -2189,20 +2189,20 @@
                         </div>
                     </div>
                     <div class="w-full h-auto pt-8 pb-4">
-                        <h1 class="text-lg font-bold mb-3 col7">Descargar resultados filtrados</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.download_filtered_results') }}</h1>
                         <div class="w-full h-auto flex flex-wrap gap-3">
                             <x-button type="button" id="export-excel-btn" data-export-url="{{ route('records.export.excel') }}" color1="green" color2="white" colortext="var(--col1)"
                                 class="p-2 flex items-center font-bold justify-center text-xs lg:text-sm gap-2">
-                                Descargar Excel
+                                {{ __('main.download_excel') }}
                             </x-button>
                             <x-button type="button" id="export-pdf-btn" data-export-url="{{ route('records.export.pdf') }}" color1="red" color2="white" colortext="var(--col1)"
                                 class="p-2 flex items-center font-bold justify-center text-xs lg:text-sm gap-2">
-                                Descargar PDF
+                                {{ __('main.download_pdf') }}
                             </x-button>
                         </div>
                     </div>
                     <div class="h-15 w-full flex justify-center mt-5">
-                        <input id="category-search" class="bgcol2 transition-all lg:text-lg xl:text-xl m-3 text-xs w-full h-10 mb-15 col7 p-2" placeholder="Busca una categoría..."/>
+                        <input id="category-search" class="bgcol2 transition-all lg:text-lg xl:text-xl m-3 text-xs w-full h-10 mb-15 col7 p-2" placeholder="{{ __('main.search_category_placeholder') }}"/>
                         <button type="button" class="h-10 cursor-pointer transition-colors aspect-square perfil-div-nav rounded-full flex items-center justify-center m-3">
                             <img src="{{ asset('images/search.png') }}" alt="" class="scale-[0.75]">
                         </button>
@@ -2210,7 +2210,7 @@
                     
 
                     <div class="w-full h-auto pt-5">
-                        <h1 class="text-lg font-bold mb-3 col7">Categorías</h1>
+                        <h1 class="text-lg font-bold mb-3 col7">{{ __('main.categories') }}</h1>
                         <div id="categories-container" class="w-full h-auto flex flex-wrap gap-3">
                             @foreach($categories as $cat)
                                 <div class="category-item-wrapper" data-name="{{ strtolower($cat->categoria) }}">

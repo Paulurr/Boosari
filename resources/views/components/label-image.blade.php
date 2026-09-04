@@ -21,7 +21,7 @@
             cont="div"
             class="p-4 w-15 sm:w-20 md:w-30 text-xs lg:w-40 text-center flex items-center justify-center"
             >
-            Agregar imagen
+            {{ __('main.add_image') }}
         </x-button>
     </label>
 

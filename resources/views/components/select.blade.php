@@ -29,5 +29,5 @@
 >
 
 <div id="{{$name}}-error-msg" class="text-red-500 text-xs mt-1 hidden text-center w-full font-medium generic-error-msg">
-    Este campo es obligatorio.
+    {{ __('main.mandatory_field') }}
 </div>

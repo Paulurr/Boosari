@@ -26,7 +26,7 @@
         <div class="w-full sm:text-[12px] text-[8px] text-end p-3 col7">
             <div class="{{ $name }}-btn editar-btn cursor-pointer"
             data-id="{{ $id }}" >
-                Detalles
+                {{ __('Details') }}
             </div>
         </div>
     </div>
@@ -44,7 +44,7 @@
     <div class="w-full h-2/6 p-3 flex flex-col justify-between">
         <div>
             <p id="record-card-{{ $name }}-{{ $id }}-monto" class="sm:text-[14px] text-[12px] font-bold col7">
-                Monto: ${{ $monto }}
+                {{ __('main.amount') }}: ${{ $monto }}
             </p>
             
             <p id="record-card-{{ $name }}-{{ $id }}-origen" class="sm:text-[12px] text-[10px] col7 truncate {{ $origen ? '' : 'hidden' }}">

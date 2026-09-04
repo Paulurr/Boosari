@@ -11,8 +11,8 @@
     <x-nav/>
 
     <h1 class="col7 text-center pt-25 pb-15 text-4xl font-bold">
-        Gestión de Usuarios
-    </h1>
+        {{ __('admin.title') }}
+    </h1> 
 
     <div class="lg:pl-30 lg:pr-30 md:pl-15 md:pr-15 pl-2 pr-2 pb-20 flex flex-col items-center gap-10 min-h-screen">
 

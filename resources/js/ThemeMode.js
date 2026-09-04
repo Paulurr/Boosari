@@ -75,7 +75,7 @@ function cambiarLogo(estado) {
 
 function obtenerIdioma() {
 
-    return document.documentElement.lang || 'es';
+    return document.documentElement.lang || 'en';
 
 }
 
