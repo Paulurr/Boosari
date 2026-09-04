@@ -6,7 +6,7 @@
             {{-- Logo + descripción --}}
             <div class="lg:w-1/3 flex flex-col gap-4">
                 <a href="/" class="flex h-15 w-1/3 lg:w-auto">
-                    <img src="{{ asset('images/LogoTypeLight.svg') }}" alt="Logo" srcset="" class="h-full lg:w-auto logo-theme w-full object-contain">
+                    <img src="{{ asset('images/LogoTypeLight.svg') }}" alt="Logo" srcset="" class="h-full lg:w-auto bg-[var(--col2)] hover:bg-[var(--col1)] transition-colors rounded-2xl logo-theme w-full object-contain">
                 </a>
                 <p class="text-sm leading-relaxed max-w-xs text-[var(--col7)]/85">
                     {{ __('footer.description') }}
