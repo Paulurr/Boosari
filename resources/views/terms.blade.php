@@ -30,21 +30,22 @@
 
             /* Paleta de marca */
             .term-acc {
-                border: 1px solid var(--col5);
+                border: 1px solid var(--col3);
             }
             .term-acc-header {
-                background: var(--col4);
+                transition:background-color 0.2s ease; 
+                background-color: var(--col4);
                 color: var(--col1);
             }
             .term-acc-header:hover {
-                background: var(--col5);
+                background-color: var(--col3);
             }
             .term-acc-body {
-                background: var(--col1);
+                background-color: var(--col1);
                 color: var(--col7);
             }
             .term-acc-body a {
-                color: var(--col5);
+                color: var(--col3);
                 text-decoration: underline;
             }
         </style>

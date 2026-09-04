@@ -21,7 +21,7 @@
                 </div>
             </div>
             <div class="h-auto w-full flex justify-center">
-                <div class="h-35 md:h-40  {{app()->getLocale() == 'en' ? 'w-90' : 'w-150'}} flex justify-evenly items-center flex-col lg:flex-row ">
+                <div class="h-35  {{app()->getLocale() == 'en' ? 'w-90' : 'w-150'}} flex justify-evenly items-center flex-col lg:flex-row ">
                     <x-button
                         color1="var(--col3)"
                         color2="var(--col4)"
