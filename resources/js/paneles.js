@@ -39,7 +39,7 @@ class Panel {
         this.onEdit = options.onEdit || (() => {});
         this.onCancelEdit = options.onCancelEdit || (() => {});
         this.onSubmit = options.onSubmit || (async () => true);
-        this.onDelete = options.onDelete || (async () => confirm(`¿Estás seguro de eliminar este registro de ${this.entity}?`));
+        this.onDelete = options.onDelete || (async () => confirm(trans('panel.delete_confirm_generic', { entity: this.entity })));
 
         // Estilos iniciales para animación
         this.cont.style.opacity = "0";

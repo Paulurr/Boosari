@@ -127,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const { ok, data } = await apiRequest(form.dataset.action, 'PUT', body);
 
             if (!ok) {
-                mostrarError(document.getElementById('info-profile-error'), primerError(data, 'No se pudo actualizar la información.'));
+                mostrarError(document.getElementById('info-profile-error'), primerError(data, trans('profile.update_error')));
                 return false;
             }
 
@@ -159,7 +159,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!ok) {
-                    mostrarError(resetPanelEl, primerError(data, 'No se pudo completar la eliminación.'));
+                    mostrarError(resetPanelEl, primerError(data, trans('profile.reset_error')));
                     return false;
                 }
 
@@ -184,7 +184,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 });
 
                 if (!ok) {
-                    mostrarError(deletePanelEl, primerError(data, 'No se pudo eliminar la cuenta.'));
+                    mostrarError(deletePanelEl, primerError(data, trans('profile.delete_account_error')));
                     return false;
                 }
 

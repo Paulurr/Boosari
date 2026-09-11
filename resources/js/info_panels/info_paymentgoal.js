@@ -42,7 +42,7 @@ document.addEventListener('DOMContentLoaded', () => {
     function setWalletSelect(walletId, walletNombre) {
         if (!selectWalletValue || !selectWalletTit) return;
         selectWalletValue.value = walletId || '';
-        selectWalletTit.textContent = walletId ? (walletNombre || 'Billetera') : 'Externa';
+        selectWalletTit.textContent = walletId ? (walletNombre || trans('paymentGoal.wallet_default')) : trans('paymentGoal.external');
     }
 
     // =====================================================================
@@ -54,7 +54,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!paymentId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información del abono...';
+            statusMsg.textContent = trans('paymentGoal.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -66,7 +66,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -122,11 +122,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const walletId = selectWalletValue?.value || null;
 
         if (!titulo) {
-            alert('El concepto del abono no puede estar vacío.');
+            alert(trans('paymentGoal.concept_required'));
             return false;
         }
         if (isNaN(monto) || monto <= 0) {
-            alert('Ingresa un monto válido mayor a 0.');
+            alert(trans('common.amount_invalid'));
             return false;
         }
 
@@ -175,7 +175,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar el abono.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('paymentGoal.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -211,7 +211,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentPaymentGoalData) return false;
 
-        if (!confirm(`¿Deseas eliminar el abono "${currentPaymentGoalData.titulo}"? Esto ajustará de vuelta el saldo de la meta (y de la billetera de origen, si aplicó).`)) {
+        if (!confirm(trans('paymentGoal.delete_confirm', { titulo: currentPaymentGoalData.titulo }))) {
             return false;
         }
 
@@ -228,7 +228,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar el abono.');
+                throw new Error(resData.message || trans('paymentGoal.delete_error'));
             }
 
             location.reload();

@@ -44,13 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
     function setWalletSelect(walletId, walletNombre) {
         if (!selectWalletValue || !selectWalletTit) return;
         selectWalletValue.value = walletId || '';
-        selectWalletTit.textContent = walletId ? (walletNombre || 'Billetera') : 'Externa';
+        selectWalletTit.textContent = walletId ? (walletNombre || trans('paymentDebt.wallet_default')) : trans('paymentDebt.external');
     }
 
     function renderMinimoBadge(esMinimo) {
         if (!badgePagoMinimo) return;
         if (esMinimo) {
-            badgePagoMinimo.textContent = 'Pago Mínimo';
+            badgePagoMinimo.textContent = trans('paymentDebt.minimum_payment');
             badgePagoMinimo.classList.remove('hidden');
         } else {
             badgePagoMinimo.textContent = '';
@@ -67,7 +67,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!paymentId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información del pago...';
+            statusMsg.textContent = trans('paymentDebt.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -79,7 +79,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -139,11 +139,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const pagoMinimo = checkPagoMinimo?.checked ? 1 : 0;
 
         if (!titulo) {
-            alert('El concepto del pago no puede estar vacío.');
+            alert(trans('paymentDebt.concept_required'));
             return false;
         }
         if (isNaN(monto) || monto <= 0) {
-            alert('Ingresa un monto válido mayor a 0.');
+            alert(trans('common.amount_invalid'));
             return false;
         }
 
@@ -193,7 +193,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar el pago.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('paymentDebt.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -230,7 +230,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentPaymentDebtData) return false;
 
-        if (!confirm(`¿Deseas eliminar el pago "${currentPaymentDebtData.titulo}"? Esto ajustará de vuelta el saldo de la deuda (y de la billetera de origen, si aplicó).`)) {
+        if (!confirm(trans('paymentDebt.delete_confirm', { titulo: currentPaymentDebtData.titulo }))) {
             return false;
         }
 
@@ -247,7 +247,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar el pago.');
+                throw new Error(resData.message || trans('paymentDebt.delete_error'));
             }
 
             location.reload();

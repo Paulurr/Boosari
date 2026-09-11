@@ -45,17 +45,13 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectPrioridadValue = document.getElementById('debtinfo-prioridad-select-value');
     const selectPrioridadTit = document.getElementById('debtinfo-prioridad-select-tit');
 
-    const PRIORIDAD_LABELS = {
-        media: 'Media (Normal)',
-        alta: 'Alta (Urgente)',
-        baja: 'Baja (Flexible)',
-    };
+    const PRIORIDAD_LABELS = window.i18n.debt.prioridad;
 
     function setPrioridadSelect(valor) {
         if (!selectPrioridadValue || !selectPrioridadTit) return;
         const v = valor || 'media';
         selectPrioridadValue.value = v;
-        selectPrioridadTit.textContent = PRIORIDAD_LABELS[v] || 'Media (Normal)';
+        selectPrioridadTit.textContent = PRIORIDAD_LABELS[v] || trans('debt.prioridad.media');
     }
 
     const paymentSection = document.getElementById('debt-payment-section');
@@ -94,17 +90,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
         if (progresoBar) progresoBar.style.width = `${pct}%`;
         if (progresoPct) progresoPct.textContent = `${pct}%`;
-        if (txtMontoActual) txtMontoActual.textContent = `Resta: $${actual.toFixed(2)}`;
-        if (txtMontoInicialTxt) txtMontoInicialTxt.textContent = `Original: $${inicial.toFixed(2)}`;
+        if (txtMontoActual) txtMontoActual.textContent = trans('debt.remaining', { monto: actual.toFixed(2) });
+        if (txtMontoInicialTxt) txtMontoInicialTxt.textContent = trans('debt.original', { monto: inicial.toFixed(2) });
     }
 
     function renderEstadoBadge(estado) {
         if (!badgeEstado) return;
         if (estado === 'pagada') {
-            badgeEstado.textContent = '¡Deuda Pagada!';
+            badgeEstado.textContent = trans('debt.paid_badge');
             badgeEstado.className = 'px-2 py-1 text-xs border rounded-full font-semibold uppercase bg-green-100 text-green-700 border-green-400';
         } else {
-            badgeEstado.textContent = 'Pendiente';
+            badgeEstado.textContent = trans('debt.pending_badge');
             badgeEstado.className = 'px-2 py-1 text-xs border rounded-full font-semibold uppercase bg-red-100 text-red-600 border-red-400';
         }
     }
@@ -114,7 +110,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!debtId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información de la deuda...';
+            statusMsg.textContent = trans('debt.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -126,7 +122,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -137,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentDebtData.titulo;
             if (txtTasa) txtTasa.textContent = `${currentDebtData.tasa_interes}%`;
             if (txtFechaVencimiento) txtFechaVencimiento.textContent = currentDebtData.fecha_vencimiento_f;
-            if (txtPrioridad) txtPrioridad.textContent = currentDebtData.prioridad;
+            if (txtPrioridad) txtPrioridad.textContent = PRIORIDAD_LABELS[currentDebtData.prioridad] || trans(`debt.prioridad.${currentDebtData.prioridad}`);
             if (txtCategory) txtCategory.textContent = currentDebtData.category;
             if (txtMontoInicial) txtMontoInicial.textContent = `$${currentDebtData.monto_inicial}`;
 
@@ -185,7 +181,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // La deuda ya está saldada: no tiene sentido seguir editándola con pagos.
         if (currentDebtData.estado === 'pagada' && checkAddPayment?.checked) {
-            alert('Esta deuda ya está pagada por completo.');
+            alert(trans('debt.already_paid'));
             return false;
         }
 
@@ -195,11 +191,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const prioridad = selectPrioridadValue?.value || 'media';
 
         if (!titulo) {
-            alert('El nombre de la deuda no puede estar vacío.');
+            alert(trans('debt.name_required'));
             return false;
         }
         if (!fechaVencimiento) {
-            alert('Selecciona una fecha de vencimiento.');
+            alert(trans('debt.due_date_required'));
             return false;
         }
 
@@ -216,15 +212,15 @@ document.addEventListener('DOMContentLoaded', () => {
             const restante = parseFloat(currentDebtData.monto_actual) || 0;
 
             if (!pagoTitulo) {
-                alert('Ingresa un concepto para el pago.');
+                alert(trans('debt.payment_concept_required'));
                 return false;
             }
             if (isNaN(pagoMonto) || pagoMonto <= 0) {
-                alert('Ingresa un monto de pago válido mayor a 0.');
+                alert(trans('debt.payment_amount_invalid'));
                 return false;
             }
             if (pagoMonto > restante) {
-                alert(`El pago no puede ser mayor al saldo restante ($${restante.toFixed(2)}). Ingresa como máximo esa cantidad.`);
+                alert(trans('debt.payment_exceeds_balance', { restante: restante.toFixed(2) }));
                 return false;
             }
 
@@ -284,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar la deuda.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('debt.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -294,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentDebtData.titulo;
             if (txtTasa) txtTasa.textContent = `${currentDebtData.tasa_interes}%`;
             if (txtFechaVencimiento) txtFechaVencimiento.textContent = currentDebtData.fecha_vencimiento_f;
-            if (txtPrioridad) txtPrioridad.textContent = currentDebtData.prioridad;
+            if (txtPrioridad) txtPrioridad.textContent = PRIORIDAD_LABELS[currentDebtData.prioridad] || trans(`debt.prioridad.${currentDebtData.prioridad}`);
 
             renderEstadoBadge(currentDebtData.estado);
             renderProgreso(currentDebtData.monto_actual, currentDebtData.monto_inicial);
@@ -312,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         titulo: currentDebtData.titulo,
                         icono: currentDebtData.icono,
                         monto: formatMoneyPhp(currentDebtData.monto_actual),
-                        destino: `Prioridad: ${capitalize(currentDebtData.prioridad)} | Vence: ${currentDebtData.fecha_vencimiento_f}`
+                        destino: trans('debt.card_destination', { prioridad: PRIORIDAD_LABELS[currentDebtData.prioridad] || currentDebtData.prioridad, fecha: currentDebtData.fecha_vencimiento_f })
                     }
                 }
             }));
@@ -327,7 +323,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentDebtData) return false;
 
-        if (!confirm(`¿Deseas eliminar la deuda "${currentDebtData.titulo}"? Se eliminará también todo su historial de pagos.`)) {
+        if (!confirm(trans('debt.delete_confirm', { titulo: currentDebtData.titulo }))) {
             return false;
         }
 
@@ -344,7 +340,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar la deuda.');
+                throw new Error(resData.message || trans('debt.delete_error'));
             }
 
             location.reload();
@@ -406,7 +402,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels,
                 datasets: [{
-                    label: 'Deuda restante ($)',
+                    label: trans('debt.chart_label'),
                     data: dataBalances,
                     backgroundColor: bgRelleno,
                     borderColor: colorGasto,
@@ -434,8 +430,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             label: function (context) {
                                 const item = currentDebtHistorial[context.dataIndex];
                                 return [
-                                    `Pago: ${item.titulo} (-$${item.monto})`,
-                                    `Resta: $${item.saldo}`
+                                    trans('debt.chart_tooltip_payment', { titulo: item.titulo, monto: item.monto }),
+                                    trans('debt.chart_tooltip_remaining', { monto: item.saldo })
                                 ];
                             }
                         }

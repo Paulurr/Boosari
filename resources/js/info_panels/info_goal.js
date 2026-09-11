@@ -88,10 +88,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderEstadoBadge(estado) {
         if (!badgeEstado) return;
         if (estado === 'completada') {
-            badgeEstado.textContent = '¡Meta Completada!';
+            badgeEstado.textContent = trans('goal.completed_badge');
             badgeEstado.className = 'px-2 py-1 text-xs border rounded-full font-semibold uppercase bg-green-100 text-green-700 border-green-400';
         } else {
-            badgeEstado.textContent = 'En progreso';
+            badgeEstado.textContent = trans('goal.in_progress_badge');
             badgeEstado.className = 'px-2 py-1 text-xs border rounded-full font-semibold uppercase bg-gray-100 text-gray-600 border-gray-400';
         }
     }
@@ -105,7 +105,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!goalId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información de la meta...';
+            statusMsg.textContent = trans('goal.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -117,7 +117,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -128,7 +128,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentGoalData.titulo;
             if (txtMontoObjetivo) txtMontoObjetivo.textContent = `$${currentGoalData.monto_objetivo}`;
             if (txtFechaLimite) txtFechaLimite.textContent = currentGoalData.fecha_limite_f;
-            if (txtDescripcion) txtDescripcion.textContent = currentGoalData.descripcion || 'Sin descripción.';
+            if (txtDescripcion) txtDescripcion.textContent = currentGoalData.descripcion || trans('goal.no_description');
             if (txtCategory) txtCategory.textContent = currentGoalData.category;
             if (txtMontoInicial) txtMontoInicial.textContent = `$${currentGoalData.monto_inicial}`;
 
@@ -176,7 +176,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
         // La meta ya está completada: no tiene sentido seguir registrando abonos.
         if (currentGoalData.estado === 'completada' && checkAddPayment?.checked) {
-            alert('Esta meta ya fue completada.');
+            alert(trans('goal.already_completed'));
             return false;
         }
 
@@ -186,15 +186,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const descripcion = inputDescripcion?.value.trim();
 
         if (!titulo) {
-            alert('El nombre de la meta no puede estar vacío.');
+            alert(trans('goal.name_required'));
             return false;
         }
         if (isNaN(montoObjetivo) || montoObjetivo <= 0) {
-            alert('Ingresa un monto objetivo válido mayor a 0.');
+            alert(trans('goal.target_amount_invalid'));
             return false;
         }
         if (!fechaLimite) {
-            alert('Selecciona una fecha límite.');
+            alert(trans('goal.due_date_required'));
             return false;
         }
 
@@ -210,11 +210,11 @@ document.addEventListener('DOMContentLoaded', () => {
             const pagoMonto = parseFloat(inputPagoMonto?.value);
 
             if (!pagoTitulo) {
-                alert('Ingresa un concepto para el abono.');
+                alert(trans('goal.contribution_concept_required'));
                 return false;
             }
             if (isNaN(pagoMonto) || pagoMonto <= 0) {
-                alert('Ingresa un monto de abono válido mayor a 0.');
+                alert(trans('goal.contribution_amount_invalid'));
                 return false;
             }
 
@@ -270,7 +270,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar la meta.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('goal.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -280,7 +280,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentGoalData.titulo;
             if (txtMontoObjetivo) txtMontoObjetivo.textContent = `$${currentGoalData.monto_objetivo}`;
             if (txtFechaLimite) txtFechaLimite.textContent = currentGoalData.fecha_limite_f;
-            if (txtDescripcion) txtDescripcion.textContent = currentGoalData.descripcion || 'Sin descripción.';
+            if (txtDescripcion) txtDescripcion.textContent = currentGoalData.descripcion || trans('goal.no_description');
 
             renderEstadoBadge(currentGoalData.estado);
             renderProgreso(currentGoalData);
@@ -298,8 +298,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         titulo: currentGoalData.titulo,
                         icono: currentGoalData.icono,
                         monto: formatMoneyPhp(currentGoalData.monto_objetivo),
-                        origen: `Meta: $${formatMoneyPhp(currentGoalData.monto_objetivo)} | Inicial: $${formatMoneyPhp(currentGoalData.monto_inicial)}`,
-                        destino: `Fecha Límite: ${currentGoalData.fecha_limite_f} | Estado: ${capitalize(currentGoalData.estado)}`
+                        origen: trans('goal.card_origin', { objetivo: formatMoneyPhp(currentGoalData.monto_objetivo), inicial: formatMoneyPhp(currentGoalData.monto_inicial) }),
+                        destino: trans('goal.card_destination', { fecha: currentGoalData.fecha_limite_f, estado: trans(`goal.estado.${currentGoalData.estado}`) })
                     }
                 }
             }));
@@ -314,7 +314,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentGoalData) return false;
 
-        if (!confirm(`¿Deseas eliminar la meta "${currentGoalData.titulo}"? Se eliminará también todo su historial de abonos.`)) {
+        if (!confirm(trans('goal.delete_confirm', { titulo: currentGoalData.titulo }))) {
             return false;
         }
 
@@ -331,7 +331,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar la meta.');
+                throw new Error(resData.message || trans('goal.delete_error'));
             }
 
             location.reload();
@@ -395,7 +395,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels,
                 datasets: [{
-                    label: 'Progreso de la meta ($)',
+                    label: trans('goal.chart_label'),
                     data: dataBalances,
                     backgroundColor: bgRelleno,
                     borderColor: colorIngreso,
@@ -423,8 +423,8 @@ document.addEventListener('DOMContentLoaded', () => {
                             label: function (context) {
                                 const item = currentGoalHistorial[context.dataIndex];
                                 return [
-                                    `Abono: ${item.titulo} (+$${item.monto})`,
-                                    `Acumulado: $${item.saldo}`
+                                    trans('goal.chart_tooltip_contribution', { titulo: item.titulo, monto: item.monto }),
+                                    trans('goal.chart_tooltip_accumulated', { monto: item.saldo })
                                 ];
                             }
                         }

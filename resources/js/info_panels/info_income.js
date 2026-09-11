@@ -34,14 +34,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectFrecuenciaValue = document.getElementById('income-frecuencia-select-value');
     const selectFrecuenciaTit = document.getElementById('income-frecuencia-select-tit');
 
-    const FRECUENCIA_LABELS = {
-        ninguno: 'Ninguno',
-        diario: 'Diario',
-        semanal: 'Semanal',
-        quincenal: 'Quincenal',
-        mensual: 'Mensual',
-        anual: 'Anual'
-    };
+    const FRECUENCIA_LABELS = window.i18n.income.frecuencia;
 
     // Replica el formato de PHP number_format($n, 2): separador de miles ','
     // y siempre 2 decimales, para que el texto de la tarjeta del home
@@ -55,7 +48,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectFrecuenciaValue || !selectFrecuenciaTit) return;
         const v = valor || 'ninguno';
         selectFrecuenciaValue.value = v === 'ninguno' ? '' : v;
-        selectFrecuenciaTit.textContent = FRECUENCIA_LABELS[v] || 'Ninguno';
+        selectFrecuenciaTit.textContent = FRECUENCIA_LABELS[v] || trans('common.none');
     }
 
     function getFrecuenciaSelect() {
@@ -77,10 +70,10 @@ document.addEventListener('DOMContentLoaded', () => {
     function renderActivoBadge(isActivo) {
         if (!badgeActivo) return;
         if (isActivo) {
-            badgeActivo.textContent = 'Generación Activa';
+            badgeActivo.textContent = trans('income.active_badge');
             badgeActivo.className = 'modal-read-only px-3 py-1 text-xs rounded-full font-bold uppercase bg-green-100 text-green-700 border border-green-400';
         } else {
-            badgeActivo.textContent = 'Pausado / Inactivo';
+            badgeActivo.textContent = trans('income.inactive_badge');
             badgeActivo.className = 'modal-read-only px-3 py-1 text-xs rounded-full font-bold uppercase bg-gray-100 text-gray-600 border border-gray-400';
         }
     }
@@ -96,7 +89,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!incomeId) {
             console.error('No se encontró un data-id válido en el disparador:', trigger);
             if (statusMsg) {
-                statusMsg.textContent = 'Error: No se proporcionó el ID del ingreso.';
+                statusMsg.textContent = trans('income.no_id_error');
                 statusMsg.classList.remove('hidden');
             }
             detailsBox?.classList.add('hidden');
@@ -104,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información del ingreso...';
+            statusMsg.textContent = trans('income.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -119,7 +112,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -130,7 +123,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imgIcono) imgIcono.src = currentIncomeData.icono;
             if (txtTitulo) txtTitulo.textContent = currentIncomeData.titulo;
             if (txtMonto) txtMonto.textContent = `$${parseFloat(currentIncomeData.monto).toFixed(2)}`;
-            if (txtFrecuencia) txtFrecuencia.textContent = currentIncomeData.frecuencia;
+            if (txtFrecuencia) txtFrecuencia.textContent = FRECUENCIA_LABELS[currentIncomeData.frecuencia] || trans(`income.frecuencia.${currentIncomeData.frecuencia}`);
             if (txtFecha) txtFecha.textContent = currentIncomeData.fecha_f;
             if (txtWallet) txtWallet.textContent = currentIncomeData.wallet;
             if (txtCategory) txtCategory.textContent = currentIncomeData.category;
@@ -193,12 +186,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const activo = checkActivo?.checked ? 1 : 0;
 
         if (!titulo) {
-            alert('El título o concepto no puede estar vacío.');
+            alert(trans('common.title_required'));
             return false;
         }
 
         if (isNaN(monto) || monto <= 0) {
-            alert('Ingresa un monto válido mayor a 0.');
+            alert(trans('common.amount_invalid'));
             return false;
         }
 
@@ -255,7 +248,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar el ingreso.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('income.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -265,7 +258,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (imgIcono) imgIcono.src = currentIncomeData.icono;
             if (txtTitulo) txtTitulo.textContent = currentIncomeData.titulo;
             if (txtMonto) txtMonto.textContent = `$${parseFloat(currentIncomeData.monto).toFixed(2)}`;
-            if (txtFrecuencia) txtFrecuencia.textContent = currentIncomeData.frecuencia;
+            if (txtFrecuencia) txtFrecuencia.textContent = FRECUENCIA_LABELS[currentIncomeData.frecuencia] || trans(`income.frecuencia.${currentIncomeData.frecuencia}`);
             if (txtFecha) txtFecha.textContent = currentIncomeData.fecha_f;
 
             renderActivoBadge(currentIncomeData.activo);
@@ -297,7 +290,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentIncomeData) return false;
 
-        if (!confirm(`¿Deseas eliminar el ingreso programado "${currentIncomeData.titulo}"? Ya no se generarán movimientos automáticos asociados.`)) {
+        if (!confirm(trans('income.delete_confirm', { titulo: currentIncomeData.titulo }))) {
             return false;
         }
 
@@ -314,7 +307,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar el ingreso.');
+                throw new Error(resData.message || trans('income.delete_error'));
             }
 
             // Remover el elemento del listado en el DOM si existe

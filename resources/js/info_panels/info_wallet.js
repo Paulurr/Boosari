@@ -76,13 +76,13 @@ document.addEventListener('DOMContentLoaded', () => {
         const diferencia = nuevoMonto - montoAnterior;
 
         if (diferencia === 0) {
-            indicatorMovTipo.textContent = 'El monto no ha cambiado.';
+            indicatorMovTipo.textContent = trans('wallet.amount_unchanged_indicator');
             indicatorMovTipo.className = 'text-xs mt-1 font-semibold text-gray-400';
         } else if (diferencia < 0) {
-            indicatorMovTipo.textContent = `Tipo: Gasto (-$${Math.abs(diferencia).toFixed(2)})`;
+            indicatorMovTipo.textContent = trans('wallet.type_expense', { monto: Math.abs(diferencia).toFixed(2) });
             indicatorMovTipo.className = 'text-xs mt-1 font-semibold text-red-500';
         } else {
-            indicatorMovTipo.textContent = `Tipo: Ingreso (+$${diferencia.toFixed(2)})`;
+            indicatorMovTipo.textContent = trans('wallet.type_income', { monto: diferencia.toFixed(2) });
             indicatorMovTipo.className = 'text-xs mt-1 font-semibold text-green-500';
         }
     }
@@ -109,7 +109,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!walletId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información...';
+            statusMsg.textContent = trans('wallet.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -124,7 +124,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo encontrar la información.`);
+                throw new Error(resData.message || trans('wallet.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -133,7 +133,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
             if (imgIcono) imgIcono.src = currentWalletData.icono;
             if (txtTitulo) txtTitulo.textContent = currentWalletData.titulo;
-            if (txtTipo) txtTipo.textContent = currentWalletData.tipo;
+            if (txtTipo) txtTipo.textContent = trans(`wallet.tipo.${(currentWalletData.tipo || '').toLowerCase()}`);
             if (txtMontoActual) txtMontoActual.textContent = `$${currentWalletData.monto_actual}`;
             if (txtMontoInicial) txtMontoInicial.textContent = `$${currentWalletData.monto_inicial}`;
             if (txtFecha) txtFecha.textContent = currentWalletData.fecha;
@@ -194,12 +194,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const montoAnterior = parseFloat(currentWalletData.monto_actual);
 
         if (!nuevoTitulo) {
-            alert('El nombre de la billetera no puede estar vacío.');
+            alert(trans('wallet.name_required'));
             return false;
         }
 
         if (isNaN(nuevoMontoActual) || isNaN(nuevoMontoInicial)) {
-            alert('Los montos no pueden estar vacíos.');
+            alert(trans('wallet.amounts_required'));
             return false;
         }
 
@@ -211,12 +211,12 @@ document.addEventListener('DOMContentLoaded', () => {
             const diferencia = nuevoMontoActual - montoAnterior;
 
             if (diferencia === 0) {
-                alert('El monto actual no ha cambiado. Modifica el saldo o desmarca la opción de registrar movimiento.');
+                alert(trans('wallet.amount_unchanged_alert'));
                 return false;
             }
 
             if (!tituloMov) {
-                alert('Ingresa un título para el movimiento.');
+                alert(trans('wallet.movement_title_required'));
                 return false;
             }
 
@@ -285,7 +285,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar los datos.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('wallet.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -308,7 +308,7 @@ document.addEventListener('DOMContentLoaded', () => {
                         titulo: currentWalletData.titulo,
                         icono: currentWalletData.icono,
                         monto: formatMoneyPhp(currentWalletData.monto_actual),
-                        destino: esCredito ? '' : `Monto Inicial: $${formatMoneyPhp(currentWalletData.monto_inicial)}`
+                        destino: esCredito ? '' : trans('wallet.initial_amount_card', { monto: formatMoneyPhp(currentWalletData.monto_inicial) })
                     }
                 }
             }));
@@ -325,7 +325,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentWalletData) return false;
 
-        if (!confirm(`¿Deseas eliminar la billetera "${currentWalletData.titulo}"? Esta acción es irreversible.`)) {
+        if (!confirm(trans('wallet.delete_confirm', { titulo: currentWalletData.titulo }))) {
             return false;
         }
 
@@ -342,7 +342,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar la billetera.');
+                throw new Error(resData.message || trans('wallet.delete_error'));
             }
 
             location.reload();
@@ -419,7 +419,7 @@ document.addEventListener('DOMContentLoaded', () => {
             data: {
                 labels: labels,
                 datasets: [{
-                    label: 'Saldo acumulado ($)',
+                    label: trans('wallet.chart_balance_label'),
                     data: dataBalances,
                     backgroundColor: bgRelleno,
                     borderWidth: 2,
@@ -457,17 +457,17 @@ document.addEventListener('DOMContentLoaded', () => {
 
                                 if (tipo === 'transaccion' || tipo === 'transferencia') {
                                     return [
-                                        `Movimiento: ${item.titulo} ($${item.monto})`,
-                                        `Origen: ${item.origen || 'N/A'}`,
-                                        `Destino: ${item.destino || 'N/A'}`,
-                                        `Saldo: $${item.saldo}`
+                                        trans('wallet.chart_tooltip_movement', { titulo: item.titulo, monto: `$${item.monto}` }),
+                                        trans('wallet.chart_tooltip_origin', { origen: item.origen || trans('common.na') }),
+                                        trans('wallet.chart_tooltip_destination', { destino: item.destino || trans('common.na') }),
+                                        trans('wallet.chart_tooltip_balance', { monto: item.saldo })
                                     ];
                                 }
 
                                 const signo = tipo === 'gasto' ? '-' : '+';
                                 return [
-                                    `Movimiento: ${item.titulo} (${signo}$${item.monto})`,
-                                    `Saldo: $${item.saldo}`
+                                    trans('wallet.chart_tooltip_movement', { titulo: item.titulo, monto: `${signo}$${item.monto}` }),
+                                    trans('wallet.chart_tooltip_balance', { monto: item.saldo })
                                 ];
                             }
                         }

@@ -72,7 +72,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!transactionId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información...';
+            statusMsg.textContent = trans('transaction.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -87,7 +87,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Renderizar datos de lectura
             if (imgIcono) imgIcono.src = currentTransactionData.icono;
             if (txtTitulo) txtTitulo.textContent = currentTransactionData.titulo;
-            if (txtTipo) txtTipo.textContent = currentTransactionData.tipo;
+            if (txtTipo) txtTipo.textContent = trans(`transaction.tipo.${currentTransactionData.tipo_raw}`);
             if (txtMonto) txtMonto.textContent = `$${parseFloat(currentTransactionData.monto).toFixed(2)}`;
             if (txtCategoria) txtCategoria.textContent = currentTransactionData.categoria;
             if (txtOrigen) txtOrigen.textContent = currentTransactionData.origen_nombre;
@@ -155,12 +155,12 @@ document.addEventListener('DOMContentLoaded', () => {
         const categoria = inputCategoria?.value.trim();
 
         if (!titulo) {
-            alert('El título o concepto no puede estar vacío.');
+            alert(trans('common.title_required'));
             return false;
         }
 
         if (isNaN(monto) || monto <= 0) {
-            alert('Ingresa un monto válido mayor a 0.');
+            alert(trans('common.amount_invalid'));
             return false;
         }
 
@@ -213,7 +213,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar el movimiento.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('transaction.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -229,7 +229,7 @@ document.addEventListener('DOMContentLoaded', () => {
             // Sincroniza la tarjeta del listado (home). Origen/Destino
             // (billeteras) no son editables desde este panel.
             const categoriaCard = (currentTransactionData.categoria && currentTransactionData.categoria !== 'Sin categoría')
-                ? `Categoria: ${capitalize(currentTransactionData.categoria)}`
+                ? trans('transaction.category_card', { categoria: capitalize(currentTransactionData.categoria) })
                 : '';
 
             window.dispatchEvent(new CustomEvent('record:updated', {
@@ -257,7 +257,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentTransactionData) return false;
 
-        if (!confirm(`¿Deseas eliminar el movimiento "${currentTransactionData.titulo}"? Esta acción no se puede deshacer.`)) {
+        if (!confirm(trans('transaction.delete_confirm', { titulo: currentTransactionData.titulo }))) {
             return false;
         }
 
@@ -274,7 +274,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar el movimiento.');
+                throw new Error(resData.message || trans('transaction.delete_error'));
             }
 
             // Opcional: Eliminar la fila o tarjeta del DOM si tiene data-id

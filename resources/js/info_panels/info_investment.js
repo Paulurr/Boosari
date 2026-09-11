@@ -37,11 +37,7 @@ document.addEventListener('DOMContentLoaded', () => {
     const selectEstadoValue = document.getElementById('investmentinfo-estado-select-value');
     const selectEstadoTit = document.getElementById('investmentinfo-estado-select-tit');
 
-    const ESTADO_LABELS = {
-        activa: 'Activa',
-        finalizada: 'Finalizada',
-        cancelada: 'Cancelada'
-    };
+    const ESTADO_LABELS = window.i18n.investment.estado;
 
     // Replica el formato de PHP number_format($n, 2): separador de miles ','
     // y siempre 2 decimales. Se usa para que el texto de la tarjeta del home
@@ -55,7 +51,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!selectEstadoValue || !selectEstadoTit) return;
         const v = valor || 'activa';
         selectEstadoValue.value = v;
-        selectEstadoTit.textContent = ESTADO_LABELS[v] || 'Activa';
+        selectEstadoTit.textContent = ESTADO_LABELS[v] || trans('investment.estado.activa');
     }
 
     function getEstadoSelect() {
@@ -73,7 +69,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
     function renderRentaBadge(tipoRenta) {
         if (!badgeRenta) return;
-        badgeRenta.textContent = tipoRenta === 'fija' ? 'Renta Fija' : 'Renta Variable';
+        badgeRenta.textContent = tipoRenta === 'fija' ? trans('investment.fixed_income') : trans('investment.variable_income');
         badgeRenta.className = 'px-2 py-1 text-xs border rounded-full font-semibold uppercase col7';
     }
 
@@ -119,7 +115,7 @@ document.addEventListener('DOMContentLoaded', () => {
         if (!investmentId) return;
 
         if (statusMsg) {
-            statusMsg.textContent = 'Cargando información de la inversión...';
+            statusMsg.textContent = trans('investment.loading');
             statusMsg.className = 'text-center col3 py-8 block';
             statusMsg.classList.remove('hidden');
         }
@@ -131,7 +127,7 @@ document.addEventListener('DOMContentLoaded', () => {
         .then(async response => {
             const resData = await response.json().catch(() => ({}));
             if (!response.ok) {
-                throw new Error(resData.message || `Error ${response.status}: No se pudo obtener la información.`);
+                throw new Error(resData.message || trans('common.fetch_info_error', { status: response.status }));
             }
             return resData;
         })
@@ -142,7 +138,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentInvestmentData.titulo;
             if (txtMontoInicial) txtMontoInicial.textContent = `$${currentInvestmentData.monto_inicial}`;
             if (txtValorActual) txtValorActual.textContent = `$${currentInvestmentData.valor_actual}`;
-            if (txtTasa) txtTasa.textContent = currentInvestmentData.tasa_interes ? `${currentInvestmentData.tasa_interes}%` : 'N/A';
+            if (txtTasa) txtTasa.textContent = currentInvestmentData.tasa_interes ? `${currentInvestmentData.tasa_interes}%` : trans('common.na');
             if (txtFechaAdquisicion) txtFechaAdquisicion.textContent = currentInvestmentData.fecha_adquisicion_f;
             if (txtFechaVencimiento) txtFechaVencimiento.textContent = currentInvestmentData.fecha_vencimiento_f;
             if (txtWallet) txtWallet.textContent = currentInvestmentData.wallet;
@@ -208,15 +204,15 @@ document.addEventListener('DOMContentLoaded', () => {
         const estado = getEstadoSelect();
 
         if (!titulo) {
-            alert('El nombre de la inversión no puede estar vacío.');
+            alert(trans('investment.name_required'));
             return false;
         }
         if (isNaN(montoInicial) || montoInicial <= 0) {
-            alert('Ingresa un monto invertido válido.');
+            alert(trans('investment.initial_amount_invalid'));
             return false;
         }
         if (isNaN(valorActual) || valorActual < 0) {
-            alert('Ingresa un valor actual válido.');
+            alert(trans('investment.current_value_invalid'));
             return false;
         }
 
@@ -275,7 +271,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : 'Error al actualizar la inversión.');
+                const errorMsg = resData.message || (resData.errors ? Object.values(resData.errors).flat().join('\n') : trans('investment.update_error'));
                 throw new Error(errorMsg);
             }
 
@@ -285,7 +281,7 @@ document.addEventListener('DOMContentLoaded', () => {
             if (txtTitulo) txtTitulo.textContent = currentInvestmentData.titulo;
             if (txtMontoInicial) txtMontoInicial.textContent = `$${currentInvestmentData.monto_inicial}`;
             if (txtValorActual) txtValorActual.textContent = `$${currentInvestmentData.valor_actual}`;
-            if (txtTasa) txtTasa.textContent = currentInvestmentData.tasa_interes ? `${currentInvestmentData.tasa_interes}%` : 'N/A';
+            if (txtTasa) txtTasa.textContent = currentInvestmentData.tasa_interes ? `${currentInvestmentData.tasa_interes}%` : trans('common.na');
             if (txtFechaVencimiento) txtFechaVencimiento.textContent = currentInvestmentData.fecha_vencimiento_f;
 
             renderEstadoBadge(currentInvestmentData.estado);
@@ -304,10 +300,10 @@ document.addEventListener('DOMContentLoaded', () => {
 
             let tasaTexto = '';
             if (currentInvestmentData.tipo_renta === 'fija' && currentInvestmentData.tasa_interes) {
-                tasaTexto = ` | Tasa: ${parseFloat(currentInvestmentData.tasa_interes)}%`;
+                tasaTexto = trans('investment.rate_suffix', { tasa: parseFloat(currentInvestmentData.tasa_interes) });
             }
 
-            const vencimientoTexto = currentInvestmentData.fecha_vencimiento_f || 'Sin fecha';
+            const vencimientoTexto = currentInvestmentData.fecha_vencimiento_f || trans('investment.no_due_date');
 
             window.dispatchEvent(new CustomEvent('record:updated', {
                 detail: {
@@ -317,8 +313,8 @@ document.addEventListener('DOMContentLoaded', () => {
                         titulo: currentInvestmentData.titulo,
                         icono: currentInvestmentData.icono,
                         monto: formatMoneyPhp(currentInvestmentData.valor_actual),
-                        origen: `Invertido: $${formatMoneyPhp(currentInvestmentData.monto_inicial)}`,
-                        destino: `Ganancia: ${gananciaFormateada}${tasaTexto} | Vence: ${vencimientoTexto}`
+                        origen: trans('investment.card_origin', { monto: formatMoneyPhp(currentInvestmentData.monto_inicial) }),
+                        destino: trans('investment.card_destination', { ganancia: gananciaFormateada, tasa: tasaTexto, fecha: vencimientoTexto })
                     }
                 }
             }));
@@ -333,7 +329,7 @@ document.addEventListener('DOMContentLoaded', () => {
     panel.onDelete = async () => {
         if (!currentInvestmentData) return false;
 
-        if (!confirm(`¿Deseas eliminar la inversión "${currentInvestmentData.titulo}"? Esta acción es irreversible.`)) {
+        if (!confirm(trans('investment.delete_confirm', { titulo: currentInvestmentData.titulo }))) {
             return false;
         }
 
@@ -350,7 +346,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const resData = await response.json().catch(() => ({}));
 
             if (!response.ok) {
-                throw new Error(resData.message || 'No se pudo eliminar la inversión.');
+                throw new Error(resData.message || trans('investment.delete_error'));
             }
 
             location.reload();
@@ -402,9 +398,9 @@ document.addEventListener('DOMContentLoaded', () => {
         investmentChartInstance = new Chart(ctx, {
             type: 'bar',
             data: {
-                labels: ['Invertido', 'Valor Actual'],
+                labels: [trans('investment.chart_invested'), trans('investment.chart_current_value')],
                 datasets: [{
-                    label: 'Monto ($)',
+                    label: trans('investment.chart_amount_label'),
                     data: [inicial, actual],
                     backgroundColor: [
                         hexToRgba(colorTexto, 0.35),

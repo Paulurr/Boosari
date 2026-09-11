@@ -44,13 +44,13 @@ document.addEventListener('DOMContentLoaded', () => {
             emptyDiv.id = 'agent-empty-state';
             emptyDiv.className = 'max-w-md mx-auto text-center pt-10';
             emptyDiv.innerHTML = `
-                <div class="w-14 h-14 rounded-full bgcol4 col1 flex items-center justify-center mx-auto mb-4 text-xl font-bold">IA</div>
-                <p class="col7 font-semibold mb-1">¿En qué te ayudo?</p>
-                <p class="col7 opacity-60 text-sm mb-5">Pregúntame sobre tus finanzas, con base en tus datos reales.</p>
+                <div class="w-14 h-14 rounded-full bgcol4 col1 flex items-center justify-center mx-auto mb-4 text-xl font-bold">${trans('agent.ai')}</div>
+                <p class="col7 font-semibold mb-1">${trans('agent.empty_title')}</p>
+                <p class="col7 opacity-60 text-sm mb-5">${trans('agent.empty_subtitle')}</p>
                 <div class="flex flex-wrap justify-center gap-2">
-                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">¿En qué debería enfocarme este mes?</button>
-                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">¿Cómo van mis metas de ahorro?</button>
-                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">¿Qué deuda debería priorizar?</button>
+                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">${trans('agent.suggestion_1')}</button>
+                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">${trans('agent.suggestion_2')}</button>
+                    <button class="agent-suggestion text-xs col7 border rounded-full px-3 py-1.5 hover:bgcol2 transition">${trans('agent.suggestion_3')}</button>
                 </div>
             `;
             messagesBox.appendChild(emptyDiv);
@@ -68,7 +68,7 @@ document.addEventListener('DOMContentLoaded', () => {
         div.className = 'text-center col7 opacity-60 text-xs px-4 py-10';
         div.innerHTML = `
             <svg xmlns="http://www.w3.org/2000/svg" class="w-8 h-8 mx-auto mb-2 opacity-60" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/></svg>
-            Aún no tienes conversaciones.`;
+            ${trans('agent.no_conversations')}`;
         historyBox.appendChild(div);
     }
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const wrap = document.createElement('div');
         wrap.className = `agent-bubble-in flex items-end gap-2 ${esUsuario ? 'justify-end' : 'justify-start'}`;
 
-        const avatar = `<div class="w-7 h-7 rounded-full bgcol4 col1 flex items-center justify-center shrink-0 text-[10px] font-bold">${esUsuario ? 'Tú' : 'IA'}</div>`;
+        const avatar = `<div class="w-7 h-7 rounded-full bgcol4 col1 flex items-center justify-center shrink-0 text-[10px] font-bold">${esUsuario ? trans('agent.you') : trans('agent.ai')}</div>`;
 
         // IA: fondo col2 (neutro) · Usuario: fondo col4 (color de acento), tal como en el resto de la app.
         const bubble = `
@@ -142,7 +142,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const res = await fetch(`/agent/${id}/messages`, {
                 headers: { 'X-Requested-With': 'XMLHttpRequest', 'Accept': 'application/json' }
             });
-            if (!res.ok) throw new Error('No se pudo cargar la conversación.');
+            if (!res.ok) throw new Error(trans('agent.load_error'));
             const json = await res.json();
 
             if (!json.data || json.data.length === 0) {
@@ -168,7 +168,7 @@ document.addEventListener('DOMContentLoaded', () => {
         const thinking = document.createElement('div');
         thinking.className = 'agent-bubble-in flex items-end gap-2 justify-start';
         thinking.innerHTML = `
-            <div class="w-7 h-7 rounded-full bgcol4 col1 flex items-center justify-center shrink-0 text-[10px] font-bold">IA</div>
+            <div class="w-7 h-7 rounded-full bgcol4 col1 flex items-center justify-center shrink-0 text-[10px] font-bold">${trans('agent.ai')}</div>
             <div class="bgcol2 col7 p-3 rounded-2xl rounded-bl-sm text-sm flex gap-1 items-center">
                 <span class="agent-dot w-1.5 h-1.5 rounded-full bgcol4 inline-block" style="animation-delay:0ms"></span>
                 <span class="agent-dot w-1.5 h-1.5 rounded-full bgcol4 inline-block" style="animation-delay:150ms"></span>
@@ -191,7 +191,7 @@ document.addEventListener('DOMContentLoaded', () => {
             const json = await res.json().catch(() => ({}));
             thinking.remove();
 
-            if (!res.ok) throw new Error(json.message || 'Error al contactar al asistente.');
+            if (!res.ok) throw new Error(json.message || trans('agent.contact_error'));
 
             const esConversacionNueva = !currentConversationId;
             currentConversationId = json.conversation_id;
@@ -210,16 +210,16 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     }
 
-    function buildHistoryItem(id, titulo, cuando = 'Ahora') {
+    function buildHistoryItem(id, titulo, cuando = null) {
         const item = document.createElement('div');
         item.dataset.id = id;
         item.className = 'agent-history-item agent-history-item-enter group relative w-full rounded-lg text-sm col7 hover:bgcol2 transition';
         item.innerHTML = `
             <button type="button" class="agent-history-open w-full text-left p-3 pr-9 flex flex-col gap-0.5 rounded-lg">
                 <span class="truncate font-medium">${escapeHtml(titulo.slice(0, 40))}</span>
-                <span class="text-[11px] col7 opacity-60">${escapeHtml(cuando)}</span>
+                <span class="text-[11px] col7 opacity-60">${escapeHtml(cuando ?? trans('agent.now'))}</span>
             </button>
-            <button type="button" class="agent-delete-btn absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-md text-red-500 hover:bg-red-500/10" title="Eliminar conversación">
+            <button type="button" class="agent-delete-btn absolute right-1.5 top-1/2 -translate-y-1/2 w-7 h-7 flex items-center justify-center rounded-md text-red-500 hover:bg-red-500/10" title="${trans('agent.delete_title_attr')}">
                 <svg xmlns="http://www.w3.org/2000/svg" class="w-4 h-4" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6h18M8 6V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2m3 0-1 14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2L4 6h16Z"/></svg>
             </button>`;
         return item;
@@ -235,9 +235,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // =====================================================================
     async function deleteConversation(item) {
         const id = item.dataset.id;
-        const titulo = item.querySelector('.agent-history-open span')?.textContent?.trim() || 'esta conversación';
+        const titulo = item.querySelector('.agent-history-open span')?.textContent?.trim() || trans('agent.delete_default_title');
 
-        if (!confirm(`¿Eliminar "${titulo}"? Esta acción no se puede deshacer.`)) return;
+        if (!confirm(trans('agent.delete_confirm', { titulo }))) return;
 
         try {
             const res = await fetch(`/agent/${id}`, {
@@ -249,7 +249,7 @@ document.addEventListener('DOMContentLoaded', () => {
                 }
             });
             const json = await res.json().catch(() => ({}));
-            if (!res.ok) throw new Error(json.message || 'No se pudo eliminar la conversación.');
+            if (!res.ok) throw new Error(json.message || trans('agent.delete_error'));
 
             // Animación de salida antes de quitarlo del DOM.
             item.classList.add('agent-history-item-leave');

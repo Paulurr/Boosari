@@ -276,7 +276,7 @@ function crearManejadorAjax(form, generalErrorId, generalMsgId) {
                     generalErrorMsg.textContent = data.message;
                     generalErrorCont.classList.remove("hidden");
                 } else if (generalErrorCont && generalErrorMsg) {
-                    generalErrorMsg.textContent = "Ocurrió un error al procesar la solicitud.";
+                    generalErrorMsg.textContent = trans('common.generic_process_error');
                     generalErrorCont.classList.remove("hidden");
                 }
 
@@ -291,7 +291,7 @@ function crearManejadorAjax(form, generalErrorId, generalMsgId) {
 
         } catch (error) {
             if (generalErrorCont && generalErrorMsg) {
-                generalErrorMsg.textContent = "Error de conexión. Inténtelo de nuevo.";
+                generalErrorMsg.textContent = trans('common.connection_error');
                 generalErrorCont.classList.remove("hidden");
             }
             return false;

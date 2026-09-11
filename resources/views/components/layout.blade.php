@@ -17,6 +17,9 @@
         {{-- Paleta personalizada del usuario (si existe), para que ThemeMode.js
              la use en vez de los colores base. Debe ir ANTES de cargar ThemeMode.js
              (que se importa desde nav.blade.php más abajo, dentro de $slot). --}}
+        <script>
+            window.i18n = @json(__('js'));
+        </script>
         @auth
             <script>
                 window.PALETA_PERSONALIZADA = @json(
