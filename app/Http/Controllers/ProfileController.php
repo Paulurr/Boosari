@@ -17,6 +17,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
 use Illuminate\Validation\Rules\Password;
 
 
@@ -111,6 +112,35 @@ class ProfileController extends Controller
     }
 
     /**
+     * Suma de saldos por tipo de billetera. Solo se llama cuando el perfil
+     * es propio. En las tarjetas de crédito monto_actual es la deuda
+     * (los gastos suman), por eso 'deuda' sale de las de tipo crédito.
+     */
+    private function resumenBilleteras(User $user): array
+    {
+        $porTipo = Wallet::where('user_id', $user->id)
+            ->get(['tipo', 'monto_actual'])
+            ->groupBy(fn ($w) => Str::ascii(mb_strtolower(trim($w->tipo))))
+            ->map(fn ($grupo) => round((float) $grupo->sum('monto_actual'), 2));
+
+        $efectivo = $porTipo->get('efectivo', 0.0);
+        $ahorro   = $porTipo->get('ahorro', 0.0);
+        $debito   = $porTipo->get('debito', 0.0);
+        $deuda    = $porTipo->get('credito', 0.0);
+
+        $disponible = $efectivo + $ahorro + $debito;
+
+        return [
+            'efectivo'   => $efectivo,
+            'ahorro'     => $ahorro,
+            'deuda'      => $deuda,
+            'debito'     => $debito,
+            'disponible' => $disponible,
+            'neto'       => $disponible - $deuda,
+        ];
+    }
+
+    /**
      * Convierte un user_agent crudo en algo legible tipo "Chrome · Windows".
      * No usa ninguna librería externa, solo heurística por substrings —
      * suficiente para un panel informativo de admin, no para fingerprinting.
@@ -184,16 +214,20 @@ class ProfileController extends Controller
         // puede ver las suyas propias. Un Moderador NO ve sesiones ajenas.
         $puedeVerSesiones = $esPropio || (int) $viewer->roles_id === 3;
 
+        // Solo el dueño del perfil: ni se calcula si es cuenta ajena.
+        $resumenBilleteras = $esPropio ? $this->resumenBilleteras($target) : null;
+
         return view('profile', [
-            'target'           => $target,
-            'rolTarget'        => $this->nombreRol($target->roles_id),
-            'esPropio'         => $esPropio,
-            'puedeGestionar'   => in_array($viewer->roles_id, [2, 3]),
-            'puedeEliminar'    => $esPropio || (int) $viewer->roles_id === 3,
-            'puedeCambiarRol'  => !$esPropio && (int) $viewer->roles_id === 3,
-            'resumen'          => $resumen,
-            'puedeVerSesiones' => $puedeVerSesiones,
-            'sesiones'         => $puedeVerSesiones ? $this->obtenerSesiones($request, $target) : collect(),
+            'target'             => $target,
+            'rolTarget'          => $this->nombreRol($target->roles_id),
+            'esPropio'           => $esPropio,
+            'puedeGestionar'     => in_array($viewer->roles_id, [2, 3]),
+            'puedeEliminar'      => $esPropio || (int) $viewer->roles_id === 3,
+            'puedeCambiarRol'    => !$esPropio && (int) $viewer->roles_id === 3,
+            'resumen'            => $resumen,
+            'resumenBilleteras'  => $resumenBilleteras,
+            'puedeVerSesiones'   => $puedeVerSesiones,
+            'sesiones'           => $puedeVerSesiones ? $this->obtenerSesiones($request, $target) : collect(),
         ]);
     }
 

@@ -172,8 +172,46 @@
             </div>
         </div>
 
+        {{-- Resumen de billeteras: SOLO el dueño del perfil (ni Admin ni Moderador en cuentas ajenas) --}}
+        @if ($esPropio && $resumenBilleteras)
+            @php
+                $fmt = fn ($n) => ($n < 0 ? '-' : '') . '$' . number_format(abs($n), 2);
+            @endphp
+            <div class="w-full lg:w-3/5 bgcol1 rounded-xs p-6 flex flex-col items-center">
+                <h2 class="text-xl font-bold col4 w-full">Resumen de billeteras</h2>
+                <div class="bgcol4 h-1 w-full mt-3 mb-6"></div>
+
+                <div class="w-full grid grid-cols-2 md:grid-cols-3 gap-6 text-center">
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold col7">{{ $fmt($resumenBilleteras['efectivo']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Efectivo</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold col7">{{ $fmt($resumenBilleteras['ahorro']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Ahorro</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold text-red-500">- {{ $fmt($resumenBilleteras['deuda']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Deuda (crédito)</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold col7">{{ $fmt($resumenBilleteras['debito']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Débito</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold col7">{{ $fmt($resumenBilleteras['disponible']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Débito + Efectivo + Ahorro</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-2xl font-bold col4">{{ $fmt($resumenBilleteras['neto']) }}</span>
+                        <span class="col7 opacity-75 text-xs uppercase font-semibold">Total menos deuda</span>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         {{-- Sesiones (solo lectura): el admin ve las de cualquier usuario, cada quien ve las suyas --}}
-        @if ($puedeVerSesiones)
+        @if ($puedeVerSesiones && auth()->user()->roles_id === 3)
             <div class="w-full lg:w-3/5 bgcol1 rounded-xs p-6 flex flex-col items-center">
                 <h2 class="text-xl font-bold col4 w-full">Sesiones</h2>
                 <div class="bgcol4 h-1 w-full mt-3 mb-6"></div>
