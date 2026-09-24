@@ -11,6 +11,7 @@ use App\Models\Investment;
 use App\Models\Transaction;
 use App\Models\Wallet;
 use App\Services\CozeService;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Str;
 
@@ -30,6 +31,24 @@ class AgentController extends Controller
     private function agenteActivo(): bool
     {
         return auth()->user()->configuracion->agente_activo ?? true;
+    }
+
+    /**
+     * Formatea una fecha venga como Carbon, string o null.
+     * Evita el error "Call to a member function format() on string"
+     * cuando el modelo no tiene el campo en $casts.
+     */
+    private function fecha($valor, string $formato = 'Y-m-d'): string
+    {
+        if (empty($valor)) {
+            return 'sin fecha';
+        }
+
+        try {
+            return Carbon::parse($valor)->format($formato);
+        } catch (\Throwable $e) {
+            return (string) $valor;
+        }
     }
 
     public function index()
@@ -82,19 +101,31 @@ class AgentController extends Controller
         ]);
 
         $conversation = null;
-        $esNuevaConversacion = false;
 
         if ($request->filled('conversation_id')) {
             $conversation = AgentConversation::where('user_id', auth()->id())
                 ->find($request->conversation_id);
         }
 
-        if (!$conversation) {
+        $esNuevaConversacion = !$conversation;
+
+        // Si es el primer mensaje del chat, inyecta el contexto de la BD;
+        // si la conversación ya existe, solo envía la pregunta del usuario para no saturar a Coze.
+        // Se arma ANTES de crear nada en la BD: si falla, no quedan conversaciones vacías.
+        try {
+            $promptCoze = $esNuevaConversacion
+                ? $this->buildPrompt(auth()->user(), $request->mensaje)
+                : $request->mensaje;
+        } catch (\Throwable $e) {
+            report($e);
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+
+        if ($esNuevaConversacion) {
             $conversation = AgentConversation::create([
                 'user_id' => auth()->id(),
                 'titulo'  => Str::limit($request->mensaje, 40),
             ]);
-            $esNuevaConversacion = true;
         }
 
         // Guarda el mensaje del usuario tal cual en la BD local
@@ -102,12 +133,6 @@ class AgentController extends Controller
             'rol'       => 'usuario',
             'contenido' => $request->mensaje,
         ]);
-
-        // Si es el primer mensaje del chat, inyecta el contexto de la BD; 
-        // si la conversación ya existe, solo envía la pregunta del usuario para no saturar a Coze
-        $promptCoze = $esNuevaConversacion 
-            ? $this->buildPrompt(auth()->user(), $request->mensaje) 
-            : $request->mensaje;
 
         try {
             $coze = app(CozeService::class);
@@ -167,18 +192,21 @@ class AgentController extends Controller
             $wallet = $walletsPorId->get($i->wallet_id)?->titulo ?? 'sin billetera';
             $cat    = $categorias[$i->category_id] ?? 'sin categoría';
             $estado = $i->activo ? 'activo' : 'inactivo';
-            $c .= "- \"{$i->titulo}\": \${$i->monto} cada {$i->frecuencia}, billetera \"{$wallet}\", categoría {$cat}, desde {$i->fecha_inicio?->format('Y-m-d')}, estado: {$estado}\n";
+            $inicio = $this->fecha($i->fecha_inicio);
+            $c .= "- \"{$i->titulo}\": \${$i->monto} cada {$i->frecuencia}, billetera \"{$wallet}\", categoría {$cat}, desde {$inicio}, estado: {$estado}\n";
         }
 
         // ---- Deudas (todas, con su historial de pagos) ----
         $debts = Debt::where('user_id', $uid)->with('payments')->get();
         $c .= "\n--- DEUDAS (" . $debts->count() . ") ---\n";
         foreach ($debts as $d) {
-            $cat = $categorias[$d->category_id] ?? 'sin categoría';
-            $c .= "- \"{$d->titulo}\" [estado: {$d->estado}]: debe \${$d->monto_actual} de \${$d->monto_inicial} original, tasa {$d->tasa_interes}%, vence {$d->fecha_vencimiento?->format('Y-m-d')}, prioridad {$d->prioridad}, categoría {$cat}\n";
+            $cat   = $categorias[$d->category_id] ?? 'sin categoría';
+            $vence = $this->fecha($d->fecha_vencimiento);
+            $c .= "- \"{$d->titulo}\" [estado: {$d->estado}]: debe \${$d->monto_actual} de \${$d->monto_inicial} original, tasa {$d->tasa_interes}%, vence {$vence}, prioridad {$d->prioridad}, categoría {$cat}\n";
             foreach ($d->payments as $p) {
                 $walletPago = $walletsPorId->get($p->wallet_id)?->titulo ?? 'sin billetera';
-                $c .= "    · pago de \${$p->monto} el {$p->created_at->format('Y-m-d')} desde \"{$walletPago}\"" . ($p->pago_minimo ? ' (pago mínimo)' : '') . "\n";
+                $fechaPago  = $this->fecha($p->created_at);
+                $c .= "    · pago de \${$p->monto} el {$fechaPago} desde \"{$walletPago}\"" . ($p->pago_minimo ? ' (pago mínimo)' : '') . "\n";
             }
         }
 
@@ -186,12 +214,14 @@ class AgentController extends Controller
         $goals = Goal::where('user_id', $uid)->with('payments')->get();
         $c .= "\n--- METAS DE AHORRO (" . $goals->count() . ") ---\n";
         foreach ($goals as $g) {
-            $cat = $categorias[$g->category_id] ?? 'sin categoría';
-            $c .= "- \"{$g->titulo}\" [estado: {$g->estado}]: \${$g->monto_actual} de \${$g->monto_objetivo} (inicial \${$g->monto_inicial}), límite {$g->fecha_limite?->format('Y-m-d')}, categoría {$cat}";
+            $cat    = $categorias[$g->category_id] ?? 'sin categoría';
+            $limite = $this->fecha($g->fecha_limite);
+            $c .= "- \"{$g->titulo}\" [estado: {$g->estado}]: \${$g->monto_actual} de \${$g->monto_objetivo} (inicial \${$g->monto_inicial}), límite {$limite}, categoría {$cat}";
             $c .= $g->descripcion ? ", nota: {$g->descripcion}\n" : "\n";
             foreach ($g->payments as $p) {
                 $walletAbono = $walletsPorId->get($p->wallet_id)?->titulo ?? 'sin billetera';
-                $c .= "    · abono de \${$p->monto} el {$p->created_at->format('Y-m-d')} desde \"{$walletAbono}\"\n";
+                $fechaAbono  = $this->fecha($p->created_at);
+                $c .= "    · abono de \${$p->monto} el {$fechaAbono} desde \"{$walletAbono}\"\n";
             }
         }
 
@@ -201,7 +231,9 @@ class AgentController extends Controller
         foreach ($investments as $inv) {
             $wallet = $walletsPorId->get($inv->wallet_id)?->titulo ?? 'sin billetera';
             $cat    = $categorias[$inv->category_id] ?? 'sin categoría';
-            $c .= "- \"{$inv->titulo}\" [estado: {$inv->estado}] ({$inv->tipo_renta}): invertido \${$inv->monto_inicial}, valor actual \${$inv->valor_actual}, ganancia \${$inv->ganancia}, tasa {$inv->tasa_interes}%, adquirida {$inv->fecha_adquisicion?->format('Y-m-d')}, vence {$inv->fecha_vencimiento?->format('Y-m-d')}, billetera \"{$wallet}\", categoría {$cat}\n";
+            $adq    = $this->fecha($inv->fecha_adquisicion);
+            $venc   = $this->fecha($inv->fecha_vencimiento);
+            $c .= "- \"{$inv->titulo}\" [estado: {$inv->estado}] ({$inv->tipo_renta}): invertido \${$inv->monto_inicial}, valor actual \${$inv->valor_actual}, ganancia \${$inv->ganancia}, tasa {$inv->tasa_interes}%, adquirida {$adq}, vence {$venc}, billetera \"{$wallet}\", categoría {$cat}\n";
         }
 
         // ---- Transacciones recientes (para buscar cualquiera por nombre/monto/fecha) ----
@@ -217,7 +249,7 @@ class AgentController extends Controller
             $origen  = $walletsPorId->get($t->wallet_origen_id)?->titulo;
             $destino = $walletsPorId->get($t->wallet_destino_id)?->titulo;
             $cat     = $categorias[$t->category_id] ?? 'sin categoría';
-            $fecha   = $t->fecha_ejecucion?->format('Y-m-d H:i');
+            $fecha   = $this->fecha($t->fecha_ejecucion, 'Y-m-d H:i');
 
             $c .= "- \"{$t->titulo}\" [{$t->tipo}]: \${$t->monto}, categoría {$cat}, fecha {$fecha}";
             if ($origen)  $c .= ", desde \"{$origen}\"";
